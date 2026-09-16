@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow private or internal routes if any
+Disallow: /admin/
+
+# Sitemaps
+Sitemap: https://nuvv.com.br/sitemap.xml

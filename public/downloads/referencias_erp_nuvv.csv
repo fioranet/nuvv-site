@@ -1,0 +1,13 @@
+Nível / Categoria,Plano de Referência (ERP/Watch),Canais,Conteúdo / Inclusões,Condição / Gatilho de Montagem,Código Extra,Imagens Grade,Imagens Catalogo
+Cortesia,UP,18,18 canais abertos/cortesia,Nível cortesia sem add-ons de streaming,—,tv_cortesia.png,cat_min.png
+Básico (Base),HUB PLAY LOCAL PRO,28,28 canais + Watch + Awdio,"Nível Básico (+ R$ 9,90) sem Telecine nem Premiere",—,tv_basico.png,cat_completo.png
+Básico + Telecine,HUB ULTRA LOCAL PRO,34,28 canais + 6 canais Telecine,"Básico com Telecine promocional (+ R$ 10,00)",—,tv_hub_ultra_local_pro.png,cat_completo.png
+Essencial (Base),POWER PLAY,68,68 canais + Canais Globo,"Nível Essencial (+ R$ 29,90) sem add-ons promocionais",—,tv_essencial.png,cat_completo.png
+Essencial + Telecine,WATCH BLACK PREMIUM,74,68 canais + 6 canais Telecine,"Essencial com Telecine promocional (+ R$ 10,00)",—,tv_watch_black_premium.png,cat_completo.png
+Essencial + Max,WATCH BLACK POWER PLAY,68,68 canais + HBO Max,"Essencial com HBO Max promocional (+ R$ 20,00)",—,tv_essencial.png,cat_completo.png
+Completo (Base),POWER SELEÇÃO ESPORTES WBD,93,99 canais + Premiere e Combate inclusos,"Nível Completo (+ R$ 59,90)",—,tv_completo.png,cat_completo.png
+Completo + Telecine,POWER ELITE WBD,99,99 canais + Premiere + Combate + Telecine,"Completo com Telecine promocional (+ R$ 10,00)",—,completo_elite.png,cat_completo.png
+Completão,POWER ELITE WBD,99,99 canais + Premiere + Combate + Telecine,,HBO Max,completo_elite.png,cat_completo.png
+Mais Cinema,WATCH BLACK CINEMA LOCAL PRO,26,26 canais + Telecine + HBO Max,,,cinema.png,cat_completo.png
+Mais Futebol,HUB SELEÇÃO ESPORTES LOCAL PRO,36,28 canais + Canais Premiere,,—,tv_hub_selecao_esportes.png,cat_completo.png
+Mais Esportes,POWER ESPORTE CLUBE,76,68 canais + Premiere,,—,tv_power_esporte_clube.png,cat_medio.png
