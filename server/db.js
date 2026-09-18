@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -98,7 +99,46 @@ export function initDatabase() {
       value TEXT NOT NULL,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS portal_users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      phone TEXT,
+      role TEXT,
+      user_type TEXT DEFAULT 'usuario', -- admin ou usuario
+      status TEXT DEFAULT 'ativo', -- ativo ou bloqueado
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_portal_users_email ON portal_users(email);
   `);
+
+  // Seed default admin if portal_users is empty
+  try {
+    const userCount = db.prepare('SELECT COUNT(*) as count FROM portal_users').get().count;
+    if (userCount === 0) {
+      const defaultHash = crypto.createHash('sha256').update('nuvv2026').digest('hex');
+      db.prepare(`
+        INSERT INTO portal_users (name, email, password_hash, phone, role, user_type, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        'Administrador Nuvv',
+        'admin@nuvv.com.br',
+        defaultHash,
+        '(11) 99999-9999',
+        'Gestor de Treinamento e Operações',
+        'admin',
+        'ativo'
+      );
+      console.log('👤 Default admin portal user seeded: admin@nuvv.com.br / nuvv2026');
+    }
+  } catch (seedErr) {
+    console.warn('⚠️ Could not check/seed portal_users:', seedErr.message);
+  }
 
   console.log('✅ SQLite Database initialized at:', dbPath);
 }
+

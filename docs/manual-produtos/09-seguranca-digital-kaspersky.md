@@ -1,4 +1,4 @@
-# Manual de Produto: Segurança Digital & Endpoint (Kaspersky Plus, Safe Kids & Proteção DNS)
+# Manual de Produto: Segurança Digital & Endpoint (Kaspersky Plus, Safe Kids & Endpoint Cloud)
 
 > **Classificação:** Produto de Cibersegurança Residencial & Corporativo  
 > **Área Responsável:** Comercial B2C/B2B, Engenharia de Segurança & Suporte Técnico  
@@ -10,12 +10,12 @@
 
 A linha de **Segurança Digital da Nuvv** é desenvolvida para proteger dispositivos, famílias e empresas contra as crescentes ameaças cibernéticas: golpes de clonagem de WhatsApp, links falsos de bancos (phishing), vírus, roubo de senhas, invasão de computadores e ataques de ransomware (sequestro de dados).
 
-Em parceria direta com a **Kaspersky Lab** (líder mundial em testes independentes de segurança) e integrando proteção de DNS na camada de rede da Nuvv, o produto oferece:
+Em parceria direta com a **Kaspersky Lab** (líder mundial em testes independentes de segurança), o produto oferece:
 - **Antivírus em Tempo Real:** Proteção contínua contra malware, spyware e trojans em computadores Windows, Mac, smartphones Android e iPhones.
 - **VPN Ilimitada de Alta Velocidade:** Criptografia militar de dados ao navegar em redes Wi-Fi públicas (aeroportos, hotéis, shoppings), impedindo interceptação de senhas bancárias.
 - **Kaspersky Safe Kids (Proteção e Controle Parental):** Permite aos pais filtrar conteúdos impróprios (pornografia, violência), monitorar o tempo de tela dos filhos e localizar o smartphone das crianças por GPS em tempo real.
 - **Proteção de Pagamentos e Identidade:** Navegador blindado que isola dados de cartão de crédito e contas bancárias durante compras virtuais.
-- **Proteção DNS Corporativa (B2B):** Bloqueio de domínios maliciosos direto no servidor de DNS da Nuvv, impedindo que computadores da empresa acessem links contaminados.
+- **Kaspersky Endpoint Security Cloud (B2B):** Painel web centralizado para gerenciamento remoto de segurança corporativa, bloqueio de pendrives não autorizados, regras de firewall e prevenção proativa contra ransomware.
 
 ---
 
@@ -32,7 +32,8 @@ Em parceria direta com a **Kaspersky Lab** (líder mundial em testes independent
 
 ### 2.2. Planos Corporativos (B2B - Endpoint Security)
 * **Kaspersky Endpoint Security Cloud:** A partir de R$ 19,90 / dispositivo / mês (Painel centralizado na nuvem para o TI da empresa controlar todos os computadores, bloquear pendrives não autorizados e aplicar regras de firewall).
-* **Proteção de DNS Corporativo Nuvv:** Incluso nos planos Semi-Dedicado e Dedicado ou como add-on de R$ 49,90/mês para redes com IP dinâmico.
+* **Pacote Office 5 Licenças:** R$ 49,90 / mês (Proteção para 5 estações de trabalho ou servidores locais).
+* **Pacote Business 10 Licenças:** R$ 89,90 / mês (Proteção com console unificado na nuvem e relatórios de segurança).
 
 ---
 

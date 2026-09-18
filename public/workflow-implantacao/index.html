@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflow Operacional de Implantação - Nuvv Telecom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              cyan: '#06b6d4',
+              teal: '#0d9488',
+              emerald: '#10b981',
+              blue: '#2563eb',
+              sky: '#0284c7',
+              dark: '#050914',
+              surface: '#0d1527',
+              card: '#131e36',
+              border: '#1f2e4d',
+              accent: '#38bdf8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #050914;
+      color: #f1f5f9;
+      overflow-x: hidden;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .gradient-mesh {
+      background: radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 85%, rgba(13, 148, 136, 0.10) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(2, 132, 199, 0.08) 0%, transparent 60%);
+    }
+    .glass-card {
+      background: rgba(19, 30, 54, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+    .slide {
+      display: none;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .slide.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #0284c7;
+      border-radius: 9999px;
+    }
+    .step-badge {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col gradient-mesh selection:bg-brand-cyan/20 selection:text-brand-cyan">
+
+  <!-- Header / Barra Superior -->
+  <header class="border-b border-brand-border/60 bg-brand-dark/80 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="/portal" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-cyan to-brand-teal flex items-center justify-center font-black text-black text-lg shadow-lg shadow-brand-cyan/20 group-hover:scale-105 transition-transform">
+          N
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold tracking-tight text-white text-base">NUVV<span class="text-brand-cyan">.</span>TELECOM</span>
+            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30 uppercase tracking-wider">Workflow</span>
+          </div>
+          <p class="text-xs text-slate-400">Guia Oficial de Implantação & Ativação de Serviços</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navegação de Slides -->
+    <div class="flex items-center gap-3">
+      <div class="hidden md:flex items-center gap-2 bg-brand-surface border border-brand-border rounded-xl px-3 py-1.5 text-xs text-slate-300 font-mono">
+        <span>Slide <span id="currentSlideNum" class="text-brand-cyan font-bold">1</span> / <span id="totalSlidesNum">11</span></span>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button id="prevBtn" onclick="prevSlide()" class="p-2 rounded-xl bg-brand-surface hover:bg-brand-card border border-brand-border hover:border-brand-cyan/50 text-slate-300 hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <button id="nextBtn" onclick="nextSlide()" class="p-2 rounded-xl bg-brand-cyan hover:bg-cyan-400 text-slate-950 font-bold shadow-lg shadow-brand-cyan/25 transition-all flex items-center gap-1">
+          <span class="text-xs font-semibold hidden sm:inline">Avançar</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Barra de Progresso Superior -->
+  <div class="w-full bg-brand-surface h-1 relative overflow-hidden">
+    <div id="progressBar" class="h-full bg-gradient-to-r from-brand-cyan via-brand-teal to-brand-emerald w-[9%] transition-all duration-300"></div>
+  </div>
+
+  <!-- Menu Rápido de Tópicos (Pills Horizontais) -->
+  <nav class="border-b border-brand-border/40 bg-brand-dark/50 px-4 sm:px-8 py-2 overflow-x-auto custom-scrollbar flex items-center gap-2 text-xs">
+    <button onclick="goToSlide(0)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">1. Visão Geral</button>
+    <button onclick="goToSlide(1)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">2. Esteira Residencial</button>
+    <button onclick="goToSlide(2)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">3. Instalação & Óptica Residencial</button>
+    <button onclick="goToSlide(3)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">4. Ativação de SVAs & Entrega</button>
+    <button onclick="goToSlide(4)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">5. Esteira Empresarial & PME</button>
+    <button onclick="goToSlide(5)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">6. Engenharia Dedicado & BGP</button>
+    <button onclick="goToSlide(6)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">7. Testes RFC 2544 & Homologação</button>
+    <button onclick="goToSlide(7)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">8. Nuvv Guard Câmeras & Interfone</button>
+    <button onclick="goToSlide(8)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">9. Nuvv Guard Poste Condomínio</button>
+    <button onclick="goToSlide(9)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">10. PABX Nuvem, SIP & RCS</button>
+    <button onclick="goToSlide(10)" class="nav-pill px-3 py-1 rounded-lg border border-transparent hover:border-brand-cyan/30 text-slate-400 hover:text-white whitespace-nowrap transition-all">11. Hubsoft & Integração IA</button>
+  </nav>
+
+  <!-- Container Principal dos Slides -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 flex flex-col justify-center">
+
+    <!-- SLIDE 1: Visão Geral e Arquitetura Operacional -->
+    <section class="slide active space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-brand-cyan/15 border border-brand-cyan/30 text-brand-cyan text-xs font-mono font-bold">ETAPA 01 // MATRIZ OPERACIONAL</span>
+        <span class="text-xs text-slate-400">Padronização de Excelência Nuvv Telecom</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-7 space-y-5">
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            Workflow de <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan via-teal-400 to-brand-emerald">Implantação & Ativação</span> de Serviços
+          </h1>
+          <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
+            Este manual e apresentação técnica definem os processos padronizados de ponta a ponta para ativação de clientes <strong class="text-white">Residenciais, PMEs, Links Dedicados e Soluções Avançadas (Nuvv Guard, Telefonia e Mensageria)</strong>.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-brand-cyan">
+              <div class="text-xs text-slate-400 font-mono">ESTEIRA</div>
+              <div class="text-lg font-bold text-white mt-1">Residencial</div>
+              <div class="text-xs text-cyan-300 mt-0.5">SLA de 24h a 48h úteis</div>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-teal-400">
+              <div class="text-xs text-slate-400 font-mono">ESTEIRA</div>
+              <div class="text-lg font-bold text-white mt-1">Empresarial</div>
+              <div class="text-xs text-teal-300 mt-0.5">SLA ágil e Vistoria Prévia</div>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-emerald-400">
+              <div class="text-xs text-slate-400 font-mono">BASE DE DADOS</div>
+              <div class="text-lg font-bold text-white mt-1">Hubsoft ERP</div>
+              <div class="text-xs text-emerald-300 mt-0.5">Pronto para IA & Automação</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="glass-card p-6 rounded-3xl space-y-4 border border-brand-border">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan animate-pulse"></span>
+              Pilares do Sucesso Operacional
+            </h3>
+            <ul class="space-y-3 text-xs sm:text-sm text-slate-300">
+              <li class="flex items-start gap-2.5">
+                <span class="text-brand-cyan font-bold mt-0.5 font-mono">01.</span>
+                <span><strong>Aferição Óptica Obrigatória:</strong> Nunca ativar um cliente sem teste de dBm registrado na OS (limite rigoroso de -15 a -24 dBm).</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="text-brand-cyan font-bold mt-0.5 font-mono">02.</span>
+                <span><strong>Provisionamento Zero Touch:</strong> Homologação automática de ONU/ONT e liberação imediata das credenciais de SVA via Hubsoft.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="text-brand-cyan font-bold mt-0.5 font-mono">03.</span>
+                <span><strong>Aceite & Onboarding Imediato:</strong> Teste de velocidade comprovado na frente do cliente e assinatura eletrônica com envio pelo WhatsApp.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="text-brand-cyan font-bold mt-0.5 font-mono">04.</span>
+                <span><strong>Prontidão para IA:</strong> Cada etapa gera status estruturado no Hubsoft para alimentar a futura IA de suporte e triagem.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: Esteira Residencial - Do Fechamento ao Agendamento -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-brand-cyan/15 border border-brand-cyan/30 text-brand-cyan text-xs font-mono font-bold">ETAPA 02 // ESTEIRA RESIDENCIAL</span>
+        <span class="text-xs text-slate-400">Venda, Viabilidade CTO & Despacho</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        Fluxo Inicial: <span class="text-brand-cyan">Fechamento, Viabilidade & OS</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Passo 1 -->
+        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-brand-cyan">
+          <div>
+            <div class="step-badge text-brand-cyan text-xs font-bold mb-2">PASSO 1.1</div>
+            <h4 class="font-bold text-white text-base mb-1">Captação & Contrato</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Vendedor colhe dados cadastrais (CPF, RG, Data Nasc, E-mail, WhatsApp) e envia link de assinatura eletrônica do contrato padrão de 12 meses.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-brand-border/60 text-[11px] text-cyan-300 font-mono">
+            Origem: Site / WhatsApp / Loja
+          </div>
+        </div>
+
+        <!-- Passo 2 -->
+        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-teal-400">
+          <div>
+            <div class="step-badge text-teal-400 text-xs font-bold mb-2">PASSO 1.2</div>
+            <h4 class="font-bold text-white text-base mb-1">Viabilidade na CTO</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Consulta do mapa de rede óptica no Hubsoft. Identificação da Caixa de Terminação Óptica (CTO) mais próxima com porta livre e medição de distância do drop (máx. 300m).
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-brand-border/60 text-[11px] text-teal-300 font-mono">
+            Check: Porta disponível & Potência
+          </div>
+        </div>
+
+        <!-- Passo 3 -->
+        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-sky-400">
+          <div>
+            <div class="step-badge text-sky-400 text-xs font-bold mb-2">PASSO 1.3</div>
+            <h4 class="font-bold text-white text-base mb-1">Cadastro no Hubsoft</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Criação do cliente, vinculação do plano contratado, composição de SVAs contratados (Universal+, TurboMed, etc.) e geração do boleto/chave PIX de adesão se houver.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-brand-border/60 text-[11px] text-sky-300 font-mono">
+            Status: "Aguardando Instalação"
+          </div>
+        </div>
+
+        <!-- Passo 4 -->
+        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-emerald-400">
+          <div>
+            <div class="step-badge text-emerald-400 text-xs font-bold mb-2">PASSO 1.4</div>
+            <h4 class="font-bold text-white text-base mb-1">Agendamento & Despacho</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Alocação no aplicativo do técnico de campo com geolocalização e rota otimizada. Notificação automática via WhatsApp para o cliente com horário de chegada.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-brand-border/60 text-[11px] text-emerald-300 font-mono">
+            OS Gerada com QR Code e Kit
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-4 rounded-2xl bg-brand-surface/90 border border-brand-border flex items-center justify-between text-xs text-slate-300">
+        <div class="flex items-center gap-2">
+          <span class="text-amber-400 text-base">⚠️</span>
+          <span><strong>Regra de Ouro:</strong> Se a CTO mais próxima estiver com ocupação de 100%, a OS entra em status <code>Aguardando Expansão de Rede</code> e aciona a Engenharia imediatamente.</span>
+        </div>
+        <button onclick="openModal('modalRegrasViabilidade')" class="text-brand-cyan hover:underline font-bold text-xs whitespace-nowrap ml-4">
+          Ver Critérios Técnicos →
+        </button>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: Instalação & Óptica Residencial -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-brand-cyan/15 border border-brand-cyan/30 text-brand-cyan text-xs font-mono font-bold">ETAPA 03 // EXECUÇÃO EM CAMPO</span>
+        <span class="text-xs text-slate-400">Lançamento de Cabo Drop, Conectorização e Óptica</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        Instalação Física: <span class="text-brand-cyan">Padrão Técnico & Limites de Sinal</span>
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass-card p-5 rounded-2xl space-y-3 border-t-2 border-brand-cyan">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-white text-base">1. Lançamento Drop</h4>
+            <span class="text-xs font-mono text-brand-cyan">Poste ➔ Residência</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Utilizar cabo Drop óptico de 1 FO homologado pela Anatel com elemento de tração. Fixação em isoladores plásticos padronizados nos postes da concessionária.
+          </p>
+          <ul class="text-[11px] text-slate-400 space-y-1 font-mono">
+            <li>• Altura mínima de travessia viária: 5,50m</li>
+            <li>• Reservar sobra técnica de 10m no poste</li>
+            <li>• Proibido passar por áreas de calor excessivo</li>
+          </ul>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-3 border-t-2 border-teal-400">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-white text-base">2. Entrada & PTO</h4>
+            <span class="text-xs font-mono text-teal-300">Ponto de Terminação</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Instalação do PTO (Ponto de Terminação Óptica) em local alto, arejado e central da residência para maximizar a cobertura do Wi-Fi 6. Conector SC-APC verde.
+          </p>
+          <ul class="text-[11px] text-slate-400 space-y-1 font-mono">
+            <li>• Evitar espelhos e paredes maciças</li>
+            <li>• Fixação por parafusos ou adesivo 3M homologado</li>
+            <li>• Manter raio de curvatura mínimo de 30mm</li>
+          </ul>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-3 border-t-2 border-emerald-400">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-white text-base">3. Medição de dBm</h4>
+            <span class="text-xs font-mono text-emerald-300">Power Meter</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Aferição com medidor de potência óptica calibrado no comprimento de onda 1490nm (Downstream) antes de plugar na ONU.
+          </p>
+          <div class="bg-brand-surface p-2.5 rounded-xl border border-brand-border text-xs font-mono">
+            <div class="text-emerald-400 font-bold">FAIXA IDEAL: -15 dBm a -23 dBm</div>
+            <div class="text-amber-400 text-[10px]">Alerta crítico: &gt; -25 dBm (refazer conector)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl border border-brand-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-cyan/20 text-brand-cyan flex items-center justify-center font-bold text-xl">
+            📶
+          </div>
+          <div>
+            <div class="font-bold text-white text-sm">Provisionamento da ONU Wi-Fi 6 Nuvv</div>
+            <div class="text-xs text-slate-400">Autenticação automática por MAC Address / Serial no OLT via TR-069.</div>
+          </div>
+        </div>
+        <div class="text-xs text-slate-300 bg-brand-dark px-3 py-1.5 rounded-lg border border-brand-border font-mono">
+          SSID: <span class="text-brand-cyan font-bold">Nuvv_Fiber_[Nome]</span> | WPA3/WPA2
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: Ativação de SVAs, Speedtest & Entrega -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-brand-cyan/15 border border-brand-cyan/30 text-brand-cyan text-xs font-mono font-bold">ETAPA 04 // ENTREGA & ONBOARDING</span>
+        <span class="text-xs text-slate-400">Homologação de Streaming, Telemedicina e Aceite</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        Ativação de SVAs & <span class="text-brand-cyan">Certificação do Cliente</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-card p-5 rounded-2xl space-y-3">
+          <div class="w-8 h-8 rounded-lg bg-brand-cyan/20 text-brand-cyan flex items-center justify-center font-bold">1</div>
+          <h4 class="font-bold text-white text-base">Ativação dos SVAs no Hubsoft</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Ao concluir a OS no app técnico, o Hubsoft dispara o webhook de provisionamento:
+          </p>
+          <ul class="text-xs text-slate-400 space-y-1.5">
+            <li>• <strong>Universal+ & Sony One:</strong> Ativação no Watch Brasil</li>
+            <li>• <strong>Max / Telecine:</strong> Envio de token via SMS/E-mail</li>
+            <li>• <strong>TurboMed:</strong> Liberação de telemedicina familiar</li>
+            <li>• <strong>Kaspersky:</strong> Envio de chave de ativação 3/5 telas</li>
+          </ul>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-3">
+          <div class="w-8 h-8 rounded-lg bg-teal-400/20 text-teal-400 flex items-center justify-center font-bold">2</div>
+          <h4 class="font-bold text-white text-base">Speedtest de Certificação</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            O técnico realiza o teste de velocidade na frente do cliente utilizando cabo Cat6 ou rede Wi-Fi 6 em 5GHz, apontando para o servidor oficial <strong>Nuvv Telecom (IX.br)</strong>.
+          </p>
+          <div class="bg-brand-surface p-3 rounded-xl border border-brand-border text-xs font-mono text-slate-300">
+            <div>Download: <span class="text-emerald-400 font-bold">100% da banda contratada</span></div>
+            <div>Upload: <span class="text-emerald-400 font-bold">100% simétrico</span></div>
+            <div>Latência IX.br: <span class="text-brand-cyan font-bold">&lt; 8ms</span></div>
+          </div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-3">
+          <div class="w-8 h-8 rounded-lg bg-emerald-400/20 text-emerald-400 flex items-center justify-center font-bold">3</div>
+          <h4 class="font-bold text-white text-base">Assinatura Digital & Fechamento</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Cliente assina na tela do celular do técnico o <strong>Termo de Instalação e Recebimento de Equipamentos</strong> (ONU / Roteador comodato).
+          </p>
+          <div class="p-3 bg-brand-surface rounded-xl border border-brand-border text-xs text-slate-300 space-y-1">
+            <div class="text-brand-cyan font-bold">Onboarding Concluído</div>
+            <div>Recebe no WhatsApp: Manual do assinante, credenciais de streaming e link do aplicativo Nuvv.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-4 rounded-2xl bg-gradient-to-r from-brand-cyan/10 to-transparent border border-brand-cyan/30 flex items-center justify-between text-xs">
+        <div class="text-slate-300">
+          <strong>Nuvv Tag (Rastreador) incluso no pedido?</strong> O técnico entrega o aparelho configurado, baixa o app no celular do cliente e faz o emparelhamento na hora.
+        </div>
+        <span class="px-2.5 py-1 rounded bg-brand-cyan/20 text-brand-cyan font-bold font-mono text-[10px]">TAG VINCULADA</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: Esteira Empresarial & PME -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-teal-400/15 border border-teal-400/30 text-teal-400 text-xs font-mono font-bold">ETAPA 05 // ESTEIRA EMPRESARIAL</span>
+        <span class="text-xs text-slate-400">Links Corporativos, PME e Vistoria Prévia</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        Fluxo Corporativo: <span class="text-teal-400">Venda Consultiva & Vistoria Técnica</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-card p-6 rounded-2xl space-y-4 border-l-4 border-teal-400">
+          <div class="font-mono text-xs text-teal-400 font-bold">FASE 1 // COMERCIAL & ESCOPO</div>
+          <h4 class="font-bold text-white text-lg">Levantamento de Requisitos</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Identificação da necessidade real da empresa: quantidade de computadores, servidores locais, VPNs matriz-filial, necessidade de IP Fixo ou Bloco de IPs (/29, /30), sistemas em nuvem e câmeras.
+          </p>
+          <div class="text-[11px] text-slate-400 bg-brand-surface p-2.5 rounded-xl border border-brand-border">
+            Definição entre <strong>Link Banda Larga PME</strong> ou <strong>Link Dedicado com SLA de 4h</strong>.
+          </div>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl space-y-4 border-l-4 border-brand-cyan">
+          <div class="font-mono text-xs text-brand-cyan font-bold">FASE 2 // ENGENHARIA DE CAMPO</div>
+          <h4 class="font-bold text-white text-lg">Vistoria Prévia (Site Survey)</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Visita do técnico sênior para mapear a infraestrutura interna do cliente: tubulação, shafts prediais, disponibilidade no rack de TI, no-break, aterramento e ponto de entrada da fibra.
+          </p>
+          <div class="text-[11px] text-slate-400 bg-brand-surface p-2.5 rounded-xl border border-brand-border">
+            Geração de Relatório Fotográfico de Viabilidade Técnica e aprovação de condomínio/prédio.
+          </div>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl space-y-4 border-l-4 border-emerald-400">
+          <div class="font-mono text-xs text-emerald-400 font-bold">FASE 3 // FORMALIZAÇÃO JURÍDICA</div>
+          <h4 class="font-bold text-white text-lg">Contrato Empresarial & SLA</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Emissão de contrato B2B com Termo de Nível de Serviço (SLA) formalizado, prazo de instalação acordado (7 a 15 dias úteis para dedicado), e definição de contatos técnicos autorizados do cliente.
+          </p>
+          <div class="text-[11px] text-slate-400 bg-brand-surface p-2.5 rounded-xl border border-brand-border">
+            Cadastro completo no Hubsoft com CNPJ, IE e Inscrição Municipal.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: Engenharia Dedicado & BGP -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-teal-400/15 border border-teal-400/30 text-teal-400 text-xs font-mono font-bold">ETAPA 06 // REDES & DEDICADO</span>
+        <span class="text-xs text-slate-400">NOC Nuvv Telecom: Configuração de Rota, VLAN e BGP</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        Engenharia de Redes: <span class="text-teal-400">Provisionamento do Link Dedicado</span>
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div class="space-y-4">
+          <div class="glass-card p-5 rounded-2xl space-y-3">
+            <h4 class="font-bold text-white text-base flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+              Alocação no Switch Metro / Core Nuvv
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Criação de VLAN dedicada exclusiva ponta a ponta (QinQ / MPLS). Alocação de porta Gigabit óptica com garantia de banda 100% full duplex e sem contenção (oversubscription = 1:1).
+            </p>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl space-y-3">
+            <h4 class="font-bold text-white text-base flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-brand-cyan"></span>
+              Roteamento IPv4 / IPv6 & Sessão BGP
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Configuração do bloco de IP público fixo no cliente (ex: /30 para roteamento e /29 para servidores). Para clientes com ASN próprio, estabelecimento de sessão BGP (eBGP) com anúncios de prefixos e trânsito IP redundante.
+            </p>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl space-y-3">
+            <h4 class="font-bold text-white text-base flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Monitoramento Ativo 24x7 no NOC (Zabbix/Grafana)
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Inclusão do IP do CPE corporativo no sistema de telemetria da Nuvv com sondas de ping a cada 30 segundos, alertas de jitter, perda de pacotes e tráfego anormal de DDoS.
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-card p-6 rounded-3xl border border-brand-border space-y-4">
+          <div class="flex items-center justify-between border-b border-brand-border pb-3">
+            <span class="font-bold text-white text-sm">Topologia Física do Link Dedicado</span>
+            <span class="text-xs font-mono text-teal-400">Ponta a Ponta</span>
+          </div>
+          <div class="space-y-3 text-xs font-mono">
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border">
+              <div class="text-slate-400 text-[10px]">CORE / POP NUVV</div>
+              <div class="text-white font-bold">Roteador de Borda Juniper / Cisco ➔ Switch Metro Fibra</div>
+            </div>
+            <div class="flex justify-center text-teal-400 text-sm">↓ Anel Óptico de Fibra Monomodo 24/48 FO</div>
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border">
+              <div class="text-slate-400 text-[10px]">ENTRADA NO CLIENTE</div>
+              <div class="text-white font-bold">DIO Óptico no Rack ➔ Cordão Duplex Monomodo LC-APC</div>
+            </div>
+            <div class="flex justify-center text-teal-400 text-sm">↓ Conversor / SFP Óptico</div>
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border">
+              <div class="text-slate-400 text-[10px]">CPE CORPORATIVO / FIREWALL DO CLIENTE</div>
+              <div class="text-emerald-400 font-bold">Roteador Mikrotik/Cisco Gigabit + Porta Ethernet Direta</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: Testes RFC 2544 & Homologação -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-teal-400/15 border border-teal-400/30 text-teal-400 text-xs font-mono font-bold">ETAPA 07 // AUDITORIA TÉCNICA</span>
+        <span class="text-xs text-slate-400">Certificação RFC 2544 / ITU-T Y.1564 e Termo de Aceite</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        Homologação: <span class="text-teal-400">Testes de Carga & Termo de Entrega</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="glass-card p-5 rounded-2xl space-y-2 border-t-2 border-teal-400">
+          <div class="text-xs font-mono text-teal-400">MÉTRICA 1</div>
+          <h4 class="font-bold text-white text-base">Throughput (100%)</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Injeção de pacotes contínua na taxa nominal contratada (ex: 500 Mbps simétricos) sem qualquer descarte de pacotes por 1 hora ininterrupta.
+          </p>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-2 border-t-2 border-brand-cyan">
+          <div class="text-xs font-mono text-brand-cyan">MÉTRICA 2</div>
+          <h4 class="font-bold text-white text-base">Latência (RTT)</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Medição de ida e volta aos principais pontos de troca de tráfego (IX.br SP &lt; 8ms). Registro do histórico para comparação no SLA.
+          </p>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-2 border-t-2 border-emerald-400">
+          <div class="text-xs font-mono text-emerald-400">MÉTRICA 3</div>
+          <h4 class="font-bold text-white text-base">Jitter (Variação)</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Estabilidade total da transmissão. Variação máxima tolerada &lt; 2ms, garantindo qualidade perfeita em telefonia VoIP e videoconferências.
+          </p>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-2 border-t-2 border-sky-400">
+          <div class="text-xs font-mono text-sky-400">MÉTRICA 4</div>
+          <h4 class="font-bold text-white text-base">Packet Loss (0%)</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Taxa de perda de pacotes estritamente 0,00% nos testes de homologação, comprovando a integridade física da fibra óptica.
+          </p>
+        </div>
+      </div>
+
+      <div class="glass-card p-6 rounded-3xl border border-brand-border flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="space-y-1">
+          <h3 class="text-lg font-bold text-white">Termo de Entrega do Circuito (TEC)</h3>
+          <p class="text-xs text-slate-300">
+            Documento técnico com os gráficos RFC 2544 anexados, dados de IP, rotas, contato do NOC corporativo e assinatura do gestor de TI da empresa contratante.
+          </p>
+        </div>
+        <button onclick="openModal('modalTemplateTEC')" class="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs whitespace-nowrap shadow-lg shadow-teal-500/20">
+          Ver Modelo de Relatório TEC →
+        </button>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: Nuvv Guard Câmeras & Interfonia -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-emerald-400/15 border border-emerald-400/30 text-emerald-400 text-xs font-mono font-bold">ETAPA 08 // SOLUÇÕES DE SEGURANÇA</span>
+        <span class="text-xs text-slate-400">Nuvv Guard: Câmeras em Nuvem e Interfonia Inteligente</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        Implantação: <span class="text-emerald-400">Câmeras em Nuvem & Interfonia IP</span>
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Câmeras em Nuvem -->
+        <div class="glass-card p-6 rounded-3xl space-y-4 border-t-4 border-emerald-400">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white">Nuvv Guard Câmeras</h3>
+            <span class="px-2 py-0.5 rounded bg-emerald-400/20 text-emerald-300 font-mono text-[10px]">REPASSE / GRAVAÇÃO 24H</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Workflow para condomínios, comércios e residências com gravação direta em nuvem criptografada (sem risco de roubo do HD físico do DVR).
+          </p>
+          <div class="space-y-2 text-xs text-slate-300">
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border space-y-1">
+              <strong class="text-emerald-400">1. Vistoria & Ângulos:</strong> Definição de pontos críticos (entradas, portarias, estacionamentos) com câmeras IP Full HD/4K com IR (visão noturna).
+            </div>
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border space-y-1">
+              <strong class="text-emerald-400">2. Cabeamento Estruturado PoE:</strong> Lançamento de cabos de rede Cat6 blindados com alimentação direta via Switch PoE Nuvv.
+            </div>
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border space-y-1">
+              <strong class="text-emerald-400">3. Configuração do Stream RTSP:</strong> Conexão segura ao servidor de nuvem Nuvv com retenção de 7, 15 ou 30 dias contínuos.
+            </div>
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border space-y-1">
+              <strong class="text-emerald-400">4. Liberação do App:</strong> Criação de usuários no app para síndicos e moradores com permissões hierárquicas.
+            </div>
+          </div>
+        </div>
+
+        <!-- Interfonia Inteligente -->
+        <div class="glass-card p-6 rounded-3xl space-y-4 border-t-4 border-brand-cyan">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white">Interfonia IP & Facial</h3>
+            <span class="px-2 py-0.5 rounded bg-brand-cyan/20 text-brand-cyan font-mono text-[10px]">SEM CABEAMENTO INTERNO</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Eliminação total de fios até os apartamentos. A chamada toca direto no smartphone dos condôminos ou no ramal SIP da portaria.
+          </p>
+          <div class="space-y-2 text-xs text-slate-300">
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border space-y-1">
+              <strong class="text-brand-cyan">1. Instalação do Porteiro IP:</strong> Fixação do painel externo com leitor facial, RFID e câmera HD de alta durabilidade.
+            </div>
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border space-y-1">
+              <strong class="text-brand-cyan">2. Ligação na Fechadura:</strong> Integração com fechadura eletroímã, botoeira de emergência e no-break dedicado para queda de energia.
+            </div>
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border space-y-1">
+              <strong class="text-brand-cyan">3. Cadastro da Tabela Condominial:</strong> Inclusão dos moradores no sistema com números de WhatsApp, ramais e fotos faciais.
+            </div>
+            <div class="p-3 bg-brand-surface rounded-xl border border-brand-border space-y-1">
+              <strong class="text-brand-cyan">4. Treinamento de Portaria:</strong> Instrução da equipe sobre abertura remota, chave virtual por QR Code e histórico de acessos.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: Nuvv Guard Poste Condomínio -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-emerald-400/15 border border-emerald-400/30 text-emerald-400 text-xs font-mono font-bold">ETAPA 09 // INFRAESTRUTURA PESADA</span>
+        <span class="text-xs text-slate-400">Poste de Monitoramento & Câmeras LPR para Condomínios e Empresas</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        Implantação: <span class="text-emerald-400">Poste Inteligente de Segurança Nuvv</span>
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-5">
+          <div class="glass-card p-4 rounded-3xl border border-brand-border overflow-hidden group">
+            <img src="/images/services/poste_nuvv_condominio.jpg" alt="Poste Nuvv de Monitoramento" class="w-full h-80 object-cover rounded-2xl group-hover:scale-105 transition-transform duration-500">
+            <div class="mt-3 text-center">
+              <div class="font-bold text-white text-sm">Poste de Monitoramento Nuvv em Operação</div>
+              <div class="text-[11px] text-slate-400">Estrutura em aço galvanizado a fogo com câmeras 360° e LPR.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 space-y-4">
+          <div class="space-y-3 text-xs text-slate-300">
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-emerald-400">
+              <h4 class="font-bold text-white text-sm mb-1">1. Engenharia Civil & Sapata de Concreto</h4>
+              <p>Escavação de 1,20m com ferragem estrutural e concretagem da base com chumbadores de aço. Cura do concreto por 7 dias antes do içamento da torre.</p>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-teal-400">
+              <h4 class="font-bold text-white text-sm mb-1">2. Içamento & Quadro Hermético</h4>
+              <p>Fixação do poste metálico galvanizado (4 a 6 metros). Montagem de caixa hermética blindada com régua de energia, proteção contra surtos (DPS) e fonte redundante.</p>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-brand-cyan">
+              <h4 class="font-bold text-white text-sm mb-1">3. Câmeras LPR & Visão Noturna de Longo Alcance</h4>
+              <p>Instalação de câmera inteligente com algoritmo OCR para leitura de placas veiculares dia e noite, mais câmera panorâmica 360° para visão perimetral do condomínio.</p>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-sky-400">
+              <h4 class="font-bold text-white text-sm mb-1">4. Conectividade de Fibra Óptica ou Rádio Dedicado</h4>
+              <p>Ligação do poste diretamente à rede de fibra Nuvv ou enlace via rádio de 5GHz ponto a ponto, garantindo envio dos vídeos em alta definição sem travar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: PABX Nuvem, SIP Trunk & RCS -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-sky-400/15 border border-sky-400/30 text-sky-400 text-xs font-mono font-bold">ETAPA 10 // TELEFONIA & COMUNICAÇÃO</span>
+        <span class="text-xs text-slate-400">PABX em Nuvem, Telefonia Fixa SIP e Mensageria RCS / SMS</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        Ativação: <span class="text-sky-400">PABX Nuvem, Tronco SIP & Mensageria RCS</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- PABX Nuvem -->
+        <div class="glass-card p-5 rounded-2xl space-y-3 border-t-2 border-sky-400">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-white text-base">PABX em Nuvem</h4>
+            <span class="text-[10px] font-mono text-sky-300">URA & RAMAIS</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Criação do tenant da empresa no servidor SIP Nuvv. Configuração do menu de URA com gravações em estúdio, filas de atendimento, gravação de chamadas e transferência entre ramais remotos.
+          </p>
+          <div class="bg-brand-surface p-2.5 rounded-xl border border-brand-border text-[11px] text-slate-400 font-mono">
+            Provisionamento de Softphones (PC/Smartphone) e telefones IP de mesa.
+          </div>
+        </div>
+
+        <!-- Telefonia Fixa / SIP Trunk -->
+        <div class="glass-card p-5 rounded-2xl space-y-3 border-t-2 border-brand-cyan">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-white text-base">Telefonia Fixa & SIP</h4>
+            <span class="text-[10px] font-mono text-cyan-300">PORTABILIDADE</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Ativação de numeração 0800, 4004 ou números locais fixos. Abertura do pedido de portabilidade numérica no sistema centralizado da ABR Telecom (prazo legal de 3 dias úteis).
+          </p>
+          <div class="bg-brand-surface p-2.5 rounded-xl border border-brand-border text-[11px] text-slate-400 font-mono">
+            Entrega via autenticação por IP ou Usuário/Senha no PABX do cliente.
+          </div>
+        </div>
+
+        <!-- Mensageria RCS & SMS -->
+        <div class="glass-card p-5 rounded-2xl space-y-3 border-t-2 border-teal-400">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-white text-base">Mensageria RCS / SMS</h4>
+            <span class="text-[10px] font-mono text-teal-300">GOOGLE BUSINESS</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Homologação do Sender ID e selo verificado junto ao Google RCS. Configuração dos templates de cards interativos com botões clicáveis, carrosséis de produtos e integração via API REST com o CRM do cliente.
+          </p>
+          <div class="bg-brand-surface p-2.5 rounded-xl border border-brand-border text-[11px] text-slate-400 font-mono">
+            Fallback automático para SMS tradicional caso o aparelho não tenha internet.
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-4 rounded-2xl border border-brand-border flex items-center justify-between text-xs text-slate-300">
+        <div>
+          <strong>Documentação Obrigatória para Portabilidade:</strong> Cópia da última fatura da operadora doadora em nome do mesmo CNPJ/CPF com status quitado.
+        </div>
+        <span class="text-emerald-400 font-mono font-bold">SEM DOWNTIME</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: Hubsoft & Integração com IA -->
+    <section class="slide space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-emerald-400/15 border border-emerald-400/30 text-emerald-400 text-xs font-mono font-bold">ETAPA 11 // INTEGRAÇÃO & FUTURO</span>
+        <span class="text-xs text-slate-400">Padronização no Hubsoft para Treinamento e IA de Atendimento</span>
+      </div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+        O Hubsoft como Cérebro: <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan via-teal-400 to-brand-emerald">Base da IA de Atendimento</span>
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div class="space-y-4 text-xs sm:text-sm text-slate-300">
+          <p class="leading-relaxed">
+            A padronização rigorosa deste workflow não serve apenas para a equipe humana. Cada etapa preenchida corretamente no Hubsoft torna-se um evento estruturado para a <strong>IA de Atendimento e Suporte Nuvv Telecom</strong>.
+          </p>
+          <div class="glass-card p-4 rounded-2xl space-y-2 border-l-4 border-brand-cyan">
+            <h4 class="font-bold text-white text-sm">Respostas Imediatas ao Cliente no WhatsApp</h4>
+            <p class="text-xs text-slate-400">
+              Quando o cliente perguntar <em>"Quando o técnico vai chegar?"</em>, a IA consulta a OS no Hubsoft e responde o nome do técnico, horário estimado e posição da rota em tempo real.
+            </p>
+          </div>
+          <div class="glass-card p-4 rounded-2xl space-y-2 border-l-4 border-teal-400">
+            <h4 class="font-bold text-white text-sm">Diagnóstico Óptico Automatizado</h4>
+            <p class="text-xs text-slate-400">
+              Ao abrir chamado de lentidão, a IA faz leitura do sinal dBm da ONU via OLT/Hubsoft. Se estiver normal (-19 dBm), sugere teste de Wi-Fi; se estiver atenuado (-28 dBm), abre OS de campo automaticamente.
+            </p>
+          </div>
+          <div class="glass-card p-4 rounded-2xl space-y-2 border-l-4 border-emerald-400">
+            <h4 class="font-bold text-white text-sm">Reativação e Envio de Credenciais SVA</h4>
+            <p class="text-xs text-slate-400">
+              Caso o cliente esqueça a senha do Universal+ ou TurboMed, a IA valida os dados e reenvia o token de acesso instantaneamente sem intervenção humana.
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-card p-6 rounded-3xl border border-brand-border space-y-4">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Checklist Geral de Fechamento de Implantação
+          </h3>
+          <div class="space-y-2.5 text-xs">
+            <div class="flex items-center gap-2.5 p-2 rounded-xl bg-brand-surface border border-brand-border/60">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span class="text-slate-300">Potência óptica aferida e anexada na OS (-15 a -24 dBm)</span>
+            </div>
+            <div class="flex items-center gap-2.5 p-2 rounded-xl bg-brand-surface border border-brand-border/60">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span class="text-slate-300">Foto do PTO, conector e acomodação dos cabos</span>
+            </div>
+            <div class="flex items-center gap-2.5 p-2 rounded-xl bg-brand-surface border border-brand-border/60">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span class="text-slate-300">Speedtest comprovando 100% da velocidade contratada</span>
+            </div>
+            <div class="flex items-center gap-2.5 p-2 rounded-xl bg-brand-surface border border-brand-border/60">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span class="text-slate-300">SVAs ativos e testados no dispositivo do cliente</span>
+            </div>
+            <div class="flex items-center gap-2.5 p-2 rounded-xl bg-brand-surface border border-brand-border/60">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span class="text-slate-300">Termo de recebimento assinado digitalmente</span>
+            </div>
+            <div class="flex items-center gap-2.5 p-2 rounded-xl bg-brand-surface border border-brand-border/60">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span class="text-slate-300">Status no Hubsoft alterado para "Cliente Habilitado / Ativo"</span>
+            </div>
+          </div>
+          <div class="pt-2 text-center">
+            <a href="/portal" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-cyan hover:bg-cyan-400 text-slate-950 font-extrabold text-xs transition-all shadow-lg shadow-brand-cyan/20">
+              Retornar ao Portal do Colaborador ➔
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modais Auxiliares -->
+  <div id="modalContainer" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full rounded-3xl p-6 sm:p-8 space-y-5 border border-brand-border relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <button onclick="closeModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-brand-surface hover:bg-brand-card flex items-center justify-center text-slate-400 hover:text-white border border-brand-border">
+        ✕
+      </button>
+
+      <!-- Conteúdo do Modal: Critérios de Viabilidade -->
+      <div id="modalRegrasViabilidade" class="modal-content hidden space-y-4">
+        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+          <span class="text-brand-cyan">📐</span> Critérios Técnicos de Viabilidade de Fibra
+        </h3>
+        <p class="text-xs text-slate-300">Critérios obrigatórios para abertura e execução de ordens de serviço residencial e empresarial:</p>
+        <div class="space-y-3 text-xs text-slate-300">
+          <div class="p-3 bg-brand-surface rounded-xl border border-brand-border">
+            <div class="font-bold text-brand-cyan mb-1">Distância Máxima de Drop:</div>
+            <div>O cabo drop óptico não deve exceder <strong>300 metros</strong> entre a CTO da Nuvv e o PTO da residência. Distâncias superiores necessitam de poste intermediário ou expansão da rede secundária.</div>
+          </div>
+          <div class="p-3 bg-brand-surface rounded-xl border border-brand-border">
+            <div class="font-bold text-brand-cyan mb-1">Portas Livres por CTO:</div>
+            <div>Cada CTO possui 8 ou 16 saídas. Nunca utilizar splitter secundário sem autorização prévia da Engenharia de Rede.</div>
+          </div>
+          <div class="p-3 bg-brand-surface rounded-xl border border-brand-border">
+            <div class="font-bold text-brand-cyan mb-1">Travessia de Ruas e Avenidas:</div>
+            <div>Respeitar as normas da ABNT e das concessionárias de energia (altura mínima de 5,5m no leito carroçável e 3,5m em calçadas).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conteúdo do Modal: Modelo de TEC -->
+      <div id="modalTemplateTEC" class="modal-content hidden space-y-4">
+        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+          <span class="text-teal-400">📋</span> Modelo de Termo de Entrega de Circuito (TEC)
+        </h3>
+        <p class="text-xs text-slate-300">Estrutura oficial entregue ao cliente corporativo na ativação do Link Dedicado:</p>
+        <div class="p-4 bg-brand-surface rounded-2xl border border-brand-border text-xs font-mono space-y-3 text-slate-300">
+          <div class="border-b border-brand-border/60 pb-2 text-brand-cyan font-bold">NUVV TELECOM - TERMO DE HOMOLOGAÇÃO TÉCNICA</div>
+          <div>Cliente: [Razão Social do Cliente] | CNPJ: [00.000.000/0001-00]</div>
+          <div>Circuito ID: NUVV-DED-[CIDADE]-[NUMERO] | Capacidade: [1000 Mbps Full Duplex]</div>
+          <div>Interface de Entrega: RJ45 Gigabit Ethernet / SFP Monomodo LC</div>
+          <div class="text-emerald-400">Bloco IPv4: 200.x.x.x/30 | Gateway: 200.x.x.1 | IP Cliente: 200.x.x.2</div>
+          <div class="text-emerald-400">DNS Primário: 1.1.1.1 | DNS Secundário: 8.8.8.8</div>
+          <div class="border-t border-brand-border/60 pt-2 text-slate-400">
+            Homologação RFC 2544: Throughput 100% | Perda de Pacotes: 0.00% | Latência Média: 4.2ms | Jitter: 0.8ms
+          </div>
+          <div class="pt-2 text-[11px] text-teal-300">Status da Homologação: APROVADO E OPERACIONAL</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer / Status do Rodapé -->
+  <footer class="border-t border-brand-border/60 bg-brand-dark/80 px-4 sm:px-8 py-3 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-2">
+    <div>
+      © 2026 Nuvv Telecom. Todos os direitos reservados. Material de uso interno e treinamento operacional.
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="font-mono text-brand-cyan">SLA & Qualidade Garantida</span>
+      <a href="/portal" class="hover:text-white transition-colors">Voltar ao Portal</a>
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const navPills = document.querySelectorAll('.nav-pill');
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+
+    document.getElementById('totalSlidesNum').innerText = totalSlides;
+
+    function updateSlide() {
+      slides.forEach((slide, idx) => {
+        if (idx === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      // Atualiza número
+      document.getElementById('currentSlideNum').innerText = currentSlide + 1;
+
+      // Atualiza barra de progresso
+      const progressPercent = ((currentSlide + 1) / totalSlides) * 100;
+      document.getElementById('progressBar').style.width = `${progressPercent}%`;
+
+      // Atualiza botões
+      document.getElementById('prevBtn').disabled = currentSlide === 0;
+      if (currentSlide === totalSlides - 1) {
+        document.getElementById('nextBtn').innerHTML = '<span class="text-xs font-semibold">Início ↺</span>';
+      } else {
+        document.getElementById('nextBtn').innerHTML = '<span class="text-xs font-semibold hidden sm:inline">Avançar</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+      }
+
+      // Atualiza pills
+      navPills.forEach((pill, idx) => {
+        if (idx === currentSlide) {
+          pill.classList.add('bg-brand-cyan/20', 'text-brand-cyan', 'border-brand-cyan/40', 'font-bold');
+          pill.classList.remove('text-slate-400', 'border-transparent');
+          pill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        } else {
+          pill.classList.remove('bg-brand-cyan/20', 'text-brand-cyan', 'border-brand-cyan/40', 'font-bold');
+          pill.classList.add('text-slate-400', 'border-transparent');
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+      } else {
+        currentSlide = 0;
+      }
+      updateSlide();
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        updateSlide();
+      }
+    }
+
+    // Teclado
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      } else if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    // Modais
+    function openModal(contentId) {
+      document.getElementById('modalContainer').classList.remove('hidden');
+      document.querySelectorAll('.modal-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(contentId);
+      if (target) target.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modalContainer').classList.add('hidden');
+      document.querySelectorAll('.modal-content').forEach(el => el.classList.add('hidden'));
+    }
+
+    document.getElementById('modalContainer').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('modalContainer')) {
+        closeModal();
+      }
+    });
+
+    // Inicialização
+    updateSlide();
+  </script>
+</body>
+</html>

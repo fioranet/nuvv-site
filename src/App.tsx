@@ -31,6 +31,7 @@ import { TotemSegundaVia } from './pages/TotemSegundaVia';
 import { Termos } from './pages/Termos';
 import { Privacidade } from './pages/Privacidade';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { PortalColaborador } from './pages/PortalColaborador';
 import { TestePlanos } from './pages/TestePlanos';
 import { usePageViewTracker } from './hooks/usePageViewTracker';
 import { DEFAULT_CITY } from './data/cities';
@@ -111,6 +112,22 @@ export function App() {
           <Route path="/totem/2via" element={<TotemSegundaVia />} />
           <Route path="/kiosk" element={<TotemSegundaVia />} />
           <Route path="/autoatendimento-totem" element={<TotemSegundaVia />} />
+        </Routes>
+      </div>
+    );
+  }
+
+  const isPortalRoute =
+    location.pathname.startsWith('/portal') ||
+    location.pathname.startsWith('/colaborador');
+
+  if (isPortalRoute) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
+        <ScrollToTop />
+        <Routes>
+          <Route path="/portal" element={<PortalColaborador />} />
+          <Route path="/colaborador" element={<PortalColaborador />} />
         </Routes>
       </div>
     );

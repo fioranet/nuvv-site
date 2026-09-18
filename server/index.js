@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { db, initDatabase } from './db.js';
 import {
@@ -14,6 +15,9 @@ import {
 } from './smtp.js';
 import { validateCpfCnpj } from './validatorService.js';
 import { buscarDadosSegundaVia, obterPixFaturamento } from './hubsoft.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -734,11 +738,268 @@ app.post('/api/segunda-via/pix', async (req, res) => {
 });
 
 // -------------------------------------------------------------
+// 6.5. PORTAL DO COLABORADOR & USUÁRIOS
+// -------------------------------------------------------------
+
+// Login do Portal do Colaborador
+app.post('/api/portal/login', (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'E-mail e senha são obrigatórios.' });
+    }
+
+    const user = db.prepare('SELECT * FROM portal_users WHERE LOWER(email) = LOWER(?)').get(email.trim());
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Credenciais inválidas. Verifique seu e-mail.' });
+    }
+
+    if (user.status === 'bloqueado') {
+      return res.status(403).json({ success: false, message: 'Usuário bloqueado. Contate o administrador.' });
+    }
+
+    const hashedInput = crypto.createHash('sha256').update(password).digest('hex');
+    if (user.password_hash !== hashedInput) {
+      return res.status(401).json({ success: false, message: 'Senha incorreta.' });
+    }
+
+    const { password_hash, ...safeUser } = user;
+    return res.json({
+      success: true,
+      user: safeUser
+    });
+  } catch (err) {
+    console.error('[PORTAL LOGIN ERROR]:', err);
+    return res.status(500).json({ success: false, message: 'Erro interno ao realizar login.' });
+  }
+});
+
+// Alteração de Senha pelo Próprio Usuário
+app.post('/api/portal/change-password', (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+    if (!email || !currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Todos os campos de senha são obrigatórios.' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ success: false, message: 'A nova senha deve ter no mínimo 6 caracteres.' });
+    }
+
+    const user = db.prepare('SELECT * FROM portal_users WHERE LOWER(email) = LOWER(?)').get(email.trim());
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
+    }
+
+    const hashedCurrent = crypto.createHash('sha256').update(currentPassword).digest('hex');
+    if (user.password_hash !== hashedCurrent) {
+      return res.status(401).json({ success: false, message: 'Senha atual incorreta.' });
+    }
+
+    const hashedNew = crypto.createHash('sha256').update(newPassword).digest('hex');
+    db.prepare('UPDATE portal_users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+      .run(hashedNew, user.id);
+
+    return res.json({ success: true, message: 'Senha atualizada com sucesso!' });
+  } catch (err) {
+    console.error('[PORTAL CHANGE PASSWORD ERROR]:', err);
+    return res.status(500).json({ success: false, message: 'Erro interno ao atualizar senha.' });
+  }
+});
+
+// CRUD de Usuários (Painel Administrativo)
+app.get('/api/portal/users', (req, res) => {
+  try {
+    const users = db.prepare(`
+      SELECT id, name, email, phone, role, user_type, status, created_at, updated_at 
+      FROM portal_users 
+      ORDER BY name ASC
+    `).all();
+    return res.json({ success: true, users });
+  } catch (err) {
+    console.error('[GET PORTAL USERS ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/portal/users', (req, res) => {
+  try {
+    const { name, email, password, phone, role, user_type, status } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ success: false, message: 'Nome, e-mail e senha são obrigatórios.' });
+    }
+
+    const existing = db.prepare('SELECT id FROM portal_users WHERE LOWER(email) = LOWER(?)').get(email.trim());
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'Já existe um usuário cadastrado com este e-mail.' });
+    }
+
+    const password_hash = crypto.createHash('sha256').update(password).digest('hex');
+    const result = db.prepare(`
+      INSERT INTO portal_users (name, email, password_hash, phone, role, user_type, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      name.trim(),
+      email.trim().toLowerCase(),
+      password_hash,
+      phone ? phone.trim() : '',
+      role ? role.trim() : 'Colaborador',
+      user_type === 'admin' ? 'admin' : 'usuario',
+      status === 'bloqueado' ? 'bloqueado' : 'ativo'
+    );
+
+    return res.json({
+      success: true,
+      user: {
+        id: result.lastInsertRowid,
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone ? phone.trim() : '',
+        role: role ? role.trim() : 'Colaborador',
+        user_type: user_type === 'admin' ? 'admin' : 'usuario',
+        status: status === 'bloqueado' ? 'bloqueado' : 'ativo',
+      }
+    });
+  } catch (err) {
+    console.error('[CREATE PORTAL USER ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.put('/api/portal/users/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, password, phone, role, user_type, status } = req.body;
+
+    const user = db.prepare('SELECT * FROM portal_users WHERE id = ?').get(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
+    }
+
+    if (email && email.toLowerCase() !== user.email.toLowerCase()) {
+      const emailConflict = db.prepare('SELECT id FROM portal_users WHERE LOWER(email) = LOWER(?) AND id != ?').get(email.trim(), id);
+      if (emailConflict) {
+        return res.status(409).json({ success: false, message: 'Este e-mail já está sendo utilizado por outro usuário.' });
+      }
+    }
+
+    let password_hash = user.password_hash;
+    if (password && password.trim().length > 0) {
+      password_hash = crypto.createHash('sha256').update(password.trim()).digest('hex');
+    }
+
+    db.prepare(`
+      UPDATE portal_users 
+      SET name = ?, email = ?, password_hash = ?, phone = ?, role = ?, user_type = ?, status = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(
+      name ? name.trim() : user.name,
+      email ? email.trim().toLowerCase() : user.email,
+      password_hash,
+      phone !== undefined ? phone.trim() : user.phone,
+      role !== undefined ? role.trim() : user.role,
+      user_type !== undefined ? user_type : user.user_type,
+      status !== undefined ? status : user.status,
+      id
+    );
+
+    return res.json({ success: true, message: 'Usuário atualizado com sucesso.' });
+  } catch (err) {
+    console.error('[UPDATE PORTAL USER ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.delete('/api/portal/users/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = db.prepare('SELECT * FROM portal_users WHERE id = ?').get(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
+    }
+
+    // Proteger para não deletar o último admin
+    if (user.user_type === 'admin') {
+      const adminCount = db.prepare("SELECT COUNT(*) as count FROM portal_users WHERE user_type = 'admin'").get().count;
+      if (adminCount <= 1) {
+        return res.status(400).json({ success: false, message: 'Não é permitido excluir o único administrador do sistema.' });
+      }
+    }
+
+    db.prepare('DELETE FROM portal_users WHERE id = ?').run(id);
+    return res.json({ success: true, message: 'Usuário removido com sucesso.' });
+  } catch (err) {
+    console.error('[DELETE PORTAL USER ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Listagem e Leitura dos Manuais em Markdown
+app.get('/api/portal/docs', (req, res) => {
+  try {
+    const docsDir = path.resolve(__dirname, '../docs/manual-produtos');
+    if (!fs.existsSync(docsDir)) {
+      return res.json({ success: true, docs: [] });
+    }
+
+    const files = fs.readdirSync(docsDir).filter(f => f.endsWith('.md'));
+    const docs = files.map(file => {
+      const fullPath = path.join(docsDir, file);
+      const stat = fs.statSync(fullPath);
+      const content = fs.readFileSync(fullPath, 'utf-8');
+      
+      // Extrair primeiro título Markdown # se houver
+      const titleMatch = content.match(/^#\s+(.+)$/m);
+      const title = titleMatch ? titleMatch[1].trim() : file.replace(/\.md$/, '').replace(/-/g, ' ');
+
+      return {
+        slug: file.replace(/\.md$/, ''),
+        filename: file,
+        title,
+        size: stat.size,
+        updatedAt: stat.mtime
+      };
+    });
+
+    return res.json({ success: true, docs });
+  } catch (err) {
+    console.error('[GET PORTAL DOCS ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.get('/api/portal/docs/:slug', (req, res) => {
+  try {
+    const { slug } = req.params;
+    const safeSlug = slug.replace(/[^a-zA-Z0-9_-]/g, '');
+    const docsDir = path.resolve(__dirname, '../docs/manual-produtos');
+    const filePath = path.join(docsDir, `${safeSlug}.md`);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: 'Documento não encontrado.' });
+    }
+
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const titleMatch = content.match(/^#\s+(.+)$/m);
+    const title = titleMatch ? titleMatch[1].trim() : safeSlug.replace(/-/g, ' ');
+
+    return res.json({
+      success: true,
+      slug: safeSlug,
+      filename: `${safeSlug}.md`,
+      title,
+      content
+    });
+  } catch (err) {
+    console.error('[GET PORTAL DOC CONTENT ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// -------------------------------------------------------------
 // 7. SERVING PRODUCTION FRONTEND (DIST) & SPA FALLBACK
 // -------------------------------------------------------------
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const distPath = path.resolve(__dirname, '../dist');
+
 
 if (fs.existsSync(distPath)) {
   console.log(`📦 Serving static files from: ${distPath}`);

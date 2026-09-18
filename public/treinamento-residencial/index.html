@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Treinamento Comercial Residencial: Conectividade, Streaming & Família — Nuvv Telecom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #5A45DE;
+      --primary-light: #7E6DFF;
+      --primary-dark: #3F2EB3;
+      --accent: #00C853;
+      --accent-light: #69F0AE;
+      --cyan: #06B6D4;
+      --amber: #F59E0B;
+      --rose: #F43F5E;
+      --blue: #3B82F6;
+      --bg: #070A12;
+      --bg-card: rgba(18, 23, 38, 0.85);
+      --bg-card-hover: rgba(26, 33, 56, 0.95);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(0, 200, 83, 0.4);
+      --border-primary: rgba(90, 69, 222, 0.5);
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --font-main: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(150px);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.22;
+    }
+    .glow-1 {
+      top: -10%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    }
+    .glow-2 {
+      bottom: -15%;
+      right: -10%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 64px;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7, 10, 18, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 50;
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .badge-header {
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .slide-indicator {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .slide-indicator span {
+      color: var(--accent);
+    }
+    .btn-icon {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #fff;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover {
+      background: var(--primary);
+      border-color: var(--primary-light);
+    }
+
+    /* Progress Bar */
+    .progress-track {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 50;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Slides Container */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: calc(100vh - 64px);
+      margin-top: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      max-width: 1320px;
+      padding: 30px 50px;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.97) translateY(10px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Typography & Badges */
+    .slide-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .slide-title {
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1.15;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    .slide-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 820px;
+      margin-bottom: 18px;
+    }
+
+    /* Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
+      align-items: center;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-3px);
+    }
+    .card-accent {
+      border-color: rgba(0, 200, 83, 0.35);
+      background: rgba(0, 200, 83, 0.05);
+    }
+    .card-primary {
+      border-color: rgba(90, 69, 222, 0.4);
+      background: rgba(90, 69, 222, 0.06);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .badge-purple { background: rgba(90, 69, 222, 0.25); color: #A5B4FC; }
+    .badge-green { background: rgba(0, 200, 83, 0.2); color: #69F0AE; }
+    .badge-amber { background: rgba(245, 158, 11, 0.2); color: #FCD34D; }
+    .badge-cyan { background: rgba(6, 182, 212, 0.2); color: #67E8F9; }
+    .badge-rose { background: rgba(244, 63, 94, 0.2); color: #FDA4AF; }
+
+    .card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+    .card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Media Box */
+    .media-box {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.5);
+      background: #000;
+    }
+    .media-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .media-box:hover img {
+      transform: scale(1.03);
+    }
+    .media-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 14px 18px;
+      background: linear-gradient(to top, rgba(7, 10, 18, 0.95), transparent);
+      font-size: 12px;
+      color: #CBD5E1;
+    }
+
+    /* Lists */
+    .value-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .value-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #E2E8F0;
+      line-height: 1.4;
+    }
+    .value-icon {
+      color: var(--accent);
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Price and Specs */
+    .price-tag {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      margin: 8px 0;
+    }
+    .price-tag small {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .spec-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      color: #CBD5E1;
+      margin-right: 6px;
+      margin-top: 4px;
+    }
+
+    /* Script & Objection Box */
+    .script-box {
+      background: rgba(90, 69, 222, 0.1);
+      border-left: 3px solid var(--primary);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 12px;
+      font-style: italic;
+      color: #E0E7FF;
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+    .script-box strong {
+      color: var(--accent-light);
+      font-style: normal;
+    }
+
+    /* Interactive Product Action Bar */
+    .product-action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .btn-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn-action:hover {
+      transform: translateY(-2px);
+    }
+    .btn-action-price {
+      background: rgba(0, 200, 83, 0.12);
+      border-color: rgba(0, 200, 83, 0.4);
+      color: #69F0AE;
+    }
+    .btn-action-price:hover {
+      background: rgba(0, 200, 83, 0.25);
+      border-color: #00C853;
+      color: #fff;
+    }
+    .btn-action-diff {
+      background: rgba(6, 182, 212, 0.12);
+      border-color: rgba(6, 182, 212, 0.35);
+      color: #67E8F9;
+    }
+    .btn-action-diff:hover {
+      background: rgba(6, 182, 212, 0.25);
+      border-color: #06B6D4;
+      color: #fff;
+    }
+    .btn-action-obj {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #FCD34D;
+    }
+    .btn-action-obj:hover {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: #F59E0B;
+      color: #fff;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 18px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 50;
+    }
+    .nav-btn {
+      background: rgba(18, 23, 38, 0.9);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 24px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .keybind-hint {
+      position: fixed;
+      bottom: 20px;
+      left: 35px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 50;
+    }
+    .key-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 10px;
+    }
+
+    /* Modal System */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 7, 15, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-card {
+      background: #0D1222;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      width: 90%;
+      max-width: 860px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      transform: scale(0.95) translateY(10px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .modal-overlay.open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(18, 24, 42, 0.9);
+    }
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .modal-close {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #94A3B8;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .modal-close:hover {
+      background: var(--rose);
+      color: #fff;
+      border-color: var(--rose);
+    }
+    .modal-body {
+      padding: 22px 26px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+      color: #E2E8F0;
+      line-height: 1.5;
+    }
+
+    /* Modal Tables */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+      margin-top: 8px;
+    }
+    .data-table th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: #E2E8F0;
+    }
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .table-price {
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: #69F0AE;
+      font-size: 14px;
+    }
+    .table-old-price {
+      text-decoration: line-through;
+      color: #64748B;
+      font-size: 11px;
+      margin-right: 4px;
+    }
+
+    /* Modal Objection & Differential Items */
+    .obj-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--amber);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .obj-question {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #FCD34D;
+      margin-bottom: 5px;
+    }
+    .obj-answer {
+      font-size: 12.5px;
+      color: #CBD5E1;
+      line-height: 1.45;
+    }
+
+    .diff-item {
+      background: rgba(6, 182, 212, 0.05);
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .diff-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #67E8F9;
+      margin-bottom: 5px;
+    }
+    .diff-desc {
+      font-size: 12.5px;
+      color: #CBD5E1;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <header>
+    <div class="logo-container">
+      <img src="/images/external/nuvv_logo_dark.png" alt="Nuvv Logo" height="26" style="filter: brightness(1.2);" onerror="this.src='/images/external/nuvv_logo.png'">
+      <div class="badge-header">Treinamento B2C • Residencial & Família</div>
+    </div>
+    <div class="nav-controls">
+      <a href="/treinamento-empresarial/" class="btn-icon" style="text-decoration: none; color: #67E8F9; border-color: rgba(6,182,212,0.35);" title="Ver Treinamento Empresarial B2B">🏢 Treinamento B2B</a>
+      <a href="/portal" class="btn-icon" style="text-decoration: none; color: #FCD34D; border-color: rgba(245,158,11,0.35);" title="Portal do Colaborador">👤 Portal do Colaborador</a>
+      <div class="slide-indicator" id="slideIndicator">Slide <span id="currentSlideNum">1</span> de <span id="totalSlidesNum">16</span></div>
+      <button class="btn-icon" onclick="toggleFullScreen()" title="Tela Cheia">⛶</button>
+    </div>
+  </header>
+
+  <div class="progress-track">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <main class="deck-container">
+
+    <!-- SLIDE 1: CAPA RESIDENCIAL -->
+    <section class="slide active" id="slide-1">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">🏠 B2C & CONECTIVIDADE FAMILIAR 2026</div>
+          <h1 class="slide-title" style="font-size: 42px;">Fibra Óptica de Alta Fidelidade, Streamings & Segurança Familiar</h1>
+          <p class="slide-subtitle">
+            A Nuvv não vende apenas megabytes. Entregamos uma experiência completa de entretenimento premium (Universal+, Sony One, Max, Telecine), saúde 24h, segurança física Nuvv Guard e a inovadora Nuvv Tag de rastreamento familiar.
+          </p>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;">
+            <span class="badge badge-green">Fibra 100% Própria & Wi-Fi 6</span>
+            <span class="badge badge-purple">Hub de Streaming (Universal+ / Sony / Max)</span>
+            <span class="badge badge-cyan">TurboMed Saúde 24h</span>
+            <span class="badge badge-amber">Nuvv Tag (Rastreador Sem Mensalidade)</span>
+          </div>
+          <div class="script-box" style="margin-top: 18px;">
+            <strong>Foco do Treinamento:</strong> Conheça a fundo os conteúdos de renome mundial inclusos nos planos, como demonstrar valor real frente às operadoras de massa (Vivo/Claro) e como utilizar a montagem personalizada de combos para aumentar o ticket médio.
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 400px;">
+            <img src="/images/hero/hero_familia_nuvv.png" alt="Família Conectada Nuvv" onerror="this.src='/images/services/wifi_coverage_hero.png'">
+            <div class="media-caption">
+              <strong>Família Conectada:</strong> Jogos sem lag, streaming 4K simultâneo e segurança para crianças e pets.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: POR QUE A NUVV VENCE A CONCORRÊNCIA -->
+    <section class="slide" id="slide-2">
+      <div class="slide-tag">⚡ POSICIONAMENTO COMPETITIVO</div>
+      <h2 class="slide-title">Nosso Posicionamento: Por que a Nuvv Supera Vivo e Claro</h2>
+      <p class="slide-subtitle">
+        Argumentos de autoridade que transformam o cliente desconfiado em promotor da marca no Alto Tietê:
+      </p>
+      <div class="grid-3">
+        <div class="card card-accent">
+          <div class="badge badge-green">Infraestrutura</div>
+          <h3>Fibra 100% Própria & ASN</h3>
+          <p>Não revendemos sinal de terceiros. Rede construída com tecnologia GPON de ponta a ponta e conexão direta ao IX.br São Paulo (latência sub-5ms em jogos e chamadas de vídeo).</p>
+        </div>
+        <div class="card card-primary">
+          <div class="badge badge-purple">Equipamentos</div>
+          <h3>Roteadores Wi-Fi 6 Ultra</h3>
+          <p>Equipamentos de alta densidade que suportam mais de 40 dispositivos conectados (celulares, Smart TVs, câmeras, Alexa) sem travar a rede ou derrubar o sinal nos cômodos.</p>
+        </div>
+        <div class="card">
+          <div class="badge badge-cyan">Atendimento</div>
+          <h3>Suporte Humano de Proximidade</h3>
+          <p>Zero robôs travados. O cliente fala direto com equipes locais do Alto Tietê e conta com técnicos de plantão com atendimento rápido em caso de rompimento de fibra.</p>
+        </div>
+      </div>
+      <div class="product-action-bar" style="margin-top: 20px;">
+        <button class="btn-action btn-action-diff" onclick="openModal('diff-geral-res')">⚡ Comparativo Detalhado: Nuvv vs Concorrência</button>
+        <button class="btn-action btn-action-obj" onclick="openModal('obj-geral-res')">🛡️ Quebra de Objeções: Preço e Marca</button>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: A GRADE DE VELOCIDADES RESIDENCIAIS -->
+    <section class="slide" id="slide-3">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">🚀 VELOCIDADE & FIBRA</div>
+          <h2 class="slide-title">Planos de Fibra Residencial</h2>
+          <p class="slide-subtitle">
+            Planos desenhados para cada tamanho de residência e intensidade de uso, sempre com ultravelocidade e downloads sem limite de franquia:
+          </p>
+          <div class="card card-accent" style="margin-bottom: 12px;">
+            <h3>Destaques dos Planos de Internet:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">✔</span> <strong>400 Mega:</strong> Para solteiros, casais e uso essencial de redes sociais e streaming Full HD.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>600 Mega (Mais Vendido):</strong> O equilíbrio perfeito para famílias com 3 a 5 pessoas assistindo 4K e jogando online.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>800 Mega:</strong> Alta velocidade para gamers, home office com grandes downloads e casas com automação.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>1 Giga (1.000 Mega):</strong> Experiência definitiva com Wi-Fi 6 de ultra densidade para múltiplos cômodos.</li>
+            </ul>
+          </div>
+          <div class="price-tag">A partir de R$ 99,90 <small>/mês (com desconto de pontualidade)</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-planos-res')">📊 Tabela Completa de Velocidades & Valores</button>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 390px;">
+            <img src="/images/services/wifi_coverage_hero.png" alt="Wi-Fi de Alta Cobertura Nuvv" onerror="this.src='/images/hero/hero_familia_nuvv.png'">
+            <div class="media-caption">
+              <strong>Roteadores Homologados:</strong> Estabilidade comprovada em todos os cômodos da casa.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: OS STREAMINGS DE RENOME MUNDIAL -->
+    <section class="slide" id="slide-4">
+      <div class="slide-tag">🎬 ENTRETENIMENTO DE PESO</div>
+      <h2 class="slide-title">Conteúdos de Renome Inclusos nos Planos</h2>
+      <p class="slide-subtitle">
+        Não oferecemos aplicativos desconhecidos. Nossos combos integram as maiores marcas globais de entretenimento:
+      </p>
+      <div class="grid-4">
+        <div class="card card-accent">
+          <div class="badge badge-green">Cinema & Séries</div>
+          <h3>Universal+</h3>
+          <p>Grandes produções da Universal Pictures, séries aclamadas do canal USA Network, Universal TV e Studio Universal.</p>
+        </div>
+        <div class="card card-primary">
+          <div class="badge badge-purple">Blockbusters</div>
+          <h3>Sony One</h3>
+          <p>Acervo lendário de filmes de cinema da Sony Pictures, além dos canais AXN e Sony Channel com séries policiais e médicas.</p>
+        </div>
+        <div class="card">
+          <div class="badge badge-cyan">Premium</div>
+          <h3>Max (HBO Max)</h3>
+          <p>Produções HBO originais, filmes da Warner Bros direto do cinema, Champions League ao vivo e Paulistão.</p>
+        </div>
+        <div class="card">
+          <div class="badge badge-amber">Cinema Nacional & Futebol</div>
+          <h3>Telecine / Premiere</h3>
+          <p>6 canais exclusivos Telecine de estreias de Hollywood + Brasileirão Séries A e B no Premiere.</p>
+        </div>
+      </div>
+      <div class="script-box" style="margin-top: 18px;">
+        <strong>Argumento de Ouro:</strong> "Se você fosse assinar Max, Universal+ e Telecine por fora no cartão de crédito, gastaria mais de R$ 100/mês só de streaming. No combo da Nuvv, esses conteúdos entram integrados na sua fatura da fibra por uma fração do preço."
+      </div>
+      <div class="product-action-bar">
+        <button class="btn-action btn-action-price" onclick="openModal('preco-streamings')">📊 Tabela de Apps de Streaming & Add-ons</button>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: TURBOMED TELEMEDICINA -->
+    <section class="slide" id="slide-5">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">🩺 SAÚDE & BEM-ESTAR FAMILIAR</div>
+          <h2 class="slide-title">TurboMed: Telemedicina 24 Horas sem Fila</h2>
+          <p class="slide-subtitle">
+            Médico na palma da mão 24 horas por dia, 7 dias por semana, direto no celular para o titular e toda a família.
+          </p>
+          <div class="card card-accent" style="margin-bottom: 12px;">
+            <h3>Benefícios que Encantam a Família:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Consultas Ilimitadas com Clínico Geral:</strong> Atendimento por videochamada em menos de 10 minutos, a qualquer hora do dia ou da noite.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Receitas Digitais Válidas em Farmácias:</strong> Receitas, atestados e pedidos de exame com assinatura digital aceitos em todo o Brasil.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>19 a 50 Especialidades Médicas:</strong> Pediatria, cardiologia, ginecologia, dermatologia e psicologia.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Descontos de até 80% em Medicamentos:</strong> Rede conveniada nas maiores farmácias (Drogasil, Raia, Pacheco).</li>
+            </ul>
+          </div>
+          <div class="price-tag">Apenas R$ 9,90 <small>(Individual)</small> | R$ 19,90 <small>(Familiar - até 4 dependentes)/mês</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-turbomed')">📊 Planos TurboMed Individual & Familiar</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-turbomed')">🛡️ Quebra de Objeções: Telemedicina</button>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 390px;">
+            <img src="/images/services/family_security.png" alt="TurboMed Telemedicina Nuvv" onerror="this.src='/images/services/business_scheduling_meet.png'">
+            <div class="media-caption">
+              <strong>Atendimento Médico Ágil:</strong> Evite horas esperando em prontos-socorros lotados.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: KASPERSKY PROTEÇÃO FAMÍLIA -->
+    <section class="slide" id="slide-6">
+      <div class="grid-2">
+        <div>
+          <div class="media-box" style="height: 390px;">
+            <img src="/images/services/security_hero.png" alt="Kaspersky Proteção Família" onerror="this.src='/images/services/security_office_hero.png'">
+            <div class="media-caption">
+              <strong>Proteção para Crianças e Dispositivos:</strong> Cibersegurança em tempo real.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="slide-tag">🛡️ CIBERSEGURANÇA & CONTROLE PARENTAL</div>
+          <h2 class="slide-title">Kaspersky Proteção Família & Safe Kids</h2>
+          <p class="slide-subtitle">
+            Proteja as contas bancárias dos pais e cuide da segurança digital dos filhos enquanto navegam na internet.
+          </p>
+          <div class="card card-primary" style="margin-bottom: 12px;">
+            <h3>Recursos Exclusivos da Licença:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Safe Kids (Controle Parental Ativo):</strong> Bloqueia conteúdos impróprios (pornografia, drogas, violência) e limita tempo de tela.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Localização GPS dos Filhos em Tempo Real:</strong> Alerta os pais no celular se a criança sair do perímetro seguro definido.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Proteção de Transações Bancárias & PIX:</strong> Navegador blindado que impede vírus espiões de roubar senhas.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>VPN Ilimitada Inclusa (Plano Plus):</strong> Segurança militar para conectar em Wi-Fi de shoppings e aeroportos.</li>
+            </ul>
+          </div>
+          <div class="price-tag">R$ 9,90 <small>(5 Dispositivos)</small> | R$ 15,90 <small>(10 Dispositivos + VPN)/mês</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-kasp-res')">📊 Tabela de Planos Kaspersky Residencial</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-kasp-res')">🛡️ Quebra de Objeções: Antivírus</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: NUVV GUARD RESIDENCIAL -->
+    <section class="slide" id="slide-7">
+      <div class="slide-tag">📹 SEGURANÇA RESIDENCIAL</div>
+      <h2 class="slide-title">Nuvv Guard Residencial: Câmeras em Nuvem & Interfone</h2>
+      <p class="slide-subtitle">
+        A tranquilidade de monitorar a casa, quintal, garagem e portão na palma da mão com gravação blindada contra invasões:
+      </p>
+      <div class="grid-2">
+        <div class="card card-accent">
+          <div class="badge badge-green">Câmeras em Nuvem</div>
+          <h3>CFTV Residencial Anti-Furto</h3>
+          <p>Imagens Full HD com visão noturna gravadas continuamente na nuvem blindada da Nuvv. Se arrombarem o local e levarem a câmera, as imagens já estão salvas e seguras no Data Center.</p>
+          <ul class="value-list" style="margin-top: 10px;">
+            <li class="value-item"><span class="value-icon">✔</span> <strong>Comodato Nuvv:</strong> Câmera Full HD com substituição garantida (a partir de R$ 39,90/mês).</li>
+            <li class="value-item"><span class="value-icon">✔</span> <strong>BYOD:</strong> Conecte sua própria câmera Wi-Fi por apenas R$ 19,90/mês (7 dias de nuvem).</li>
+          </ul>
+        </div>
+        <div class="card card-primary">
+          <div class="badge badge-purple">Portão & Interfone</div>
+          <h3>Interfone Virtual por QR Code</h3>
+          <p>O fim dos cabos oxidados e reformas na calçada. O visitante aponta o celular para a placa no portão e o smartphone do morador toca com chamada de vídeo em tempo real.</p>
+          <ul class="value-list" style="margin-top: 10px;">
+            <li class="value-item"><span class="value-icon">✔</span> <strong>Taxa Única:</strong> R$ 79,90 pela placa de alta durabilidade gravada a laser.</li>
+            <li class="value-item"><span class="value-icon">✔</span> <strong>Mensalidade Zero:</strong> Gratuito enquanto for cliente de fibra óptica Nuvv.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="product-action-bar">
+        <button class="btn-action btn-action-price" onclick="openModal('preco-guard-res')">📊 Tabela de Planos Guard Residencial</button>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: NUVV TAG (RASTREADOR INTELIGENTE) -->
+    <section class="slide" id="slide-8">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">📍 RASTREAMENTO INTELIGENTE NUVV</div>
+          <h2 class="slide-title">Nuvv Tag: O Rastreador Sem Mensalidade de Chip</h2>
+          <p class="slide-subtitle">
+            O rastreador inteligente compacto que protege o que mais importa: veículos (carros, motos, bikes), mochilas de crianças, malas de viagem e coleiras de pets.
+          </p>
+          <div class="card card-accent" style="margin-bottom: 12px;">
+            <h3>Por que a Nuvv Tag é um Sucesso de Vendas:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">🚗</span> <strong>Rastreador Veicular Silencioso:</strong> Esconda no carro ou na moto para localização anti-furto sem precisar pagar planos mensais caros de rastreadores tradicionais (R$ 80 a R$ 120/mês).</li>
+              <li class="value-item"><span class="value-icon">🐾</span> <strong>Pets & Filhos:</strong> Coloque na coleira do cachorro ou na mochila do filho para acompanhar o trajeto escolar.</li>
+              <li class="value-item"><span class="value-icon">📱</span> <strong>Compatível com Android e iPhone:</strong> Funciona com qualquer celular, permitindo que toda a família acompanhe no mesmo App Nuvv Guard.</li>
+              <li class="value-item"><span class="value-icon">💰</span> <strong>Sem Mensalidade para Cliente Nuvv:</strong> Apenas R$ 79,90 taxa única do aparelho. Zero mensalidade de rastreamento.</li>
+            </ul>
+          </div>
+          <div class="price-tag">Taxa Única R$ 79,90 <small>(Sem mensalidade enquanto cliente de fibra Nuvv)</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-tag')">📊 Condições & Preços da Nuvv Tag</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-tag')">⚡ Diferenciais: Nuvv Tag vs AirTag / Rastreadores Caros</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-tag')">🛡️ Quebra de Objeções: Rastreador Nuvv Tag</button>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 390px;">
+            <img src="/images/services/poste_nuvv_mapa_app.jpg" alt="Rastreamento no App Nuvv Guard" onerror="this.src='/images/services/poste_nuvv_condominio.jpg'">
+            <div class="media-caption">
+              <strong>Localização em Tempo Real:</strong> Mapa interativo no App Nuvv Guard no celular.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: COMBOS PRONTOS DE STREAMING -->
+    <section class="slide" id="slide-9">
+      <div class="slide-tag">📦 PACOTES FECHADOS DE VALOR</div>
+      <h2 class="slide-title">Combos Prontos de Streaming: A Solução Completa</h2>
+      <p class="slide-subtitle">
+        Para o cliente que busca praticidade com o melhor custo-benefício, temos pacotes prontos que reúnem internet ultraveloz e os melhores apps de entretenimento:
+      </p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="badge badge-green">Combo Essencial</div>
+          <h3>Fibra 600M + Universal+</h3>
+          <p>Internet de 600 Mega + App Watch Brasil + Universal+ com filmes e séries inclusas.</p>
+          <div class="price-tag" style="margin-top: 15px;">R$ 119,90 <small>/mês</small></div>
+        </div>
+        <div class="card card-accent">
+          <div class="badge badge-purple">Combo Cinema & Campeão</div>
+          <h3>Fibra 800M + Sony One + Max</h3>
+          <p>Internet de 800 Mega + Sony One + Max (HBO Max) + Universal+ + Watch Brasil.</p>
+          <div class="price-tag" style="margin-top: 15px; color: #69F0AE;">R$ 149,90 <small>/mês</small></div>
+        </div>
+        <div class="card card-primary">
+          <div class="badge badge-cyan">Combo Família Total</div>
+          <h3>Fibra 1 Giga + Max + Telecine + TurboMed</h3>
+          <p>1.000 Mega de internet + Max + Telecine + Universal+ + Sony One + Telemedicina Familiar 24h.</p>
+          <div class="price-tag" style="margin-top: 15px; color: #A5B4FC;">R$ 199,90 <small>/mês</small></div>
+        </div>
+      </div>
+      <div class="product-action-bar" style="margin-top: 20px;">
+        <button class="btn-action btn-action-price" onclick="openModal('preco-combos-res')">📊 Tabela Completa dos Tiers de Entretenimento</button>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: MONTE SEU PLANO (A FERRAMENTA DE PERSONALIZAÇÃO) -->
+    <section class="slide" id="slide-10">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">🎛️ FERRAMENTA INTERATIVA</div>
+          <h2 class="slide-title">Monte seu Plano: Personalização Total do Cliente</h2>
+          <p class="slide-subtitle">
+            Diferente das grandes operadoras que empurram pacotes engessados com canais que ninguém assiste, a Nuvv permite que o cliente monte exatamente a combinação que deseja.
+          </p>
+          <div class="card card-accent" style="margin-bottom: 12px;">
+            <h3>Como Funciona o Fluxo no Site:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">1.</span> <strong>Escolhe a Velocidade da Fibra:</strong> 400M, 600M, 800M ou 1 Giga.</li>
+              <li class="value-item"><span class="value-icon">2.</span> <strong>Adiciona os Streamings Favoritos:</strong> Max, Telecine, Premiere, Combate, Universal+.</li>
+              <li class="value-item"><span class="value-icon">3.</span> <strong>Agrega Saúde e Segurança:</strong> TurboMed Telemedicina e Kaspersky Proteção Família.</li>
+              <li class="value-item"><span class="value-icon">4.</span> <strong>Inclui Nuvv Guard & Nuvv Tag:</strong> Câmeras com gravação em nuvem e tags de rastreamento veicular/familiar.</li>
+              <li class="value-item"><span class="value-icon">5.</span> <strong>Totalizador em Tempo Real:</strong> O cliente visualiza o valor exato na tela sem taxas escondidas.</li>
+            </ul>
+          </div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-addons-res')">📊 Tabela de Preços de Todos os Opcionais</button>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 390px;">
+            <img src="/images/hero/hero_familia_nuvv.png" alt="Monte seu Plano Nuvv" onerror="this.src='/images/services/wifi_coverage_hero.png'">
+            <div class="media-caption">
+              <strong>Transparência Comercial:</strong> O cliente paga somente pelo que realmente utiliza.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: TELEFONIA FIXA RESIDENCIAL -->
+    <section class="slide" id="slide-11">
+      <div class="grid-2">
+        <div>
+          <div class="media-box" style="height: 390px;">
+            <img src="/images/external/telephony.jpg" alt="Telefonia Fixa Residencial" onerror="this.src='/images/services/office_1.png'">
+            <div class="media-caption">
+              <strong>Voz Digital Nuvv:</strong> Linha fixa digital com portabilidade gratuita do número da residência.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="slide-tag">📞 TELEFONIA FIXA ILIMITADA</div>
+          <h2 class="slide-title">Telefonia Fixa Ilimitada Residencial</h2>
+          <p class="slide-subtitle">
+            Para famílias com idosos ou moradores que não abrem mão de ter o telefone fixo tradicional em casa para receber ligações de parentes.
+          </p>
+          <div class="card card-primary" style="margin-bottom: 12px;">
+            <h3>Benefícios Imediatos:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Portabilidade Gratuita:</strong> Mantém o mesmo número fixo histórico da residência sem custo.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Ligações Ilimitadas Brasil:</strong> Fale à vontade para qualquer telefone fixo ou celular de qualquer operadora do país.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Voz Digital em Fibra Óptica:</strong> Qualidade cristalina sem chiados de fios de cobre antigos da rua.</li>
+            </ul>
+          </div>
+          <div class="price-tag">A partir de R$ 19,90 <small>/mês (quando combinada com plano de fibra)</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: QUEBRA DE OBJEÇÕES RESIDENCIAIS -->
+    <section class="slide" id="slide-12">
+      <div class="slide-tag">🛡️ ROTEIRO COMERCIAL CONSULTIVO</div>
+      <h2 class="slide-title">Como o Consultor Nuvv Quebra as Maiores Objeções</h2>
+      <p class="slide-subtitle">
+        Argumentos preparados para fechar vendas residenciais com segurança técnica e autoridade:
+      </p>
+      <div class="grid-3">
+        <div class="card">
+          <h3 style="color: var(--amber);">"A Claro/Vivo me ofereceu um plano mais barato."</h3>
+          <p style="margin-top: 8px;"><strong>Resposta:</strong> "Entendo perfeitamente a busca por economia! Mas cuidado com a 'pegadinha' do valor promocional: eles cobram esse preço só por 3 meses e depois aumentam sem avisar. Além disso, quando a internet cai em um domingo à noite, você fica horas preso em URA sem atendimento. Na Nuvv o preço é fixo, transparente e nosso suporte é local aqui no Alto Tietê."</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--cyan);">"Eu já tenho Netflix, não preciso de outros streamings."</h3>
+          <p style="margin-top: 8px;"><strong>Resposta:</strong> "A Netflix é ótima, mas não tem os filmes da Universal, as produções da Warner/HBO, a Champions League nem os canais ao vivo. No nosso combo, por uma diferença de poucos reais você ganha Max e Universal+ para toda a casa, com catálogo muito mais completo e variado."</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--accent);">"Moro em sobrado e o Wi-Fi nunca chega nos quartos."</h3>
+          <p style="margin-top: 8px;"><strong>Resposta:</strong> "Essa é a maior reclamação de quem vem das outras operadoras, porque elas instalam roteadores antigos e fracos. Na Nuvv nossos técnicos fazem a análise de sinal no local e entregamos roteadores Wi-Fi 6 de alta potência com opção de pontos Mesh cabeados, garantindo sinal forte e veloz em todos os cômodos."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: ESTRATÉGIAS DE UPSELL RESIDENCIAL -->
+    <section class="slide" id="slide-13">
+      <div class="slide-tag">📈 TÉCNICAS DE VENDA</div>
+      <h2 class="slide-title">Técnicas de Upsell: Como Elevar o Ticket Médio</h2>
+      <p class="slide-subtitle">
+        Nunca venda apenas o plano de internet de R$ 99,90. Sempre agregue valor durante a conversa:
+      </p>
+      <div class="grid-3">
+        <div class="card card-accent">
+          <div class="badge badge-green">Gancho 1: Filhos & Pets</div>
+          <h3>Ofereça a Nuvv Tag</h3>
+          <p style="margin-top: 6px;">"Você tem pet ou filhos em idade escolar? Por apenas R$ 79,90 de taxa única, você leva a nossa Nuvv Tag para colocar na coleira ou na mochila e acompanha a localização direto no celular sem mensalidade de chip."</p>
+        </div>
+        <div class="card card-primary">
+          <div class="badge badge-purple">Gancho 2: Saúde da Família</div>
+          <h3>Ofereça o TurboMed</h3>
+          <p style="margin-top: 6px;">"Quantas vezes você já precisou ir ao pronto-socorro de madrugada só para pegar uma receita de antibiótico ou tirar dúvida de febre? Por apenas R$ 19,90/mês você e seus dependentes têm médico 24h na tela do celular."</p>
+        </div>
+        <div class="card">
+          <div class="badge badge-amber">Gancho 3: Segurança da Casa</div>
+          <h3>Ofereça o Nuvv Guard</h3>
+          <p style="margin-top: 6px;">"Você já tem câmeras em casa? Conectamos as suas câmeras existentes na nossa nuvem por apenas R$ 19,90/mês para gravar tudo com proteção contra roubo do gravador."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: ENCERRAMENTO RESIDENCIAL -->
+    <section class="slide" id="slide-14">
+      <div style="text-align: center; max-width: 820px; margin: 0 auto;">
+        <div class="slide-tag" style="justify-content: center;">🏆 EXCELÊNCIA EM ATENDIMENTO RESIDENCIAL</div>
+        <h1 class="slide-title" style="font-size: 46px; margin-bottom: 18px;">Conectando Vidas, Famílias e Lares com o Coração</h1>
+        <p class="slide-subtitle" style="margin: 0 auto 30px auto;">
+          O consultor Nuvv não empurra produtos; entende a rotina da família, identifica as reais necessidades e entrega a melhor solução com simpatia, verdade e suporte de proximidade.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px;">
+          <button class="nav-btn" onclick="goToSlide(1)" style="background: var(--primary); padding: 12px 26px; font-size: 14px;">
+            🔄 Reiniciar Apresentação Residencial
+          </button>
+        </div>
+        <div style="margin-top: 35px; color: var(--text-muted); font-size: 12px;">
+          Nuvv Telecomunicações • Material Oficial de Treinamento Comercial Residencial • 2026
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="prevSlide()">◀ Anterior</button>
+    <button class="nav-btn" onclick="nextSlide()" style="background: var(--primary);">Próximo ▶</button>
+  </div>
+
+  <div class="keybind-hint">
+    <span>Navegação:</span>
+    <span><span class="key-badge">◄</span> <span class="key-badge">►</span> Setas</span>
+    <span><span class="key-badge">Espaço</span> Avançar</span>
+    <span><span class="key-badge">ESC</span> Fechar Janela</span>
+    <span><span class="key-badge">F</span> Tela Cheia</span>
+  </div>
+
+  <!-- MODAL OVERLAY -->
+  <div class="modal-overlay" id="modalOverlay" onclick="handleBackdropClick(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="badge badge-green" id="modalBadge">Detalhes</span>
+          <h3 class="modal-title" id="modalTitle">Título do Modal</h3>
+        </div>
+        <button class="modal-close" onclick="closeModal()" title="Fechar (ESC)">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Dynamic Content Injected Here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 14;
+
+    const currentSlideNumEl = document.getElementById('currentSlideNum');
+    const totalSlidesNumEl = document.getElementById('totalSlidesNum');
+    const progressBarEl = document.getElementById('progressBar');
+    const modalOverlayEl = document.getElementById('modalOverlay');
+
+    totalSlidesNumEl.innerText = totalSlides;
+
+    function updateSlide() {
+      document.querySelectorAll('.slide').forEach((slide, idx) => {
+        if (idx + 1 === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      currentSlideNumEl.innerText = currentSlide;
+      const progressPercent = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+      progressBarEl.style.width = progressPercent + '%';
+    }
+
+    function nextSlide() {
+      if (modalOverlayEl.classList.contains('open')) return;
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (modalOverlayEl.classList.contains('open')) return;
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(n) {
+      if (n >= 1 && n <= totalSlides) {
+        currentSlide = n;
+        updateSlide();
+      }
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    /* Modal Datasets Residencial */
+    const modalData = {
+      'preco-planos-res': {
+        title: '📊 Grade Completa de Planos de Fibra Residencial',
+        badge: 'Tabela Comercial B2C',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plano</th>
+                <th>Download / Upload</th>
+                <th>Roteador Wi-Fi Incluso</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Fibra 400 Mega</strong></td>
+                <td>400 Mbps / 200 Mbps</td>
+                <td>Wi-Fi Plus Alta Performance</td>
+                <td><span class="table-old-price">R$ 119,90</span><span class="table-price">R$ 99,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Fibra 600 Mega</strong> (Mais Popular)</td>
+                <td>600 Mbps / 300 Mbps</td>
+                <td>Wi-Fi 6 Ultra Densidade</td>
+                <td><span class="table-old-price">R$ 139,90</span><span class="table-price">R$ 119,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Fibra 800 Mega</strong> (Gamers & Home Office)</td>
+                <td>800 Mbps / 400 Mbps</td>
+                <td>Wi-Fi 6 Gigabit Dual-Band</td>
+                <td><span class="table-old-price">R$ 159,90</span><span class="table-price">R$ 139,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Fibra 1 Giga (1.000M)</strong></td>
+                <td>1.000 Mbps / 500 Mbps</td>
+                <td>Wi-Fi 6 Max com suporte a Mesh</td>
+                <td><span class="table-old-price">R$ 199,90</span><span class="table-price">R$ 179,90</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">*Valores com desconto de pontualidade via débito automático ou PIX. Instalação e comodato de ONU/Roteador inclusos em contrato padrão de 12 meses.</p>
+        `
+      },
+
+      'diff-geral-res': {
+        title: '⚡ Diferenciais Competitivos: Nuvv vs Concorrência (Vivo / Claro)',
+        badge: 'Por que a Nuvv?',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Atendimento Humano Local Sem Robôs Intermináveis</div>
+            <div class="diff-desc">Enquanto nas operadoras multinacionais o cliente fica 40 minutos ouvindo música em ura eletrônica para falar com um atendente de outro estado, na Nuvv o atendimento é via WhatsApp ou telefone com equipe própria sediada a poucos minutos de você.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Roteadores Wi-Fi 6 Reais em Comodato</div>
+            <div class="diff-desc">A concorrência instala roteadores antigos reaproveitados que travam com 10 aparelhos conectados. A Nuvv fornece roteadores modernos homologados com tecnologia Wi-Fi 6 que mantêm alta velocidade com mais de 40 dispositivos ativos.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Conexão Direta ao IX.br São Paulo (Baixo Ping)</div>
+            <div class="diff-desc">Rotas diretas para servidores de jogos (Valorant, Fortnite, CS2, League of Legends) e para Netflix, YouTube e Amazon Prime, garantindo carregamento instantâneo sem congelamento de tela.</div>
+          </div>
+        `
+      },
+
+      'obj-geral-res': {
+        title: '🛡️ Quebra de Objeções Gerais: Residencial',
+        badge: 'Roteiro de Vendas',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "A Claro/Vivo me ofereceu mais velocidade por um preço menor."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Entendo perfeitamente o atrativo do número! Mas é importante observar as letras miúdas do contrato: na maioria das vezes eles usam cabo coaxial com upload baixíssimo, dão desconto apenas por 3 meses e depois dobram o valor. Na Nuvv a fibra é 100% de ponta a ponta até a sua sala, a velocidade é real no cabo e no Wi-Fi e o preço é transparente do início ao fim."</div>
+          </div>
+          <div class="obj-item">
+            <div class="obj-question">❓ "Nunca ouvi falar da Nuvv, prefiro uma empresa grande e conhecida."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Essa é uma excelente reflexão! Mas pense: quando você tem um problema com uma empresa gigantesca, para eles você é apenas um número de contrato em meio a 15 milhões de clientes. Na Nuvv nós somos a operadora de fibra óptica de referência do Alto Tietê, nossos técnicos moram na sua cidade e nosso compromisso com a sua família é pessoal e imediato."</div>
+          </div>
+        `
+      },
+
+      'preco-streamings': {
+        title: '📊 Tabela de Streamings & Conteúdos de Renome',
+        badge: 'Entretenimento',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plataforma / Canal</th>
+                <th>O que está incluso</th>
+                <th>Valor Avulso no Mercado</th>
+                <th>No Combo Nuvv</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Max (HBO Max)</strong></td>
+                <td>Filmes Warner, séries HBO, Champions League e Paulistão</td>
+                <td>R$ 39,90/mês</td>
+                <td><span class="table-price">Incluso ou R$ 34,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Universal+</strong></td>
+                <td>Filmes e séries Universal TV, Studio Universal e USA Network</td>
+                <td>R$ 29,90/mês</td>
+                <td><strong style="color: #69F0AE;">Incluso nos combos</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Sony One</strong></td>
+                <td>Cinema Sony Pictures, séries AXN e Sony Channel</td>
+                <td>R$ 24,90/mês</td>
+                <td><strong style="color: #69F0AE;">Incluso nos combos</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Telecine</strong></td>
+                <td>6 canais de estreias de Hollywood on-demand</td>
+                <td>R$ 29,90/mês</td>
+                <td><span class="table-price">R$ 29,90/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>Premiere</strong></td>
+                <td>Brasileirão Séries A e B + Copa do Brasil ao vivo</td>
+                <td>R$ 59,90/mês</td>
+                <td><span class="table-price">R$ 49,90/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>Combate</strong></td>
+                <td>100% esportes de luta, MMA e eventos ao vivo</td>
+                <td>R$ 44,90/mês</td>
+                <td><span class="table-price">R$ 39,90/mês</span></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      },
+
+      'preco-turbomed': {
+        title: '📊 Tabela de Planos: TurboMed Telemedicina 24h',
+        badge: 'Saúde na Fatura',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Modalidade TurboMed</th>
+                <th>Cobertura</th>
+                <th>Consultas Online</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>TurboMed Individual</strong></td>
+                <td>1 Pessoa (Titular)</td>
+                <td>Clínico Geral 24h Ilimitado + 19 Especialidades</td>
+                <td><span class="table-price">R$ 9,90/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>TurboMed Familiar</strong> (Mais Escolhido)</td>
+                <td>Titular + Dependentes</td>
+                <td>Clínico Geral 24h Ilimitado + Pediatria + Descontos</td>
+                <td><span class="table-price">R$ 19,90/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>TurboMed + Rede Individual</strong></td>
+                <td>1 Pessoa</td>
+                <td>Telemedicina + Consultas presenciais a partir de R$ 35</td>
+                <td><span class="table-price">R$ 14,90/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>TurboMed + Rede Familiar</strong></td>
+                <td>Família Completa</td>
+                <td>Telemedicina + Consultas presenciais + Odontologia</td>
+                <td><span class="table-price">R$ 24,90/mês</span></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      },
+      'obj-turbomed': {
+        title: '🛡️ Quebra de Objeções: TurboMed Telemedicina',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Consulta por internet funciona mesmo? É médico de verdade?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Sim, 100%! São médicos com CRM ativo homologados pelo Conselho Federal de Medicina. Em mais de 85% dos casos comuns (febre, gripes, dores de garganta, crises alérgicas, dúvidas de dosagem) o médico atende na hora, emite a receita com assinatura digital que você apresenta na farmácia pelo WhatsApp e você não gasta 4 horas esperando no pronto-socorro."</div>
+          </div>
+        `
+      },
+
+      'preco-kasp-res': {
+        title: '📊 Tabela de Licenças: Kaspersky Proteção Família',
+        badge: 'Segurança & Kids',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pacote</th>
+                <th>Aparelhos Cobertos</th>
+                <th>Safe Kids (Filhos)</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Proteção Família</strong></td>
+                <td>Até 5 Dispositivos (PC, Mac, Android, iOS)</td>
+                <td>1 Licença Safe Kids inclusa</td>
+                <td><span class="table-price">R$ 9,90/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>Proteção Família Plus</strong></td>
+                <td>Até 10 Dispositivos</td>
+                <td>2 Licenças Safe Kids + VPN Ilimitada</td>
+                <td><span class="table-price">R$ 15,90/mês</span></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      },
+      'obj-kasp-res': {
+        title: '🛡️ Quebra de Objeções: Kaspersky Proteção Família',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Eu tomo cuidado, não preciso de antivírus no celular."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Você toma cuidado, mas e as crianças quando baixam jogos ou clicam em links no WhatsApp? E os golpes do PIX com páginas idênticas às dos bancos? A Kaspersky bloqueia esses links antes que você digite sua senha, protegendo a conta bancária da sua família por menos de R$ 0,35 por dia."</div>
+          </div>
+        `
+      },
+
+      'preco-guard-res': {
+        title: '📊 Tabela de Preços: Nuvv Guard Residencial',
+        badge: 'Segurança Patrimonial',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Serviço Nuvv Guard</th>
+                <th>Equipamento / Modelo</th>
+                <th>Retenção na Nuvem</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Câmera Comodato Full HD (3D)</strong></td>
+                <td>Câmera Nuvv inclusa com troca garantida</td>
+                <td>3 Dias contínuos 24h na nuvem</td>
+                <td><span class="table-price">R$ 39,90/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>Câmera Comodato Full HD (7D)</strong></td>
+                <td>Câmera Nuvv inclusa com troca garantida</td>
+                <td>7 Dias contínuos 24h na nuvem</td>
+                <td><span class="table-price">R$ 44,90/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>BYOD (Câmera Própria)</strong></td>
+                <td>Aproveite sua câmera existente</td>
+                <td>7 Dias contínuos 24h na nuvem</td>
+                <td><span class="table-price">R$ 19,90/mês (+ R$ 15 ativação)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Interfone Virtual QR Code</strong></td>
+                <td>Placa metálica QR gravada a laser</td>
+                <td>Chamadas de vídeo no smartphone</td>
+                <td><strong style="color: #69F0AE;">R$ 79,90 taxa única (R$ 0 mensal)</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      },
+
+      'preco-tag': {
+        title: '📊 Condições & Preços: Nuvv Tag de Rastreamento',
+        badge: 'Rastreamento Familiar',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Modalidade Nuvv Tag</th>
+                <th>O que está incluso</th>
+                <th>Mensalidade</th>
+                <th>Valor de Aquisição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Nuvv Tag (Assinante Fibra Nuvv)</strong></td>
+                <td>Aparelho Nuvv Tag + Acesso ilimitado à plataforma Nuvv Guard para toda a família</td>
+                <td><strong style="color: #69F0AE; font-size: 15px;">R$ 0,00 / Mês (SEM MENSALIDADE)</strong></td>
+                <td><span class="table-price">R$ 79,90 (Taxa Única)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Nuvv Tag (Não Assinante Fibra)</strong></td>
+                <td>Aparelho Nuvv Tag + Plataforma ativa para quem usa outra operadora</td>
+                <td>R$ 9,90 / Mês (cobre até 8 tags)</td>
+                <td><span class="table-price">R$ 79,90 (+ R$ 15 ativação)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      },
+      'diff-tag': {
+        title: '⚡ Diferenciais: Nuvv Tag vs Rastreadores Tradicionais & AirTag',
+        badge: 'Vantagens Nuvv Tag',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Zero Mensalidade de Chip de Celular</div>
+            <div class="diff-desc">Rastreadores veiculares comuns de empresas de segurança exigem chip M2M com mensalidade de R$ 80 a R$ 120 todo mês. A Nuvv Tag não tem mensalidade para quem é cliente de fibra Nuvv.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Funciona em Android e iPhone Simultaneamente</div>
+            <div class="diff-desc">A AirTag da Apple só funciona se você tiver iPhone. A Nuvv Tag funciona com qualquer smartphone, e o pai, a mãe e os filhos conseguem acompanhar o mesmo veículo ou pet no mesmo app Nuvv Guard.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Discreto e Fácil de Esconder no Carro ou na Moto</div>
+            <div class="diff-desc">Compacto, sem fios para cortar na fiação do carro (não perde a garantia de fábrica do veículo). Pode ser colocado embaixo do carpete, no porta-malas ou na carenagem da moto.</div>
+          </div>
+        `
+      },
+      'obj-tag': {
+        title: '🛡️ Quebra de Objeções: Nuvv Tag de Rastreamento',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Mas se não tem chip de celular com mensalidade, como ele manda a localização?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Ele utiliza a mesma tecnologia inteligente da Apple e do Google: a rede de bilhões de smartphones conectados ao redor do mundo. Toda vez que qualquer celular passa perto da sua Nuvv Tag, ele capta o sinal Bluetooth criptografado e atualiza a localização exata no seu aplicativo, com bateria de longa duração que dura mais de 1 ano."</div>
+          </div>
+        `
+      },
+
+      'preco-combos-res': {
+        title: '📊 Tabela Completa dos Tiers de Combos Residenciais',
+        badge: 'Entretenimento & Combos',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tier de Conteúdo</th>
+                <th>Canais / Plataformas</th>
+                <th>Velocidade Sugerida</th>
+                <th>Valor do Combo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Essencial Universal+</strong></td><td>Watch Brasil + Universal+</td><td>Fibra 600 Mega</td><td><span class="table-price">R$ 119,90/mês</span></td></tr>
+              <tr><td><strong>Essencial Max</strong></td><td>Watch Brasil + Universal+ + Max (HBO)</td><td>Fibra 600 Mega</td><td><span class="table-price">R$ 139,90/mês</span></td></tr>
+              <tr><td><strong>Completo Cinema</strong></td><td>Max + Sony One + Universal+ + Watch</td><td>Fibra 800 Mega</td><td><span class="table-price">R$ 149,90/mês</span></td></tr>
+              <tr><td><strong>Mais Esportes</strong></td><td>Premiere ou Combate + Watch + Universal+</td><td>Fibra 800 Mega</td><td><span class="table-price">R$ 179,90/mês</span></td></tr>
+              <tr><td><strong>Completão Família</strong></td><td>Max + Telecine + Sony + Universal+ + TurboMed</td><td>Fibra 1 Giga</td><td><span class="table-price">R$ 199,90/mês</span></td></tr>
+            </tbody>
+          </table>
+        `
+      },
+
+      'preco-addons-res': {
+        title: '📊 Tabela de Opcionais & SVAs do "Monte seu Plano"',
+        badge: 'Add-ons Transparentes',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Serviço Adicional</th>
+                <th>Categoria</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Max (antigo HBO Max)</strong></td><td>Streaming</td><td><span class="table-price">R$ 39,90/mês</span></td></tr>
+              <tr><td><strong>Telecine (6 Canais)</strong></td><td>Streaming</td><td><span class="table-price">R$ 29,90/mês</span></td></tr>
+              <tr><td><strong>Premiere (Brasileirão)</strong></td><td>Esportes</td><td><span class="table-price">R$ 49,90/mês</span></td></tr>
+              <tr><td><strong>Combate (MMA & Lutas)</strong></td><td>Esportes</td><td><span class="table-price">R$ 39,90/mês</span></td></tr>
+              <tr><td><strong>TurboMed Saúde Individual</strong></td><td>Telemedicina</td><td><span class="table-price">R$ 9,90/mês</span></td></tr>
+              <tr><td><strong>TurboMed Saúde Familiar</strong></td><td>Telemedicina</td><td><span class="table-price">R$ 19,90/mês</span></td></tr>
+              <tr><td><strong>Kaspersky Proteção Família (5 disp)</strong></td><td>Segurança</td><td><span class="table-price">R$ 9,90/mês</span></td></tr>
+              <tr><td><strong>Kaspersky Proteção Família Plus (10 disp)</strong></td><td>Segurança</td><td><span class="table-price">R$ 15,90/mês</span></td></tr>
+              <tr><td><strong>Nuvv Tag (Rastreador)</strong></td><td>Segurança / Track</td><td><span class="table-price">R$ 79,90 (Taxa Única)</span></td></tr>
+              <tr><td><strong>Interfone Virtual QR Code</strong></td><td>Segurança / Intercom</td><td><span class="table-price">R$ 79,90 (Taxa Única)</span></td></tr>
+              <tr><td><strong>Telefonia Fixa Ilimitada Brasil</strong></td><td>Voz</td><td><span class="table-price">R$ 19,90/mês</span></td></tr>
+            </tbody>
+          </table>
+        `
+      }
+    };
+
+    function openModal(id) {
+      const data = modalData[id];
+      if (!data) return;
+      document.getElementById('modalTitle').innerText = data.title;
+      document.getElementById('modalBadge').innerText = data.badge;
+      document.getElementById('modalBody').innerHTML = data.html;
+      modalOverlayEl.classList.add('open');
+    }
+
+    function closeModal() {
+      modalOverlayEl.classList.remove('open');
+    }
+
+    function handleBackdropClick(e) {
+      if (e.target === modalOverlayEl) {
+        closeModal();
+      }
+    }
+
+    /* Keyboard Navigation */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        return;
+      }
+      if (modalOverlayEl.classList.contains('open')) return;
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullScreen();
+      } else if (e.key === 'Home') {
+        goToSlide(1);
+      } else if (e.key === 'End') {
+        goToSlide(totalSlides);
+      }
+    });
+
+    /* Touch Navigation */
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', (e) => {
+      if (modalOverlayEl.classList.contains('open')) return;
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 50) nextSlide();
+      if (touchEndX - touchStartX > 50) prevSlide();
+    });
+
+    updateSlide();
+  </script>
+</body>
+</html>

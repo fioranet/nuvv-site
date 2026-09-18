@@ -218,6 +218,92 @@ export const apiService = {
       return { success: false, points: [] };
     }
   },
+
+  // 7. Portal do Colaborador & Usuários
+  portalLogin: async (email: string, password: string) => {
+    const res = await fetch('/api/portal/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    return await res.json();
+  },
+
+  portalChangePassword: async (email: string, currentPassword: string, newPassword: string) => {
+    const res = await fetch('/api/portal/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, currentPassword, newPassword }),
+    });
+    return await res.json();
+  },
+
+  getPortalUsers: async () => {
+    const res = await fetch('/api/portal/users');
+    return await res.json();
+  },
+
+  createPortalUser: async (userData: any) => {
+    const res = await fetch('/api/portal/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
+    return await res.json();
+  },
+
+  updatePortalUser: async (id: number, userData: any) => {
+    const res = await fetch(`/api/portal/users/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
+    return await res.json();
+  },
+
+  deletePortalUser: async (id: number) => {
+    const res = await fetch(`/api/portal/users/${id}`, {
+      method: 'DELETE',
+    });
+    return await res.json();
+  },
+
+  getPortalDocs: async () => {
+    const res = await fetch('/api/portal/docs');
+    return await res.json();
+  },
+
+  getPortalDoc: async (slug: string) => {
+    const res = await fetch(`/api/portal/docs/${slug}`);
+    return await res.json();
+  },
 };
+
+export interface PortalUser {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  role?: string;
+  user_type: 'admin' | 'usuario';
+  status: 'ativo' | 'bloqueado';
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PortalDocSummary {
+  slug: string;
+  filename: string;
+  title: string;
+  size: number;
+  updatedAt?: string;
+}
+
+export interface PortalDocDetail {
+  slug: string;
+  filename: string;
+  title: string;
+  content: string;
+}
 
 

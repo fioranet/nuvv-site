@@ -32,6 +32,7 @@ import { apiService, AdminMetricsResponse } from '../services/apiService';
 import { BLOG_POSTS } from '../data/blog';
 import { CoverageManager } from '../components/admin/CoverageManager';
 import { BlogManager } from '../components/admin/BlogManager';
+import { PortalUsersManager } from '../components/admin/PortalUsersManager';
 
 export const AdminDashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -40,7 +41,7 @@ export const AdminDashboard: React.FC = () => {
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'analytics' | 'viability' | 'blog' | 'newsletter' | 'leads' | 'smtp'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'viability' | 'blog' | 'newsletter' | 'leads' | 'smtp' | 'portal_users'>('analytics');
   const [viabilityViewMode, setViabilityViewMode] = useState<'manager' | 'queries'>('manager');
   const [loading, setLoading] = useState(false);
 
@@ -289,6 +290,7 @@ export const AdminDashboard: React.FC = () => {
             { id: 'blog', label: 'Blog & Artigos', icon: BookOpen },
             { id: 'newsletter', label: 'Nuvv News & Disparador', icon: Mail, badge: metrics?.kpis?.totalSubscribers },
             { id: 'leads', label: 'Leads Comerciais', icon: Users, badge: metrics?.kpis?.totalLeads },
+            { id: 'portal_users', label: '👥 Usuários do Portal', icon: Users },
             { id: 'smtp', label: 'Configurações SMTP', icon: Zap },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -1062,6 +1064,11 @@ export const AdminDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* 7. Portal Users Management Tab */}
+        {activeTab === 'portal_users' && (
+          <PortalUsersManager />
         )}
       </main>
     </div>
