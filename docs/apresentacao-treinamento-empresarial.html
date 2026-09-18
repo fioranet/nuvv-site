@@ -16,6 +16,7 @@
       --accent-light: #69F0AE;
       --cyan: #06B6D4;
       --amber: #F59E0B;
+      --rose: #F43F5E;
       --blue: #3B82F6;
       --bg: #070A12;
       --bg-card: rgba(18, 23, 38, 0.85);
@@ -118,13 +119,16 @@
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       color: #fff;
-      width: 36px;
       height: 36px;
+      padding: 0 12px;
       border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
       transition: all 0.2s;
     }
     .btn-icon:hover {
@@ -135,98 +139,92 @@
     /* Progress Bar */
     .progress-track {
       position: fixed;
-      top: 63px;
+      top: 64px;
       left: 0;
       width: 100%;
       height: 3px;
       background: rgba(255, 255, 255, 0.05);
-      z-index: 51;
+      z-index: 50;
     }
     .progress-bar {
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, var(--primary), var(--accent));
-      transition: width 0.3s ease;
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Deck Viewport */
+    /* Slides Container */
     .deck-container {
       position: relative;
       width: 100vw;
       height: calc(100vh - 64px);
       margin-top: 64px;
-      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .slide {
       position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
-      height: 100%;
-      padding: 35px 60px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      max-width: 1320px;
+      padding: 30px 50px;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(20px) scale(0.98);
+      transform: scale(0.97) translateY(10px);
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: calc(100vh - 100px);
       overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
     }
     .slide.active {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0) scale(1);
+      transform: scale(1) translateY(0);
     }
 
-    /* Typography */
+    /* Typography & Badges */
     .slide-tag {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
+      font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 1.5px;
       color: var(--accent);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .slide-title {
       font-family: var(--font-display);
-      font-size: 38px;
-      font-weight: 800;
+      font-size: 34px;
+      font-weight: 700;
       line-height: 1.15;
+      color: #fff;
+      margin-bottom: 12px;
       letter-spacing: -0.5px;
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, #FFFFFF 30%, #CBD5E1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
     .slide-subtitle {
-      font-size: 16px;
+      font-size: 15px;
       color: var(--text-muted);
-      max-width: 900px;
-      line-height: 1.45;
-      margin-bottom: 24px;
+      line-height: 1.5;
+      max-width: 820px;
+      margin-bottom: 18px;
     }
 
-    /* Grid Layouts */
+    /* Grids */
     .grid-2 {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
       align-items: center;
     }
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+      gap: 20px;
     }
     .grid-12-portfolio {
       display: grid;
@@ -273,6 +271,7 @@
     .badge-green { background: rgba(0, 200, 83, 0.2); color: #69F0AE; }
     .badge-amber { background: rgba(245, 158, 11, 0.2); color: #FCD34D; }
     .badge-cyan { background: rgba(6, 182, 212, 0.2); color: #67E8F9; }
+    .badge-rose { background: rgba(244, 63, 94, 0.2); color: #FDA4AF; }
 
     .card h3 {
       font-size: 17px;
@@ -322,7 +321,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-top: 12px;
+      margin-top: 10px;
     }
     .value-item {
       display: flex;
@@ -383,6 +382,65 @@
       font-style: normal;
     }
 
+    /* Interactive Product Action Bar */
+    .product-action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .btn-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn-action:hover {
+      transform: translateY(-2px);
+    }
+    .btn-action-price {
+      background: rgba(0, 200, 83, 0.12);
+      border-color: rgba(0, 200, 83, 0.4);
+      color: #69F0AE;
+    }
+    .btn-action-price:hover {
+      background: rgba(0, 200, 83, 0.25);
+      border-color: #00C853;
+      color: #fff;
+    }
+    .btn-action-diff {
+      background: rgba(6, 182, 212, 0.12);
+      border-color: rgba(6, 182, 212, 0.35);
+      color: #67E8F9;
+    }
+    .btn-action-diff:hover {
+      background: rgba(6, 182, 212, 0.25);
+      border-color: #06B6D4;
+      color: #fff;
+    }
+    .btn-action-obj {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #FCD34D;
+    }
+    .btn-action-obj:hover {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: #F59E0B;
+      color: #fff;
+    }
+
+    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
       bottom: 18px;
@@ -432,6 +490,169 @@
       font-family: monospace;
       font-size: 10px;
     }
+
+    /* Modal System */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 7, 15, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-card {
+      background: #0D1222;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      width: 90%;
+      max-width: 860px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      transform: scale(0.95) translateY(10px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .modal-overlay.open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(18, 24, 42, 0.9);
+    }
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .modal-close {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #94A3B8;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .modal-close:hover {
+      background: var(--rose);
+      color: #fff;
+      border-color: var(--rose);
+    }
+    .modal-body {
+      padding: 22px 26px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+      color: #E2E8F0;
+      line-height: 1.5;
+    }
+
+    /* Modal Tables */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+      margin-top: 8px;
+    }
+    .data-table th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: #E2E8F0;
+    }
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .table-price {
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: #69F0AE;
+      font-size: 14px;
+    }
+    .table-old-price {
+      text-decoration: line-through;
+      color: #64748B;
+      font-size: 11px;
+      margin-right: 4px;
+    }
+
+    /* Modal Objection & Differential Items */
+    .obj-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--amber);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .obj-question {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #FCD34D;
+      margin-bottom: 5px;
+    }
+    .obj-answer {
+      font-size: 12.5px;
+      color: #CBD5E1;
+      line-height: 1.45;
+    }
+
+    .diff-item {
+      background: rgba(6, 182, 212, 0.05);
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .diff-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #67E8F9;
+      margin-bottom: 5px;
+    }
+    .diff-desc {
+      font-size: 12.5px;
+      color: #CBD5E1;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
@@ -445,7 +666,7 @@
       <div class="badge-header">Treinamento B2B • Os 12 Pilares do Portfólio</div>
     </div>
     <div class="nav-controls">
-      <a href="/treinamento/" class="btn-icon" style="text-decoration: none; width: auto; padding: 0 12px; font-size: 12px; font-weight: 600; color: #A5B4FC; border-color: rgba(90,69,222,0.4);" title="Ver Treinamento Geral / Residencial">🏠 Treinamento Geral</a>
+      <a href="/treinamento/" class="btn-icon" style="text-decoration: none; color: #A5B4FC; border-color: rgba(90,69,222,0.4);" title="Ver Treinamento Geral / Residencial">🏠 Treinamento Geral</a>
       <div class="slide-indicator" id="slideIndicator">Slide <span id="currentSlideNum">1</span> de <span id="totalSlidesNum">22</span></div>
       <button class="btn-icon" onclick="toggleFullScreen()" title="Tela Cheia">⛶</button>
     </div>
@@ -462,19 +683,22 @@
       <div class="grid-2">
         <div>
           <div class="slide-tag">💼 B2B & TELECOM CORPORATIVA 2026</div>
-          <h1 class="slide-title" style="font-size: 48px;">Engenharia de Soluções & Vendas Empresariais</h1>
+          <h1 class="slide-title" style="font-size: 44px;">Engenharia de Soluções & Vendas Empresariais</h1>
           <p class="slide-subtitle">
-            Imersão técnica e comercial nos 12 pilares corporativos da Nuvv Telecom: conectividade de missão crítica, voz avançada, segurança física e patrimonial, infraestrutura de data center e inteligência artificial.
+            Imersão técnica e comercial nos 12 pilares corporativos da Nuvv Telecom: conectividade empresarial e de missão crítica, voz avançada, segurança física e patrimonial, data center e inteligência artificial.
           </p>
-          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
-            <span class="badge badge-green">12 Soluções de Portfólio</span>
-            <span class="badge badge-purple">Nuvv Guard Detalhado (3 Módulos)</span>
-            <span class="badge badge-cyan">Comunicação Digital (RCS + Voice AI)</span>
-            <span class="badge badge-amber">Carrier-Grade & Missão Crítica</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;">
+            <span class="badge badge-green">Pilar 1: Banda Larga PME & Semi</span>
+            <span class="badge badge-purple">Pilar 2: Link Dedicado Carrier</span>
+            <span class="badge badge-amber">Nuvv Guard (3 Módulos)</span>
+            <span class="badge badge-cyan">Mensageria (SMS & RCS) + Voice AI</span>
+          </div>
+          <div class="script-box" style="margin-top: 18px;">
+            <strong>Dica do Consultor:</strong> Navegue com <strong>◄</strong> e <strong>►</strong>. Em cada slide, utilize os botões interativos para abrir a <strong>Tabela de Preços</strong>, os <strong>Diferenciais Competitivos</strong> e o roteiro de <strong>Quebra de Objeções</strong>.
           </div>
         </div>
         <div>
-          <div class="media-box" style="height: 420px;">
+          <div class="media-box" style="height: 400px;">
             <img src="/images/hero/business_1.png" alt="Nuvv B2B" onerror="this.src='/images/services/business_scheduling_meet.png'">
             <div class="media-caption">
               <strong>Nuvv Corporativo:</strong> ASN próprio, backbone óptico e soluções de alta fidelidade para empresas.
@@ -486,99 +710,138 @@
 
     <!-- SLIDE 2: OS 12 PILARES DO PORTFÓLIO -->
     <section class="slide" id="slide-2">
-      <div class="slide-tag">🗺️ VISÃO GERAL</div>
-      <h2 class="slide-title">Os 12 Pilares do Portfólio Empresarial</h2>
+      <div class="slide-tag">🗺️ VISÃO GERAL DO PORTFÓLIO</div>
+      <h2 class="slide-title">Os 12 Pilares Corporativos da Nuvv</h2>
       <p class="slide-subtitle">
-        Toda a esteira de produtos que a Nuvv oferece para empresas, comércios, indústrias e condomínios:
+        Toda a esteira de produtos empresariais, iniciando pela conectividade PME e Semi-Dedicado até projetos complexos de engenharia:
       </p>
       <div class="grid-12-portfolio">
-        <div class="card" style="padding: 14px;">
+        <div class="card" style="padding: 12px; border-color: rgba(0, 200, 83, 0.45); background: rgba(0,200,83,0.06);">
           <div class="badge badge-green">1. Conectividade</div>
-          <h3 style="font-size: 14px;">Link Dedicado</h3>
+          <h3 style="font-size: 13.5px;">Banda Larga PME & Semi</h3>
+          <p style="font-size: 11px;">IP Fixo, CIR 80%, SLA 12h e Linha</p>
+        </div>
+        <div class="card" style="padding: 12px;">
+          <div class="badge badge-green">2. Conectividade</div>
+          <h3 style="font-size: 13.5px;">Link Dedicado</h3>
           <p style="font-size: 11px;">100% simétrico, SLA 4h, BGP, /29</p>
         </div>
-        <div class="card" style="padding: 14px;">
-          <div class="badge badge-purple">2. Voz & PABX</div>
-          <h3 style="font-size: 14px;">PABX em Nuvem</h3>
+        <div class="card" style="padding: 12px;">
+          <div class="badge badge-purple">3. Voz & PABX</div>
+          <h3 style="font-size: 13.5px;">PABX em Nuvem</h3>
           <p style="font-size: 11px;">URA, ramais no celular e gravação</p>
         </div>
-        <div class="card" style="padding: 14px;">
-          <div class="badge badge-purple">3. Voz & PABX</div>
-          <h3 style="font-size: 14px;">Telefonia IP / SIP</h3>
+        <div class="card" style="padding: 12px;">
+          <div class="badge badge-purple">4. Voz & PABX</div>
+          <h3 style="font-size: 13.5px;">Telefonia IP / SIP</h3>
           <p style="font-size: 11px;">Tronco SIP, 0800 e portabilidade</p>
         </div>
-        <div class="card" style="padding: 14px; border-color: rgba(0, 200, 83, 0.4);">
-          <div class="badge badge-amber">4. Segurança</div>
-          <h3 style="font-size: 14px;">Nuvv Guard (3 Módulos)</h3>
-          <p style="font-size: 11px;">Câmeras Nuvem, Interfone e Poste</p>
+        <div class="card" style="padding: 12px; border-color: rgba(245, 158, 11, 0.4);">
+          <div class="badge badge-amber">5. Segurança</div>
+          <h3 style="font-size: 13.5px;">Nuvv Guard (3 Módulos)</h3>
+          <p style="font-size: 11px;">CFTV Nuvem, Interfone e Poste</p>
         </div>
-        <div class="card" style="padding: 14px;">
-          <div class="badge badge-green">5. Conectividade</div>
-          <h3 style="font-size: 14px;">Lan to Lan</h3>
+        <div class="card" style="padding: 12px;">
+          <div class="badge badge-green">6. Conectividade</div>
+          <h3 style="font-size: 13.5px;">Lan to Lan</h3>
           <p style="font-size: 11px;">Rede privada L2 Matriz-Filiais</p>
         </div>
-        <div class="card" style="padding: 14px;">
-          <div class="badge badge-green">6. Conectividade</div>
-          <h3 style="font-size: 14px;">Link Temporário</h3>
+        <div class="card" style="padding: 12px;">
+          <div class="badge badge-green">7. Conectividade</div>
+          <h3 style="font-size: 13.5px;">Link Temporário</h3>
           <p style="font-size: 11px;">Eventos, transmissões e obras</p>
         </div>
-        <div class="card" style="padding: 14px;">
-          <div class="badge badge-cyan">7. Atendimento</div>
-          <h3 style="font-size: 14px;">Multiatendimento</h3>
+        <div class="card" style="padding: 12px;">
+          <div class="badge badge-cyan">8. Atendimento</div>
+          <h3 style="font-size: 13.5px;">Multiatendimento</h3>
           <p style="font-size: 11px;">WhatsApp Multiagente com IA</p>
         </div>
-        <div class="card" style="padding: 14px;">
-          <div class="badge badge-cyan">8. Varejo</div>
-          <h3 style="font-size: 14px;">Hotspot Wi-Fi Social</h3>
+        <div class="card" style="padding: 12px;">
+          <div class="badge badge-cyan">9. Varejo</div>
+          <h3 style="font-size: 13.5px;">Hotspot Wi-Fi Social</h3>
           <p style="font-size: 11px;">Captura de leads LGPD e reviews</p>
         </div>
-        <div class="card" style="padding: 14px;">
-          <div class="badge badge-purple">9. Cibersegurança</div>
-          <h3 style="font-size: 14px;">Segurança Digital</h3>
+        <div class="card" style="padding: 12px;">
+          <div class="badge badge-purple">10. Cibersegurança</div>
+          <h3 style="font-size: 13.5px;">Segurança Digital</h3>
           <p style="font-size: 11px;">Kaspersky Endpoint e DNS Shield</p>
         </div>
-        <div class="card" style="padding: 14px; border-color: rgba(90, 69, 222, 0.4);">
-          <div class="badge badge-cyan">10. Inovação & IA</div>
-          <h3 style="font-size: 14px;">Comunicação Digital</h3>
-          <p style="font-size: 11px;">RCS Verificado + Voice AI</p>
+        <div class="card" style="padding: 12px; border-color: rgba(90, 69, 222, 0.4);">
+          <div class="badge badge-cyan">11. Inovação & IA</div>
+          <h3 style="font-size: 13.5px;">Mensageria & Voice AI</h3>
+          <p style="font-size: 11px;">SMS, RCS Verificado e Voice AI</p>
         </div>
-        <div class="card" style="padding: 14px;">
-          <div class="badge badge-amber">11. Cloud</div>
-          <h3 style="font-size: 14px;">Data Center & Co-loc</h3>
-          <p style="font-size: 11px;">Bare Metal, VPS e Racks Tier III</p>
-        </div>
-        <div class="card" style="padding: 14px;">
-          <div class="badge badge-green">12. Engenharia</div>
-          <h3 style="font-size: 14px;">Projetos Sob Medida</h3>
-          <p style="font-size: 11px;">Dark Fiber, DWDM e anéis ópticos</p>
+        <div class="card" style="padding: 12px;">
+          <div class="badge badge-amber">12. Infraestrutura</div>
+          <h3 style="font-size: 13.5px;">Data Center & Projetos</h3>
+          <p style="font-size: 11px;">Bare Metal, VPS e Engenharia</p>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 3: SOLUÇÃO 1 - LINK DEDICADO CARRIER GRADE -->
+    <!-- SLIDE 3: PILAR 1 - BANDA LARGA PME & SEMI-DEDICADO -->
     <section class="slide" id="slide-3">
       <div class="grid-2">
         <div>
-          <div class="slide-tag">01. CONECTIVIDADE CRÍTICA</div>
-          <h2 class="slide-title">Link Dedicado Carrier-Grade</h2>
+          <div class="slide-tag">01. CONECTIVIDADE DE NEGÓCIOS</div>
+          <h2 class="slide-title">Banda Larga PME & Link Semi-Dedicado</h2>
           <p class="slide-subtitle">
-            Circuito exclusivo de fibra óptica ponto a ponto com 100% de garantia real de banda (CIR 1:1) e SLA de 4 horas contratuais.
+            A porta de entrada corporativa para comércios, escritórios e clínicas. Elimina o risco de usar planos residenciais amadores sujeitos a IP dinâmico e suporte lento.
           </p>
-          <div class="card card-accent" style="margin-bottom: 14px;">
-            <h3>Diferenciais de Engenharia:</h3>
+          <div class="card card-accent" style="margin-bottom: 12px;">
+            <h3>Destaques Técnicos & Contratuais:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>100% Simétrico:</strong> Mesma velocidade real para download e upload</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>SLA Contratual de 4 Horas (24/7/365):</strong> Com ressarcimento de fatura se houver indisponibilidade</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>ASN Próprio & BGP:</strong> Sessões BGP multihomed e conexão direta aos PTTs/IX.br</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Bloco de IPs Públicos:</strong> Sub-redes IPv4 (/30, /29, /28) inclusas</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>1 IP Fixo IPv4 Público Incluso (/32):</strong> No Semi-Dedicado, viabilizando acesso remoto a DVRs de CFTV, sistemas ERP e VPNs de filiais.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Garantia Real de 80% de Banda (CIR):</strong> Tráfego prioritário sem oscilações em horário comercial.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>SLA de Atendimento em até 12 Horas:</strong> Contato direto com a engenharia e NOC local no Alto Tietê.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Linha Fixa Ilimitada Brasil Inclusa:</strong> Economia imediata na telefonia da empresa.</li>
             </ul>
           </div>
-          <div class="script-box">
-            <strong>Público:</strong> Indústrias, Data Centers, Hospitais, E-commerces e empresas onde 1 hora fora do ar custa milhares de reais.
+          <div class="price-tag">Banda Larga a partir de R$ 99,90 <small>| Semi-Dedicado R$ 199,90/mês</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-pme')">📊 Tabela de Preços & Planos PME</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-pme')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-pme')">🛡️ Quebra de Objeções</button>
           </div>
         </div>
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
+            <img src="/images/hero/business_1.png" alt="Banda Larga PME Nuvv" onerror="this.src='/images/services/business_scheduling_meet.png'">
+            <div class="media-caption">
+              <strong>Estabilidade para Negócios:</strong> Sem travar caixas, PDVs, maquininhas ou emissão de NF-e.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: PILAR 2 - LINK DEDICADO CARRIER GRADE -->
+    <section class="slide" id="slide-4">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">02. MISSÃO CRÍTICA ENTERPRISE</div>
+          <h2 class="slide-title">Link Dedicado Carrier-Grade</h2>
+          <p class="slide-subtitle">
+            Circuito exclusivo de fibra óptica ponto a ponto com 100% de garantia real de banda (CIR 1:1) e SLA contratual de até 4 horas contínuas (24/7/365).
+          </p>
+          <div class="card card-primary" style="margin-bottom: 12px;">
+            <h3>Diferenciais Técnicos Corporativos:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">✔</span> <strong>100% Simétrico Real:</strong> Mesma velocidade exata para download e upload contínuo.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>SLA Contratual de 4 Horas (24/7/365):</strong> Com ressarcimento de fatura se houver indisponibilidade.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>ASN Próprio & BGP:</strong> Sessões BGP multihomed e conexão direta aos PTTs/IX.br São Paulo.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Bloco de IPs Públicos (/30, /29, /28):</strong> Prontos para firewalls NGFW e servidores corporativos.</li>
+            </ul>
+          </div>
+          <div class="price-tag">Projetos Sob Consulta <small>(Circuitos de 50M a 10 Gbps)</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-dedicado')">📊 Parâmetros & SLA Dedicado</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-dedicado')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-dedicado')">🛡️ Quebra de Objeções</button>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 390px;">
             <img src="/images/hero/business_2.png" alt="Link Dedicado Nuvv" onerror="this.src='/images/services/tech_1.png'">
             <div class="media-caption">
               <strong>Alta Conectividade:</strong> Porta óptica exclusiva sem compartilhamento de banda.
@@ -588,28 +851,33 @@
       </div>
     </section>
 
-    <!-- SLIDE 4: SOLUÇÃO 2 - PABX EM NUVEM -->
-    <section class="slide" id="slide-4">
+    <!-- SLIDE 5: PILAR 3 - PABX EM NUVEM -->
+    <section class="slide" id="slide-5">
       <div class="grid-2">
         <div>
-          <div class="slide-tag">02. VOZ & COMUNICAÇÃO</div>
+          <div class="slide-tag">03. VOZ & TELEFONIA CORPORATIVA</div>
           <h2 class="slide-title">PABX em Nuvem (Cloud PBX)</h2>
           <p class="slide-subtitle">
-            A central telefônica corporativa que roda em nuvem, eliminando equipamentos físicos caros que queimam em tempestades.
+            A central telefônica corporativa que roda 100% em nuvem, eliminando equipamentos físicos caros que queimam em tempestades e prendem os colaboradores na mesa.
           </p>
-          <div class="card card-primary" style="margin-bottom: 14px;">
+          <div class="card card-primary" style="margin-bottom: 12px;">
             <h3>Funcionalidades que Fecham Contrato:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>URA Inteligente com Menu de Voz:</strong> "Disque 1 para Comercial..." com áudio profissional gravado</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Gravação de 100% das Chamadas:</strong> Armazenadas na nuvem para segurança jurídica e auditoria</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Ramais Web, App e Telefone IP:</strong> O colaborador atende no notebook com fone ou no celular onde estiver</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Ligações Ilimitadas Brasil Inclusas:</strong> Sem surpresas na fatura no final do mês</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>URA Inteligente com Menu de Voz:</strong> "Disque 1 para Comercial..." com áudio profissional gravado.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Gravação de 100% das Chamadas:</strong> Armazenadas na nuvem para segurança jurídica e auditoria.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Ramais Web, App e Telefone IP:</strong> O colaborador atende no notebook com fone ou no celular onde estiver.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Ligações Ilimitadas Brasil Inclusas:</strong> Fatura fixa sem surpresas no fim do mês.</li>
             </ul>
           </div>
           <div class="price-tag">A partir de R$ 59,90 <small>/mês (2 a 100 ramais)</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-pabx')">📊 Tabela de Preços & Ramais</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-pabx')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-pabx')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/pabx/adicionais_tarifas.png" alt="PABX em Nuvem" onerror="this.src='/images/services/telephony_sip_hero.png'">
             <div class="media-caption">
               <strong>Painel Web de Gestão:</strong> Relatórios de chamadas atendidas, perdidas e tempo médio de espera.
@@ -619,11 +887,11 @@
       </div>
     </section>
 
-    <!-- SLIDE 5: SOLUÇÃO 3 - TELEFONIA IP & TRONCO SIP -->
-    <section class="slide" id="slide-5">
+    <!-- SLIDE 6: PILAR 4 - TELEFONIA IP & TRONCO SIP -->
+    <section class="slide" id="slide-6">
       <div class="grid-2">
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/external/telephony.jpg" alt="Telefonia IP" onerror="this.src='/images/services/office_1.png'">
             <div class="media-caption">
               <strong>Tronco SIP de Alta Densidade:</strong> Voz digital com qualidade HD e zero ruídos.
@@ -631,78 +899,89 @@
           </div>
         </div>
         <div>
-          <div class="slide-tag">03. VOZ & COMUNICAÇÃO</div>
+          <div class="slide-tag">04. VOZ & TELEFONIA CORPORATIVA</div>
           <h2 class="slide-title">Telefonia IP & Tronco SIP</h2>
           <p class="slide-subtitle">
             Linhas digitais corporativas para empresas que já possuem central PABX própria (Asterisk, FreePBX, Elastix, Panasonic ou Intelbras).
           </p>
-          <div class="card" style="margin-bottom: 14px;">
+          <div class="card" style="margin-bottom: 12px;">
             <h3>Vantagens Imediatas:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Portabilidade Numérica Gratuita:</strong> O cliente mantém seu número tradicional de décadas</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Canais Simultâneos Escaláveis:</strong> De 2 até 120 canais digitais sem precisar passar mais cabos</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>0800 Nacional & Números Virtuais (DID):</strong> Presença em várias capitais e DDDs</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Economia de até 60%:</strong> Substitui troncos E1 caros de operadoras legadas</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Portabilidade Numérica Gratuita:</strong> O cliente mantém seu número tradicional de décadas.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Canais Simultâneos Escaláveis:</strong> De 2 até 120 canais digitais sem precisar passar novos cabos físicos.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>0800 Nacional & Números Virtuais (DID):</strong> Presença em várias capitais e DDDs.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Economia de até 60%:</strong> Substitui troncos E1 caros de operadoras legadas.</li>
             </ul>
           </div>
-          <div class="price-tag">Linhas a partir de R$ 9,90 <small>/mês</small></div>
+          <div class="price-tag">Linhas a partir de R$ 9,90 <small>/mês | Troncos a partir de R$ 69,90</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-sip')">📊 Tabela de Tarifas & Troncos</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-sip')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-sip')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 6: SOLUÇÃO 4 - NUVV GUARD (VISÃO GERAL) -->
-    <section class="slide" id="slide-6">
-      <div class="slide-tag">04. SEGURANÇA PATRIMONIAL & CONDOMINIAL</div>
+    <!-- SLIDE 7: PILAR 5 - NUVV GUARD (VISÃO GERAL) -->
+    <section class="slide" id="slide-7">
+      <div class="slide-tag">05. SEGURANÇA PATRIMONIAL & CONDOMINIAL</div>
       <h2 class="slide-title">Nuvv Guard: O Ecossistema Integrado de Segurança</h2>
       <p class="slide-subtitle">
         Não venda equipamentos soltos. O Nuvv Guard integra CFTV Nuvem, Interfone Sem Fio e Monitoramento Urbano numa única plataforma unificada.
       </p>
       <div class="grid-3">
         <div class="card card-accent">
-          <div class="badge badge-green">Módulo 4.1</div>
+          <div class="badge badge-green">Módulo 5.1</div>
           <h3>Câmeras & CFTV Nuvem</h3>
-          <p>Gravação contínua 24h na nuvem blindada contra roubo de DVR. Comodato Full HD ou câmeras próprias.</p>
+          <p>Gravação contínua 24h na nuvem blindada contra roubo de DVR. Comodato Full HD ou câmeras próprias BYOD.</p>
           <div class="spec-pill">3 a 30 dias de retenção</div>
         </div>
         <div class="card card-primary">
-          <div class="badge badge-purple">Módulo 4.2</div>
+          <div class="badge badge-purple">Módulo 5.2</div>
           <h3>Interfone Virtual QR Code</h3>
           <p>Zero fiação predial. Chamada de vídeo direto no smartphone do morador com liberação remota de portão.</p>
           <div class="spec-pill">Taxa única R$ 79,90</div>
         </div>
         <div class="card">
-          <div class="badge badge-amber">Módulo 4.3</div>
+          <div class="badge badge-amber">Módulo 5.3</div>
           <h3>Poste de Monitoramento</h3>
           <p>Estação autônoma de segurança perimetral com câmeras 360°, leitora de placas (LPR) e botão de pânico.</p>
           <div class="spec-pill">Ruas, Vilas e Condomínios</div>
         </div>
       </div>
-      <div class="script-box" style="margin-top: 20px;">
-        <strong>Por que o Nuvv Guard Vende Tanto?</strong> Porque resolve as duas maiores dores de condomínios: o custo abusivo de consertar fiação de interfone e o pavor de terem o gravador de câmeras roubado em invasões.
+      <div class="script-box" style="margin-top: 18px;">
+        <strong>Por que o Nuvv Guard Vende Tanto?</strong> Porque resolve as duas maiores dores de condomínios e comércios: o custo abusivo de consertar fiação de interfone e o pavor de terem o gravador de câmeras roubado em invasões.
       </div>
     </section>
 
-    <!-- SLIDE 7: SOLUÇÃO 4.1 - CFTV EM NUVEM -->
-    <section class="slide" id="slide-7">
+    <!-- SLIDE 8: PILAR 5.1 - CFTV EM NUVEM -->
+    <section class="slide" id="slide-8">
       <div class="grid-2">
         <div>
-          <div class="slide-tag">04.1 NUVV GUARD</div>
+          <div class="slide-tag">05.1 NUVV GUARD</div>
           <h2 class="slide-title">CFTV em Nuvem: Gravação Anti-Furto de DVR</h2>
           <p class="slide-subtitle">
             Em mais de 80% das invasões a comércios e condomínios, os criminosos roubam ou quebram o aparelho gravador (DVR) para sumir com as provas.
           </p>
-          <div class="card card-accent">
+          <div class="card card-accent" style="margin-bottom: 12px;">
             <h3>A Blindagem Nuvv Guard:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Gravação Contínua em Data Center Nacional:</strong> Mesmo se quebrarem a câmera, o vídeo já está salvo na nuvem</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Acesso pelo App Nuvv Guard:</strong> Linha do tempo inteligente, busca por horários e download em Full HD</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Modelo BYOD (Aproveite suas Câmeras):</strong> Conectamos as câmeras que o cliente já tem por apenas R$ 19,90/mês</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Modelo Comodato Nuvv:</strong> Câmera Full HD com substituição garantida por R$ 44,90/mês (7 dias)</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Gravação Contínua em Data Center Nacional:</strong> Mesmo se quebrarem a câmera, o vídeo já está salvo na nuvem.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Acesso pelo App Nuvv Guard:</strong> Linha do tempo inteligente, busca por horários e download em Full HD.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Modelo BYOD (Aproveite suas Câmeras):</strong> Conectamos as câmeras que o cliente já tem por apenas R$ 19,90/mês.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Modelo Comodato Nuvv:</strong> Câmera Full HD com substituição garantida por R$ 44,90/mês (7 dias).</li>
             </ul>
+          </div>
+          <div class="price-tag">A partir de R$ 14,90 <small>/mês por câmera</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-cftv')">📊 Tabela de Planos CFTV Nuvem</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-cftv')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-cftv')">🛡️ Quebra de Objeções</button>
           </div>
         </div>
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/guard/camera-outdoor-showcase.jpg" alt="CFTV Nuvem" onerror="this.src='/images/services/security_office_hero.png'">
             <div class="media-caption">
               <strong>Imagens Blindadas:</strong> Acesso criptografado de qualquer lugar pelo celular ou computador.
@@ -712,11 +991,11 @@
       </div>
     </section>
 
-    <!-- SLIDE 8: SOLUÇÃO 4.2 - INTERFONE VIRTUAL QR CODE -->
-    <section class="slide" id="slide-8">
+    <!-- SLIDE 9: PILAR 5.2 - INTERFONE VIRTUAL QR CODE -->
+    <section class="slide" id="slide-9">
       <div class="grid-2">
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/guard/interfone-virtual-showcase.jpg" alt="Interfone Virtual QR Code" onerror="this.src='/images/guard/interfone-virtual-showcase.jpg'">
             <div class="media-caption">
               <strong>Sem Obras e Sem Fiação:</strong> Chamada de vídeo no smartphone com liberação de portão.
@@ -724,49 +1003,57 @@
           </div>
         </div>
         <div>
-          <div class="slide-tag">04.2 NUVV GUARD</div>
+          <div class="slide-tag">05.2 NUVV GUARD</div>
           <h2 class="slide-title">Interfone Virtual: Adeus Fiação Quebrada</h2>
           <p class="slide-subtitle">
             O fim definitivo dos orçamentos astronômicos para trocar cabeamento e tubulações entupidas em prédios e condomínios horizontais.
           </p>
-          <div class="card card-primary" style="margin-bottom: 14px;">
+          <div class="card card-primary" style="margin-bottom: 12px;">
             <h3>Como Funciona na Prática:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">1.</span> O visitante chega ao portão e aponta a câmera para a placa QR Code ou digita o apartamento</li>
-              <li class="value-item"><span class="value-icon">2.</span> O celular do morador toca com <strong>chamada de vídeo em tempo real</strong></li>
-              <li class="value-item"><span class="value-icon">3.</span> O morador vê quem está na porta de onde estiver (no quarto, no trabalho ou na praia)</li>
-              <li class="value-item"><span class="value-icon">4.</span> Libera a fechadura eletrônica com 1 toque no aplicativo</li>
+              <li class="value-item"><span class="value-icon">1.</span> O visitante chega ao portão e aponta a câmera para a placa QR Code ou digita o apartamento.</li>
+              <li class="value-item"><span class="value-icon">2.</span> O celular do morador toca com <strong>chamada de vídeo em tempo real</strong>.</li>
+              <li class="value-item"><span class="value-icon">3.</span> O morador vê quem está na porta de onde estiver (no quarto, no trabalho ou na praia).</li>
+              <li class="value-item"><span class="value-icon">4.</span> Libera a fechadura eletrônica com 1 toque no aplicativo.</li>
             </ul>
           </div>
-          <div class="price-tag">R$ 79,90 <small>(Taxa única da placa QR Code — Sem mensalidade para assinante de fibra Nuvv)</small></div>
+          <div class="price-tag">R$ 79,90 <small>(Taxa única da placa — R$ 0 de mensalidade para assinante de fibra Nuvv)</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-interfone')">📊 Preços & Condições Interfone</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-interfone')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-interfone')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 9: SOLUÇÃO 4.3 - POSTE DE MONITORAMENTO INTELIGENTE -->
-    <section class="slide" id="slide-9">
+    <!-- SLIDE 10: PILAR 5.3 - POSTE DE MONITORAMENTO INTELIGENTE -->
+    <section class="slide" id="slide-10">
       <div class="grid-2">
         <div>
-          <div class="slide-tag">04.3 NUVV GUARD & SMART CITIES</div>
+          <div class="slide-tag">05.3 NUVV GUARD & SMART CITIES</div>
           <h2 class="slide-title">Poste de Monitoramento Inteligente</h2>
           <p class="slide-subtitle">
             Infraestrutura de segurança ostensiva para ruas abertas, vilas residenciais, condomínios e corredores comerciais.
           </p>
-          <div class="card card-accent" style="margin-bottom: 14px;">
+          <div class="card card-accent" style="margin-bottom: 12px;">
             <h3>Tecnologia Integrada no Poste:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Câmera LPR (Leitura de Placas):</strong> Registra veículos suspeitos automaticamente</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Câmeras 360° e Iluminação LED:</strong> Cobertura total de área sem pontos escuros</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Botão de Pânico com Intercomunicador:</strong> Ajuda imediata com áudio bidirecional</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Conexão em Fibra Óptica Nuvv + Nobreak:</strong> Gravação contínua sem depender de Wi-Fi caseiro</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Câmera LPR (Leitura de Placas):</strong> Registra veículos suspeitos automaticamente.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Câmeras 360° e Iluminação LED:</strong> Cobertura total de área sem pontos escuros.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Botão de Pânico com Intercomunicador:</strong> Ajuda imediata com áudio bidirecional.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Conexão em Fibra Óptica Nuvv + Nobreak:</strong> Gravação contínua sem depender de Wi-Fi caseiro.</li>
             </ul>
           </div>
-          <div class="script-box">
-            <strong>Modelo Vizinhança Solidária:</strong> 20 vizinhos dividem o poste e pagam menos de R$ 20/mês por casa para ver a rua no celular antes de entrar na garagem.
+          <div class="price-tag">A partir de R$ 299,00 <small>/mês | Vizinhança Solidária R$ 19,90/casa</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-poste')">📊 Tabela & Modelos do Poste</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-poste')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-poste')">🛡️ Quebra de Objeções</button>
           </div>
         </div>
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/poste_monitoramento.png" alt="Poste Nuvv Vision" onerror="this.src='/images/services/poste_nuvv_condominio.jpg'">
             <div class="media-caption">
               <strong>Presença Ostensiva:</strong> Redução comprovada de índices de furtos e invasões.
@@ -776,27 +1063,33 @@
       </div>
     </section>
 
-    <!-- SLIDE 10: SOLUÇÃO 5 - LAN TO LAN -->
-    <section class="slide" id="slide-10">
+    <!-- SLIDE 11: PILAR 6 - LAN TO LAN -->
+    <section class="slide" id="slide-11">
       <div class="grid-2">
         <div>
-          <div class="slide-tag">05. REDES PRIVADAS</div>
+          <div class="slide-tag">06. REDES PRIVADAS L2 / MPLS</div>
           <h2 class="slide-title">Lan to Lan: Interligação Matriz e Filiais</h2>
           <p class="slide-subtitle">
             Conecte sedes, filiais, galpões e centros de distribuição em uma rede privada de Camada 2 (L2) / MPLS de altíssima velocidade.
           </p>
-          <div class="card card-primary" style="margin-bottom: 14px;">
+          <div class="card card-primary" style="margin-bottom: 12px;">
             <h3>Por que o TI da Empresa Contrata Lan to Lan:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Totalmente Fora da Internet Pública:</strong> Os dados da empresa não trafegam na web aberta, imunes a ataques DDoS e interceptações</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Comportamento de Rede Local:</strong> A filial acessa o servidor da matriz como se estivesse no mesmo prédio</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Latência Mínima para ERPs:</strong> Comunicação ultrarrápida com SAP, Totvs, Oracle e bancos de dados SQL</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Disponibilidade Garantida de 99,8%:</strong> Roteamento redundante em fibra óptica</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Totalmente Fora da Internet Pública:</strong> Os dados da empresa não trafegam na web aberta, imunes a ataques DDoS e interceptações.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Comportamento de Rede Local:</strong> A filial acessa o servidor da matriz como se estivesse no mesmo prédio.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Latência Mínima para ERPs:</strong> Comunicação ultrarrápida com SAP, Totvs, Senior e bancos de dados SQL.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Disponibilidade Garantida de 99,8%:</strong> Roteamento redundante em fibra óptica.</li>
             </ul>
+          </div>
+          <div class="price-tag">Circuitos Sob Consulta <small>(Ponto a Ponto e Ponto-Multiponto)</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-lantolan')">📊 Parâmetros Técnicos Lan to Lan</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-lantolan')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-lantolan')">🛡️ Quebra de Objeções</button>
           </div>
         </div>
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/office_1.png" alt="Lan to Lan Nuvv" onerror="this.src='/images/hero/business_1.png'">
             <div class="media-caption">
               <strong>Túnel Privado Seguro:</strong> Interligando unidades com máxima integridade corporativa.
@@ -806,11 +1099,11 @@
       </div>
     </section>
 
-    <!-- SLIDE 11: SOLUÇÃO 6 - LINK TEMPORÁRIO -->
-    <section class="slide" id="slide-11">
+    <!-- SLIDE 12: PILAR 7 - LINK TEMPORÁRIO -->
+    <section class="slide" id="slide-12">
       <div class="grid-2">
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/business_scheduling_meet.png" alt="Link Temporário para Eventos" onerror="this.src='/images/services/wifi_coverage_hero.png'">
             <div class="media-caption">
               <strong>Alta Densidade:</strong> Suporte a feiras, congressos, transmissões e canteiros de obras.
@@ -818,47 +1111,57 @@
           </div>
         </div>
         <div>
-          <div class="slide-tag">06. CONECTIVIDADE SOB DEMANDA</div>
+          <div class="slide-tag">07. CONECTIVIDADE SOB DEMANDA</div>
           <h2 class="slide-title">Link Temporário para Eventos & Obras</h2>
           <p class="slide-subtitle">
             Conexão de fibra óptica de ultravelocidade por dia, semana ou mês, com equipe técnica dedicada presencialmente no local.
           </p>
-          <div class="card" style="margin-bottom: 14px;">
+          <div class="card" style="margin-bottom: 12px;">
             <h3>Aplicações Típicas:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Transmissões ao Vivo e Lives:</strong> Upload garantido e simétrico sem engasgos de transmissão</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Congressos e Feiras de Negócios:</strong> Wi-Fi de alta densidade suportando milhares de credenciamentos e maquininhas</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Canteiros de Obras de Construção Civil:</strong> Conexão para engenharia e câmeras durante o período da obra</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Plantão Técnico Local:</strong> Engenheiro da Nuvv acompanhando o evento do início ao fim</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Transmissões ao Vivo e Lives:</strong> Upload garantido e simétrico sem engasgos de transmissão.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Congressos e Feiras de Negócios:</strong> Wi-Fi de alta densidade suportando milhares de credenciamentos e maquininhas.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Canteiros de Obras de Construção Civil:</strong> Conexão para engenharia e câmeras durante o período da obra.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Plantão Técnico Local:</strong> Engenheiro da Nuvv acompanhando o evento do início ao fim.</li>
             </ul>
           </div>
-          <div class="price-tag">Contratos Flexíveis <small>(Locação por diária, semana ou meses)</small></div>
+          <div class="price-tag">Contratos Flexíveis <small>(Diárias, Finais de Semana ou Mensal de Obra)</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-temp')">📊 Tabela de Diárias & Eventos</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-temp')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-temp')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 12: SOLUÇÃO 7 - MULTIATENDIMENTO OMNICHANNEL -->
-    <section class="slide" id="slide-12">
+    <!-- SLIDE 13: PILAR 8 - MULTIATENDIMENTO OMNICHANNEL -->
+    <section class="slide" id="slide-13">
       <div class="grid-2">
         <div>
-          <div class="slide-tag">07. ATENDIMENTO & CRM</div>
+          <div class="slide-tag">08. ATENDIMENTO & CRM</div>
           <h2 class="slide-title">Multiatendimento Omnichannel WhatsApp</h2>
           <p class="slide-subtitle">
             Centralize todos os atendentes em um único número oficial de WhatsApp, Instagram Direct e Messenger sem perder vendas.
           </p>
-          <div class="card card-accent" style="margin-bottom: 14px;">
+          <div class="card card-accent" style="margin-bottom: 12px;">
             <h3>Funcionalidades que Vencem a Concorrência:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Coexistência Exclusiva:</strong> Use a plataforma web no PC e continue com o WhatsApp no celular simultaneamente</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Automação de Comentários no Instagram:</strong> Transforma comentários em posts e Reels em vendas privadas na DM</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Agente de IA Integrado (GPT):</strong> Tira dúvidas e agenda reuniões 24h em menos de 1,2s</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>CRM Kanban com Múltiplos Funis:</strong> Arraste negociações e nunca mais esqueça um cliente</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Coexistência Exclusiva:</strong> Use a plataforma web no PC e continue com o WhatsApp no celular simultaneamente.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Automação de Comentários no Instagram:</strong> Transforma comentários em posts e Reels em vendas privadas na DM.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Agente de IA Integrado (GPT):</strong> Tira dúvidas e agenda reuniões 24h em menos de 1,2s.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>CRM Kanban com Múltiplos Funis:</strong> Arraste negociações e nunca mais esqueça um cliente.</li>
             </ul>
           </div>
           <div class="price-tag">R$ 149,90 <small>(3 users)</small> | R$ 299,90 <small>(10 users + IA)/mês</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-multi')">📊 Tabela de Planos Multiatendimento</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-multi')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-multi')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/multiatendimento_hero.png" alt="Multiatendimento" onerror="this.src='/images/services/smart_communication.png'">
             <div class="media-caption">
               <strong>Caixa de Entrada Unificada:</strong> Histórico salvo na empresa, mesmo se o vendedor sair.
@@ -868,11 +1171,11 @@
       </div>
     </section>
 
-    <!-- SLIDE 13: SOLUÇÃO 8 - SOCIAL WI-FI MARKETING -->
-    <section class="slide" id="slide-13">
+    <!-- SLIDE 14: PILAR 9 - SOCIAL WI-FI MARKETING -->
+    <section class="slide" id="slide-14">
       <div class="grid-2">
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/social_wifi_hero.png" alt="Social Wi-Fi Marketing" onerror="this.src='/images/services/wifi_1.png'">
             <div class="media-caption">
               <strong>Captive Portal Personalizado:</strong> Banners, promoções e captura consentida de dados.
@@ -880,47 +1183,57 @@
           </div>
         </div>
         <div>
-          <div class="slide-tag">08. VAREJO & MARKETING</div>
+          <div class="slide-tag">09. VAREJO & MARKETING</div>
           <h2 class="slide-title">Hotspot Social Wi-Fi Marketing</h2>
           <p class="slide-subtitle">
             Transforme a internet gratuita que o comércio oferece aos clientes em uma ferramenta automática de captação de leads e fidelização.
           </p>
-          <div class="card" style="margin-bottom: 14px;">
+          <div class="card" style="margin-bottom: 12px;">
             <h3>Benefícios Imediatos para o Comerciante:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>100% em Conformidade com LGPD e Marco Civil:</strong> Armazena logs com segurança jurídica</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Captura Automática de Dados:</strong> Coleta nome, WhatsApp, e-mail e data de aniversário</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Mensagens de Aniversário Automáticas:</strong> Dispara cupons para clientes aniversariantes</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Avaliações 5 Estrelas no Google Maps:</strong> Convida o cliente a avaliar a loja após a visita</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>100% em Conformidade com LGPD e Marco Civil:</strong> Armazena logs com segurança jurídica.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Captura Automática de Dados:</strong> Coleta nome, WhatsApp, e-mail e data de aniversário.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Mensagens de Aniversário Automáticas:</strong> Dispara cupons para clientes aniversariantes.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Avaliações 5 Estrelas no Google Maps:</strong> Convida o cliente a avaliar a loja após a visita.</li>
             </ul>
           </div>
           <div class="price-tag">Apenas R$ 59,90 <small>/mês (50 acessos simultâneos)</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-wifi')">📊 Tabela de Planos Social Wi-Fi</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-wifi')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-wifi')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 14: SOLUÇÃO 9 - SEGURANÇA DIGITAL & ENDPOINT -->
-    <section class="slide" id="slide-14">
+    <!-- SLIDE 15: PILAR 10 - SEGURANÇA DIGITAL & ENDPOINT -->
+    <section class="slide" id="slide-15">
       <div class="grid-2">
         <div>
-          <div class="slide-tag">09. CIBERSEGURANÇA CORPORATIVA</div>
+          <div class="slide-tag">10. CIBERSEGURANÇA CORPORATIVA</div>
           <h2 class="slide-title">Segurança Digital & Endpoint Kaspersky</h2>
           <p class="slide-subtitle">
             Proteção avançada para computadores, servidores e celulares corporativos contra ransomware, phishing e roubo de dados.
           </p>
-          <div class="card card-primary" style="margin-bottom: 14px;">
+          <div class="card card-primary" style="margin-bottom: 12px;">
             <h3>Blindagem Corporativa:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Tecnologia Líder Kaspersky Lab:</strong> Menor consumo de memória e maior índice de detecção</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Módulo Anti-Ransomware Proativo:</strong> Reverte alterações maliciosas antes do sequestro de dados</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Painel em Nuvem Centralizado:</strong> O responsável de TI gerencia todos os computadores de qualquer lugar</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Proteção de DNS Nuvv:</strong> Bloqueia sites perigosos direto na camada de rede da operadora</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Tecnologia Líder Kaspersky Lab:</strong> Menor consumo de memória e maior índice de detecção mundial.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Módulo Anti-Ransomware Proativo:</strong> Reverte alterações maliciosas antes do sequestro de dados.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Painel em Nuvem Centralizado:</strong> O responsável de TI gerencia todos os computadores de qualquer lugar.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Proteção de DNS Nuvv:</strong> Bloqueia sites perigosos direto na camada de rede da operadora.</li>
             </ul>
           </div>
-          <div class="price-tag">A partir de R$ 29,90 <small>/mês</small></div>
+          <div class="price-tag">A partir de R$ 29,90 <small>/mês (pacotes de 3 a 50+ licenças)</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-kasp')">📊 Tabela de Licenças Kaspersky</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-kasp')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-kasp')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/security_office_hero.png" alt="Segurança Digital" onerror="this.src='/images/services/security_hero.png'">
             <div class="media-caption">
               <strong>Proteção Total da Empresa:</strong> Dados bancários, arquivos de clientes e redes blindadas.
@@ -930,68 +1243,47 @@
       </div>
     </section>
 
-    <!-- SLIDE 15: SOLUÇÃO 10 - COMUNICAÇÃO DIGITAL (VISÃO GERAL) -->
-    <section class="slide" id="slide-15">
-      <div class="slide-tag">10. INOVAÇÃO & IA CONVERSACIONAL</div>
-      <h2 class="slide-title">Comunicação Digital: Mensageria & Voz Inteligente</h2>
-      <p class="slide-subtitle">
-        Acelere as vendas e reduza custos operacionais com as duas tecnologias que substituem o SMS arcaico e as ligações manuais repetitivas.
-      </p>
-      <div class="grid-2">
-        <div class="card card-accent">
-          <div class="badge badge-green">Módulo 10.1</div>
-          <h3>RCS Corporativo Verificado</h3>
-          <p>O "novo SMS" oficial do Google com selo verde de autenticidade, carrosséis de produtos, botões de ação e 98% de taxa de abertura.</p>
-          <div class="spec-pill" style="margin-top: 14px;">35x mais engajamento que SMS</div>
-        </div>
-        <div class="card card-primary">
-          <div class="badge badge-purple">Módulo 10.2</div>
-          <h3>Voice AI (Agente de Voz)</h3>
-          <p>IA conversacional que liga para milhares de pessoas ao mesmo tempo com voz humana para confirmar consultas, cobrar e pesquisar.</p>
-          <div class="spec-pill" style="margin-top: 14px;">Reduz faltas em até 80%</div>
-        </div>
-      </div>
-      <div class="script-box" style="margin-top: 20px;">
-        <strong>Integração via API:</strong> Tanto o RCS quanto o Voice AI se conectam facilmente ao ERP, CRM ou sistemas de agendamento da empresa via Webhooks simples.
-      </div>
-    </section>
-
-    <!-- SLIDE 16: SOLUÇÃO 10.1 - RCS VERIFICADO -->
+    <!-- SLIDE 16: PILAR 11 - MENSAGERIA CORPORATIVA (SMS & RCS) -->
     <section class="slide" id="slide-16">
       <div class="grid-2">
         <div>
-          <div class="slide-tag">10.1 COMUNICAÇÃO DIGITAL</div>
-          <h2 class="slide-title">RCS Corporativo Verificado Google</h2>
+          <div class="slide-tag">11. MENSAGERIA CORPORATIVA</div>
+          <h2 class="slide-title">Mensageria Inteligente: SMS & RCS Verificado</h2>
           <p class="slide-subtitle">
-            O SMS tradicional com links suspeitos virou sinônimo de golpe. O RCS traz a autoridade visual que o cliente precisa para confiar e comprar.
+            A Nuvv oferece a suíte completa de mensageria móvel corporativa: desde o tradicional <strong>SMS Corporativo Shortcode</strong> homologado pela Anatel até a revolução visual do <strong>RCS Corporativo Verificado Google</strong>.
           </p>
-          <div class="card card-accent">
-            <h3>Recursos Exclusivos do RCS:</h3>
+          <div class="card card-accent" style="margin-bottom: 12px;">
+            <h3>Comparativo dos Dois Serviços:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Remetente Verificado:</strong> Nome oficial, logotipo e selo verde emitido pelo Google</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Mídia Rica em Alta Resolução:</strong> Imagens de produtos, comprovantes e catálogos</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Botões de Ação Clicáveis:</strong> *"Copiar Código PIX"*, *"Confirmar Presença"*, *"Ligar Agora"*</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Fallback Automático Inteligente:</strong> Se o aparelho for antigo, entrega SMS comum sem perdas</li>
+              <li class="value-item"><span class="value-icon">📱</span> <strong>SMS Corporativo:</strong> Shortcode oficial, 1-way (envios em massa) e 2-way (respostas), ideal para senhas 2FA, OTP e alertas urgentes.</li>
+              <li class="value-item"><span class="value-icon">🌟</span> <strong>RCS Corporativo Verificado (Foco Principal):</strong> Selo verde Google de autenticidade, logotipo da empresa, carrosséis de produtos em alta definição e botões nativos clicáveis.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Fallback Automático Inteligente:</strong> Se o aparelho do cliente não suportar RCS, a mensagem é entregue instantaneamente via SMS sem perdas.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>98% de Taxa de Abertura:</strong> Leitura em menos de 3 minutos no app nativo de mensagens.</li>
             </ul>
           </div>
-          <div class="price-tag">A partir de R$ 0,085 <small>/ mensagem entregue</small></div>
+          <div class="price-tag">SMS R$ 0,055 <small>| RCS a partir de R$ 0,085 / mensagem entregue</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-mensageria')">📊 Tabela de Preços (SMS & RCS)</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-mensageria')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-mensageria')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/smart_communication.png" alt="RCS Corporativo" onerror="this.src='/images/services/business_scheduling_meet.png'">
             <div class="media-caption">
-              <strong>98% de Taxa de Leitura:</strong> Abertura nos primeiros 3 minutos após o envio.
+              <strong>Autoridade Visual Google:</strong> Selo de verificação contra golpes e botões de ação nativos.
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 17: SOLUÇÃO 10.2 - VOICE AI -->
+    <!-- SLIDE 17: PILAR 11.2 - VOICE AI -->
     <section class="slide" id="slide-17">
       <div class="grid-2">
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/business_scheduling_meet.png" alt="Voice AI Nuvv" onerror="this.src='/images/services/office_1.png'">
             <div class="media-caption">
               <strong>Agentes Virtuais de Voz:</strong> Atendimento telefônico humanizado 24/7.
@@ -999,47 +1291,57 @@
           </div>
         </div>
         <div>
-          <div class="slide-tag">10.2 COMUNICAÇÃO DIGITAL</div>
+          <div class="slide-tag">11.2 VOZ & INTELIGÊNCIA ARTIFICIAL</div>
           <h2 class="slide-title">Voice AI: Agentes Virtuais de Voz</h2>
           <p class="slide-subtitle">
-            Elimine equipes caras de discagem manual. Uma IA com fala humanizada que conversa de verdade com o cliente.
+            Elimine equipes caras de discagem manual. Uma inteligência artificial com fala humana que conversa de verdade com o cliente e agenda compromissos sozinha.
           </p>
-          <div class="card card-primary" style="margin-bottom: 14px;">
+          <div class="card card-primary" style="margin-bottom: 12px;">
             <h3>Principais Aplicações Comerciais:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Clínicas & Hospitais:</strong> Confirmação e reagendamento de consultas reduzindo no-show</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Cobrança Preventiva & Amigável:</strong> Lembra faturas a vencer e envia chave PIX</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Pesquisas de Satisfação (NPS):</strong> Coleta nota verbal em ligações de 30 segundos</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Capacidade Gigantesca:</strong> Dispara 10.000 ligações simultâneas em poucos minutos</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Clínicas & Hospitais:</strong> Confirmação e reagendamento de consultas reduzindo no-show em até 80%.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Cobrança Preventiva & Amigável:</strong> Lembra faturas a vencer e envia chave PIX automaticamente.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Pesquisas de Satisfação (NPS):</strong> Coleta nota verbal em ligações rápidas e objetivas.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Capacidade Gigantesca:</strong> Dispara 10.000 ligações simultâneas em poucos minutos.</li>
             </ul>
           </div>
           <div class="price-tag">A partir de R$ 0,39 <small>/ minuto falado com sucesso</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-voiceai')">📊 Tabela de Planos Voice AI</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-voiceai')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-voiceai')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 18: SOLUÇÃO 11 - DATA CENTER & CO-LOCATION -->
+    <!-- SLIDE 18: PILAR 12 - DATA CENTER & CO-LOCATION -->
     <section class="slide" id="slide-18">
       <div class="grid-2">
         <div>
-          <div class="slide-tag">11. INFRAESTRUTURA EM NUVEM</div>
-          <h2 class="slide-title">Data Center & Co-location</h2>
+          <div class="slide-tag">12. INFRAESTRUTURA EM NUVEM</div>
+          <h2 class="slide-title">Data Center & Co-location Tier III</h2>
           <p class="slide-subtitle">
             Hospede os servidores e dados críticos da sua empresa em ambiente seguro Tier III com conectividade direta ao backbone óptico da Nuvv.
           </p>
-          <div class="card" style="margin-bottom: 14px;">
+          <div class="card" style="margin-bottom: 12px;">
             <h3>Portfólio de Data Center:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Co-location (Espaço em Rack):</strong> Meio rack, rack inteiro ou gaiolas dedicadas com energia no-break e gerador</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Servidores Dedicados (Bare Metal):</strong> Máquinas de altíssima performance para bancos de dados pesados</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Cloud VPS Corporativo:</strong> Máquinas virtuais escaláveis com discos NVMe ultrarrápidos</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Backup em Nuvem Imutável:</strong> Proteção contra ransomware com histórico inviolável</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Co-location (Espaço em Rack):</strong> Meio rack, rack inteiro ou gaiolas dedicadas com energia no-break e gerador.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Servidores Dedicados (Bare Metal):</strong> Máquinas de altíssima performance para bancos de dados pesados.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Cloud VPS Corporativo:</strong> Máquinas virtuais escaláveis com discos NVMe ultrarrápidos.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Backup em Nuvem Imutável:</strong> Proteção contra ransomware com histórico inviolável.</li>
             </ul>
           </div>
-          <div class="price-tag">Projetos Sob Medida <small>(Conforme consumo de U's, energia e banda)</small></div>
+          <div class="price-tag">VPS a partir de R$ 99,90 <small>| Co-location a partir de R$ 350,00</small></div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-dc')">📊 Tabela & Parâmetros Data Center</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-dc')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-dc')">🛡️ Quebra de Objeções</button>
+          </div>
         </div>
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/tech_1.png" alt="Data Center Nuvv" onerror="this.src='/images/services/office_1.png'">
             <div class="media-caption">
               <strong>Ambiente Tier III:</strong> Climatização de precisão, geradores redundantes e biometria 24/7.
@@ -1049,11 +1351,11 @@
       </div>
     </section>
 
-    <!-- SLIDE 19: SOLUÇÃO 12 - PROJETOS PERSONALIZADOS DE ENGENHARIA -->
+    <!-- SLIDE 19: PILAR 13 - PROJETOS PERSONALIZADOS DE ENGENHARIA -->
     <section class="slide" id="slide-19">
       <div class="grid-2">
         <div>
-          <div class="media-box" style="height: 380px;">
+          <div class="media-box" style="height: 390px;">
             <img src="/images/services/security_1.png" alt="Engenharia de Telecom" onerror="this.src='/images/hero/business_1.png'">
             <div class="media-caption">
               <strong>Engenharia de Ponta:</strong> AS-Built, anéis ópticos e projetos de alta complexidade.
@@ -1061,19 +1363,24 @@
           </div>
         </div>
         <div>
-          <div class="slide-tag">12. ENGENHARIA CONSULTIVA</div>
+          <div class="slide-tag">13. ENGENHARIA CONSULTIVA</div>
           <h2 class="slide-title">Projetos Personalizados de Telecom</h2>
           <p class="slide-subtitle">
             Quando a solução padrão de prateleira não atende, a equipe de engenharia sênior da Nuvv desenha uma infraestrutura dedicada sob medida.
           </p>
-          <div class="card card-accent" style="margin-bottom: 14px;">
+          <div class="card card-accent" style="margin-bottom: 12px;">
             <h3>Capacidades de Engenharia Nuvv:</h3>
             <ul class="value-list">
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Fibra Apagada (Dark Fiber):</strong> Locação de pares de fibra exclusivos para tráfego ilimitado do cliente</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Redes Metropolitanas DWDM:</strong> Multiplexação óptica com canais de 10G, 40G e 100G</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>Dupla Abordagem Física e Anéis Redundantes:</strong> A fibra entra por duas ruas diferentes garantindo zero downtime</li>
-              <li class="value-item"><span class="value-icon">✔</span> <strong>SLAs Contratuais Customizados:</strong> Prazos de reparo especiais conforme a operação fabril ou médica</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Fibra Apagada (Dark Fiber):</strong> Locação de pares de fibra exclusivos para tráfego ilimitado do cliente.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Redes Metropolitanas DWDM:</strong> Multiplexação óptica com canais de 10G, 40G e 100G.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Dupla Abordagem Física e Anéis Redundantes:</strong> A fibra entra por duas rotas diferentes garantindo zero downtime.</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>SLAs Contratuais Customizados:</strong> Prazos de reparo especiais conforme a operação fabril ou médica.</li>
             </ul>
+          </div>
+          <div class="product-action-bar">
+            <button class="btn-action btn-action-price" onclick="openModal('preco-eng')">📊 Capacidades de Engenharia</button>
+            <button class="btn-action btn-action-diff" onclick="openModal('diff-eng')">⚡ Diferenciais Competitivos</button>
+            <button class="btn-action btn-action-obj" onclick="openModal('obj-eng')">🛡️ Quebra de Objeções</button>
           </div>
         </div>
       </div>
@@ -1084,7 +1391,7 @@
       <div class="slide-tag">💰 ESTRATÉGIA COMERCIAL</div>
       <h2 class="slide-title">Engenharia de Combos B2B: Como Dobrar o Ticket</h2>
       <p class="slide-subtitle">
-        Nunca venda apenas o link de internet. Monte pacotes de valor somando Conectividade + Voz + Software + Segurança.
+        Nunca venda apenas o link de internet. Monte pacotes de alto valor somando Conectividade + Voz + Software + Segurança.
       </p>
       <div class="grid-2">
         <div class="card card-accent">
@@ -1116,19 +1423,22 @@
           <p style="font-size: 12px; color: #CBD5E1;">Elimina o custo de trocar fiação e moderniza o condomínio sem rateio pesado.</p>
         </div>
       </div>
+      <div class="product-action-bar" style="justify-content: center; margin-top: 15px;">
+        <button class="btn-action btn-action-price" onclick="openModal('preco-combos')">📊 Comparativo Completo dos Combos B2B</button>
+      </div>
     </section>
 
-    <!-- SLIDE 21: MATANDO OBJEÇÕES B2B -->
+    <!-- SLIDE 21: MATANDO OBJEÇÕES GERAIS B2B -->
     <section class="slide" id="slide-21">
       <div class="slide-tag">🛡️ MATANDO OBJEÇÕES B2B</div>
       <h2 class="slide-title">Como o Consultor Nuvv Quebra Objeções Empresariais</h2>
       <p class="slide-subtitle">
-        Negociações corporativas exigem segurança técnica e justificativa de ROI (Retorno sobre Investimento):
+        Negociações corporativas exigem segurança técnica e justificativa clara de ROI (Retorno sobre Investimento):
       </p>
       <div class="grid-3">
         <div class="card">
           <h3 style="color: var(--amber);">"Já temos contrato com a Vivo/Claro Empresas."</h3>
-          <p style="margin-top: 8px;"><strong>Resposta:</strong> "Excelente operadora! Mas quando você precisa de suporte ou o link oscila, você fala com um engenheiro local que resolve em minutos ou fica horas numa URA nacional? A maioria dos nossos clientes de grande porte mantém um link Nuvv para balanceamento de carga ou migrou totalmente pelo nosso atendimento de proximidade."</p>
+          <p style="margin-top: 8px;"><strong>Resposta:</strong> "Excelente operadora! Mas quando você precisa de suporte ou o link oscila, você fala com um engenheiro local que resolve em minutos ou fica horas numa URA nacional? A maioria dos nossos clientes corporativos mantém um link Nuvv para balanceamento de carga ou migrou totalmente pelo nosso atendimento de proximidade."</p>
         </div>
         <div class="card">
           <h3 style="color: var(--cyan);">"Está acima do orçamento que planejamos."</h3>
@@ -1145,9 +1455,9 @@
     <section class="slide" id="slide-22">
       <div style="text-align: center; max-width: 820px; margin: 0 auto;">
         <div class="slide-tag" style="justify-content: center;">🏆 FECHANDO CONTRATOS DE ALTO VALOR</div>
-        <h1 class="slide-title" style="font-size: 50px; margin-bottom: 18px;">A Nuvv É a Parceira Estratégica que as Empresas Procuram</h1>
+        <h1 class="slide-title" style="font-size: 48px; margin-bottom: 18px;">A Nuvv É a Parceira Estratégica que as Empresas Procuram</h1>
         <p class="slide-subtitle" style="margin: 0 auto 30px auto;">
-          Grandes empresas não compram cabos; compram tranquilidade, estabilidade e parceiros locais confiáveis. Domine os 12 pilares do portfólio e boas vendas corporativas!
+          Grandes empresas não compram apenas fibra; compram tranquilidade operacional, estabilidade contratual e engenharia local de confiança. Domine o portfólio corporativo e boas vendas!
         </p>
         <div style="display: flex; justify-content: center; gap: 16px;">
           <button class="nav-btn" onclick="goToSlide(1)" style="background: var(--primary); padding: 12px 26px; font-size: 14px;">
@@ -1171,7 +1481,24 @@
     <span>Navegação:</span>
     <span><span class="key-badge">◄</span> <span class="key-badge">►</span> Setas</span>
     <span><span class="key-badge">Espaço</span> Avançar</span>
+    <span><span class="key-badge">ESC</span> Fechar Janela</span>
     <span><span class="key-badge">F</span> Tela Cheia</span>
+  </div>
+
+  <!-- MODAL OVERLAY -->
+  <div class="modal-overlay" id="modalOverlay" onclick="handleBackdropClick(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="badge badge-green" id="modalBadge">Detalhes</span>
+          <h3 class="modal-title" id="modalTitle">Título do Modal</h3>
+        </div>
+        <button class="modal-close" onclick="closeModal()" title="Fechar (ESC)">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Dynamic Content Injected Here -->
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1181,6 +1508,7 @@
     const currentSlideNumEl = document.getElementById('currentSlideNum');
     const totalSlidesNumEl = document.getElementById('totalSlidesNum');
     const progressBarEl = document.getElementById('progressBar');
+    const modalOverlayEl = document.getElementById('modalOverlay');
 
     totalSlidesNumEl.innerText = totalSlides;
 
@@ -1199,6 +1527,7 @@
     }
 
     function nextSlide() {
+      if (modalOverlayEl.classList.contains('open')) return;
       if (currentSlide < totalSlides) {
         currentSlide++;
         updateSlide();
@@ -1206,6 +1535,7 @@
     }
 
     function prevSlide() {
+      if (modalOverlayEl.classList.contains('open')) return;
       if (currentSlide > 1) {
         currentSlide--;
         updateSlide();
@@ -1229,7 +1559,1051 @@
       }
     }
 
+    /* Modal System Datasets */
+    const modalData = {
+      // 01. PME & SEMI-DEDICADO
+      'preco-pme': {
+        title: '📊 Tabela de Preços: Conectividade PME & Semi-Dedicado',
+        badge: 'Tabela Comercial',
+        html: `
+          <h4 style="color: #fff; margin-bottom: 8px;">1. Banda Larga Corporativa PME</h4>
+          <table class="data-table" style="margin-bottom: 22px;">
+            <thead>
+              <tr>
+                <th>Plano</th>
+                <th>Velocidade</th>
+                <th>Benefícios Inclusos</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Empresa Start</strong></td>
+                <td>400 Mega</td>
+                <td>Wi-Fi Plus Corporativo + 1 Linha Fixa Ilimitada Brasil + SLA 48h</td>
+                <td><span class="table-old-price">R$ 119,90</span><span class="table-price">R$ 99,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Empresa Plus</strong> (Campeão PME)</td>
+                <td>800 Mega</td>
+                <td>Wi-Fi Alta Densidade para PDVs/Clientes + 1 Linha Fixa Ilimitada + SLA 48h</td>
+                <td><span class="table-old-price">R$ 149,90</span><span class="table-price">R$ 129,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Empresa Max 1 Giga</strong></td>
+                <td>1.000 Mega</td>
+                <td>Garantia 65% CIR + SLA Prioritário 24h + Roteador Wi-Fi 6 Ultra + 1 Linha Fixa</td>
+                <td><span class="table-old-price">R$ 209,90</span><span class="table-price">R$ 189,90</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4 style="color: #69F0AE; margin-bottom: 8px;">2. Link Semi-Dedicado (com IP Fixo IPv4 Público Incluso)</h4>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plano</th>
+                <th>Velocidade Real</th>
+                <th>Garantia CIR / SLA</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Semi-Dedicado 300M</strong></td>
+                <td>300 Mega</td>
+                <td>1 IP Fixo Público + 80% CIR Real + SLA 12h + NOC Ativo</td>
+                <td><span class="table-old-price">R$ 219,90</span><span class="table-price">R$ 199,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Semi-Dedicado 500M</strong> (Melhor Custo-Benefício)</td>
+                <td>500 Mega</td>
+                <td>1 IP Fixo Público + 80% CIR Real + SLA 12h + NOC Ativo</td>
+                <td><span class="table-old-price">R$ 279,90</span><span class="table-price">R$ 259,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Semi-Dedicado 700M</strong></td>
+                <td>700 Mega</td>
+                <td>1 IP Fixo Público + 80% CIR Real + SLA 12h + NOC Ativo</td>
+                <td><span class="table-old-price">R$ 419,90</span><span class="table-price">R$ 399,90</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">*Valores com desconto de pontualidade no débito automático/PIX. Instalação e comodato de equipamentos corporativos inclusos sob contrato de 12 meses.</p>
+        `
+      },
+      'diff-pme': {
+        title: '⚡ Diferenciais Competitivos: Conectividade PME & Semi-Dedicado',
+        badge: 'Por que a Nuvv?',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ IP Fixo IPv4 Público Sem Burocracia</div>
+            <div class="diff-desc">Enquanto grandes operadoras cobram taxas abusivas ou exigem contratações complexas, na Nuvv o IP fixo já vem liberado na instalação do Semi-Dedicado para acesso remoto a DVRs, firewalls e servidores.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Garantia Real de 80% de Banda (CIR)</div>
+            <div class="diff-desc">Planos residenciais comuns garantem apenas 40% pela regulamentação da Anatel. O Semi-Dedicado Nuvv entrega 80% de garantia real, impedindo que a internet caia de velocidade em horários de pico.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ SLA Contratual de 12 Horas & NOC Local</div>
+            <div class="diff-desc">Equipe técnica e engenharia sediadas no Alto Tietê. Atendimento direto via WhatsApp corporativo e telefone sem robôs intermináveis ou dias de espera para visita técnica.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Rotas Diretas ao IX.br São Paulo</div>
+            <div class="diff-desc">Menor latência (ping sub-5ms) para aplicações em nuvem como AWS, Microsoft 365, Google Workspace e emissão instantânea de notas fiscais (SEFAZ).</div>
+          </div>
+        `
+      },
+      'obj-pme': {
+        title: '🛡️ Quebra de Objeções: Conectividade PME & Semi-Dedicado',
+        badge: 'Roteiro de Vendas',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Por que pagar R$ 199 no Semi-Dedicado se existe internet residencial por R$ 99?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "A diferença está no contrato e na tecnologia da rota. No plano residencial, a operadora só garante 40% de velocidade pela Anatel, usa IP dinâmico que muda sozinho e o prazo de reparo pode levar até 48 horas úteis. No Semi-Dedicado, você recebe 1 IP Fixo público para seus sistemas e câmeras, 80% de garantia real de banda e um SLA de 12 horas. Um único dia de operação parada no seu comércio custa muito mais do que a diferença de R$ 3,30 por dia entre os planos."</div>
+          </div>
+          <div class="obj-item">
+            <div class="obj-question">❓ "A Claro/Vivo me ofereceu o dobro de velocidade pelo mesmo valor."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Eles oferecem velocidade nominal de download em rede compartilhada com o bairro todo, mas não entregam simetria nem garantia de banda no upload. Para empresas, o upload e a latência estável são fundamentais para sistemas em nuvem e reuniões em vídeo. Além disso, quando você tem um problema com essas multinacionais, você fala com atendentes terceirizados em outros estados. Na Nuvv, o técnico que atende a sua empresa está sediado a poucos minutos de você."</div>
+          </div>
+        `
+      },
+
+      // 02. LINK DEDICADO
+      'preco-dedicado': {
+        title: '📊 Parâmetros Técnicos & SLA: Link Dedicado Carrier-Grade',
+        badge: 'Missão Crítica',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Especificação Técnica</th>
+                <th>Padrão Nuvv Carrier-Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Garantia de Banda (CIR)</strong></td><td><strong style="color: #69F0AE;">100% Full Duplex Garantido (1:1)</strong></td></tr>
+              <tr><td><strong>Simetria Real</strong></td><td>100% Simétrico (Download idêntico ao Upload)</td></tr>
+              <tr><td><strong>SLA de Reparo Contratual</strong></td><td><strong style="color: #67E8F9;">Até 4 Horas Contratuais (24/7/365)</strong></td></tr>
+              <tr><td><strong>Disponibilidade (Uptime)</strong></td><td>99,9% com ressarcimento financeiro em fatura</td></tr>
+              <tr><td><strong>Endereçamento IP</strong></td><td>Bloco de IPs Públicos IPv4 (/30, /29, /28) inclusos</td></tr>
+              <tr><td><strong>Roteamento & BGP</strong></td><td>Sessões BGP com ASN próprio, trânsito multihomed e IX.br</td></tr>
+              <tr><td><strong>Meio Físico de Entrega</strong></td><td>Porta Metro Ethernet Exclusiva em Fibra Óptica</td></tr>
+              <tr><td><strong>Valores</strong></td><td><span class="table-price">Projetos Customizados sob Viabilidade de Engenharia</span></td></tr>
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">*A viabilidade técnica é executada pela equipe de engenharia da Nuvv em até 24 horas úteis com apresentação de projeto de AS-Built e dupla abordagem quando solicitada.</p>
+        `
+      },
+      'diff-dedicado': {
+        title: '⚡ Diferenciais Competitivos: Link Dedicado Carrier-Grade',
+        badge: 'Enterprise',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Porta Exclusiva sem Contenção (Zero Compartilhamento)</div>
+            <div class="diff-desc">Não há agregação de vizinhança. O cliente possui uma porta física dedicada no switch de agregação da Nuvv com capacidade 1:1 inegociável.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Monitoramento Proativo 24/7/365 (Alerta em <3 min)</div>
+            <div class="diff-desc">O NOC da Nuvv detecta qualquer variação ou atenuação no enlace antes mesmo que o cliente perceba, despachando equipe de campo preventivamente.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Bloco de IPs Públicos & Suporte a BGP</div>
+            <div class="diff-desc">Perfeito para empresas com ASN próprio que necessitam fechar sessões BGP multihomed ou operar servidores DNS e VPNs com sub-redes IPv4 dedicadas.</div>
+          </div>
+        `
+      },
+      'obj-dedicado': {
+        title: '🛡️ Quebra de Objeções: Link Dedicado Carrier-Grade',
+        badge: 'Negociação B2B',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "O valor do link dedicado é muito superior ao de um link comum de banda larga."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Sim, e a razão é contratual e de infraestrutura. No Link Dedicado a porta da fibra é 100% exclusiva sua, sem compartilhamento com ninguém, com 100% de simetria real e um SLA de 4 horas com ressarcimento financeiro em contrato. Se a sua indústria, hospital ou centro de distribuição ficar 2 horas sem internet, o custo da equipe parada e das notas bloqueadas é muito maior do que a mensalidade do link. Dedicado é seguro operacional."</div>
+          </div>
+        `
+      },
+
+      // 03. PABX EM NUVEM
+      'preco-pabx': {
+        title: '📊 Tabela de Preços: PABX em Nuvem (Cloud PBX)',
+        badge: 'Telefonia Digital',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plano PABX</th>
+                <th>Ramais Inclusos</th>
+                <th>Recursos Avançados</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Start PBX</strong></td>
+                <td>2 Ramais</td>
+                <td>URA Básica + App Celular + Gravação 30D</td>
+                <td><span class="table-price">R$ 59,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Pro PBX</strong> (Mais Vendido)</td>
+                <td>5 Ramais</td>
+                <td>URA Profissional com Menus + Gravação 90D + Filas + Relatórios</td>
+                <td><span class="table-price">R$ 129,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Business PBX</strong></td>
+                <td>10 Ramais</td>
+                <td>URA Multi-nível + Gravação Ilimitada + Softphones PC + Integração CRM</td>
+                <td><span class="table-price">R$ 249,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Enterprise PBX</strong></td>
+                <td>20+ Ramais</td>
+                <td>Painel de Call Center + Transcrição IA + Gestão de Tráfego</td>
+                <td><span class="table-price">R$ 449,90+</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">*Ramal adicional: R$ 19,90/mês. Inclui ligações ilimitadas para fixo e celular em todo o Brasil sem custo adicional por minuto.</p>
+        `
+      },
+      'diff-pabx': {
+        title: '⚡ Diferenciais Competitivos: PABX em Nuvem',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Zero Investimento em Hardware Físico</div>
+            <div class="diff-desc">Elimina centrais telefônicas físicas na parede do cliente que esquentam, quebram em tempestades com raios e custam fortunas de manutenção.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Mobilidade Híbrida Total</div>
+            <div class="diff-desc">O vendedor ou recepcionista atende ligações no notebook com fone de ouvido ou no aplicativo no celular em casa, na rua ou na empresa com o mesmo ramal.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Gravação 100% em Nuvem com Backup</div>
+            <div class="diff-desc">Todas as chamadas gravadas com facilidade de busca por data, ramal e cliente, oferecendo total proteção jurídica e auditoria comercial.</div>
+          </div>
+        `
+      },
+      'obj-pabx': {
+        title: '🛡️ Quebra de Objeções: PABX em Nuvem',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Já temos uma central telefônica física da Intelbras funcionando bem."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Ela atende no escritório físico, mas e quando o seu vendedor está externo ou alguém faz home office? Se houver uma descarga elétrica e a placa queimar, quanto tempo a sua empresa fica sem receber chamadas? O PABX em Nuvem não quebra, atualiza sozinho e permite atender chamadas corporativas no celular de qualquer lugar com gravação de segurança."</div>
+          </div>
+        `
+      },
+
+      // 04. TELEFONIA IP & TRONCO SIP
+      'preco-sip': {
+        title: '📊 Tabela de Tarifas: Telefonia IP & Tronco SIP',
+        badge: 'Voz Digital',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Produto de Voz</th>
+                <th>Capacidade / Canais</th>
+                <th>Diferenciais</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Linha Digital SIP Avulsa</strong></td>
+                <td>1 a 2 Canais</td>
+                <td>Portabilidade gratuita + 1 Linha Fixa Local</td>
+                <td><span class="table-price">R$ 9,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Tronco SIP 5 Canais</strong></td>
+                <td>5 Ligações Simultâneas</td>
+                <td>Ideal para centrais IP Asterisk / Elastix</td>
+                <td><span class="table-price">R$ 69,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Tronco SIP 10 Canais</strong></td>
+                <td>10 Ligações Simultâneas</td>
+                <td>Alta densidade comercial com ligações Brasil inclusas</td>
+                <td><span class="table-price">R$ 119,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Tronco SIP 30 Canais (E1 Digital)</strong></td>
+                <td>30 Ligações Simultâneas</td>
+                <td>Substitui feixes E1 legados com economia imediata</td>
+                <td><span class="table-price">R$ 299,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Número Nacional 0800</strong></td>
+                <td>Nacional</td>
+                <td>Tarifação reversa competitiva sob consulta</td>
+                <td><span class="table-price">Sob Consulta</span></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      },
+      'diff-sip': {
+        title: '⚡ Diferenciais Competitivos: Telefonia IP & Tronco SIP',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Portabilidade Numérica 100% Gratuita</div>
+            <div class="diff-desc">A empresa mantém o mesmo número telefônico de 10 ou 20 anos que os clientes já conhecem, sem perda de contato.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Escalabilidade Instantânea sem Obras</div>
+            <div class="diff-desc">Precisa aumentar de 5 para 20 canais em época de Black Friday? A alteração é feita em minutos via software, sem puxar fios físicos adicionais.</div>
+          </div>
+        `
+      },
+      'obj-sip': {
+        title: '🛡️ Quebra de Objeções: Telefonia IP & Tronco SIP',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Tenho receio de perder o número de 15 anos da minha empresa na portabilidade."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "A portabilidade numérica é regulamentada pela Anatel e o número pertence à sua empresa por direito. Nós cuidamos de todo o processo técnico e a transição ocorre em minutos durante a madrugada, sem que a sua empresa fique nem um único minuto sem receber chamadas."</div>
+          </div>
+        `
+      },
+
+      // 05.1 CFTV NUVEM
+      'preco-cftv': {
+        title: '📊 Tabela de Planos: Nuvv Guard CFTV em Nuvem',
+        badge: 'Segurança Anti-Furto',
+        html: `
+          <h4 style="color: #fff; margin-bottom: 8px;">1. Modalidade BYOD (Conecte suas Câmeras Existentes)</h4>
+          <table class="data-table" style="margin-bottom: 22px;">
+            <thead>
+              <tr>
+                <th>Plano de Retenção</th>
+                <th>Dias de Gravação Contínua</th>
+                <th>Acesso App Nuvv Guard</th>
+                <th>Valor / Câmera</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>BYOD 3 Dias</strong></td><td>3 Dias 24h na Nuvem</td><td>Multi-usuários + Download HD</td><td><span class="table-price">R$ 14,90/mês</span></td></tr>
+              <tr><td><strong>BYOD 7 Dias</strong> (Mais Popular)</td><td>7 Dias 24h na Nuvem</td><td>Multi-usuários + Download HD</td><td><span class="table-price">R$ 19,90/mês</span></td></tr>
+              <tr><td><strong>BYOD 15 Dias</strong></td><td>15 Dias 24h na Nuvem</td><td>Multi-usuários + Download HD</td><td><span class="table-price">R$ 29,90/mês</span></td></tr>
+              <tr><td><strong>BYOD 30 Dias</strong> (Condomínios)</td><td>30 Dias 24h na Nuvem</td><td>Multi-usuários + Download HD</td><td><span class="table-price">R$ 44,90/mês</span></td></tr>
+            </tbody>
+          </table>
+
+          <h4 style="color: #69F0AE; margin-bottom: 8px;">2. Modalidade Comodato Nuvv (Câmera Full HD Inclusa + Troca Garantida)</h4>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plano Comodato</th>
+                <th>Equipamento Incluso</th>
+                <th>Garantia & Troca</th>
+                <th>Valor / Câmera</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Comodato 7 Dias</strong></td><td>Câmera Full HD IR Visão Noturna</td><td>Substituição garantida Nuvv</td><td><span class="table-price">R$ 44,90/mês</span></td></tr>
+              <tr><td><strong>Comodato 15 Dias</strong></td><td>Câmera Full HD IR Visão Noturna</td><td>Substituição garantida Nuvv</td><td><span class="table-price">R$ 54,90/mês</span></td></tr>
+              <tr><td><strong>Comodato 30 Dias</strong></td><td>Câmera Full HD IR Visão Noturna</td><td>Substituição garantida Nuvv</td><td><span class="table-price">R$ 69,90/mês</span></td></tr>
+            </tbody>
+          </table>
+        `
+      },
+      'diff-cftv': {
+        title: '⚡ Diferenciais Competitivos: CFTV em Nuvem',
+        badge: 'Anti-Furto de DVR',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Imunidade Total contra Furto ou Destruição do Gravador (DVR)</div>
+            <div class="diff-desc">Em mais de 80% das invasões os criminosos levam o DVR. No Nuvv Guard, as imagens estão salvas no Data Center nacional. Mesmo se a câmera for destruída, os segundos anteriores estão intactos.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Aplicativo Rápido e Seguro sem Port Forwarding</div>
+            <div class="diff-desc">Não precisa abrir portas vulneráveis no roteador nem configurar DDNS problemático. Acesso criptografado com linha do tempo instantânea.</div>
+          </div>
+        `
+      },
+      'obj-cftv': {
+        title: '🛡️ Quebra de Objeções: CFTV em Nuvem',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Eu já tenho DVR com HD de 1TB e não pago nada por mês."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Com certeza, o DVR local grava muito bem... até o dia em que o estabelecimento for invadido ou ocorrer um incêndio. Se o invasor levar o gravador na mochila, de que adiantou o investimento nas câmeras? O Nuvv Guard custa menos de R$ 0,70 por dia por câmera e garante que a prova do crime estará salva para a polícia e para o seguro."</div>
+          </div>
+        `
+      },
+
+      // 05.2 INTERFONE VIRTUAL
+      'preco-interfone': {
+        title: '📊 Tabela & Condições: Interfone Virtual QR Code',
+        badge: 'Sem Obras',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Item / Modalidade</th>
+                <th>O que está incluso</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Taxa Única de Placa QR Code</strong></td>
+                <td>Placa de alta resistência em alumínio/acrílico com QR Code gravado a laser + configuração do condomínio</td>
+                <td><span class="table-price">R$ 79,90 (Taxa Única)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Mensalidade (Assinante Fibra Nuvv)</strong></td>
+                <td>Chamadas de vídeo ilimitadas, moradores ilimitados e abertura remota de fechadura</td>
+                <td><strong style="color: #69F0AE; font-size: 16px;">R$ 0,00 / Mês (GRATUITO)</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Mensalidade (Não Assinante Fibra)</strong></td>
+                <td>Plataforma ativa para condomínio com outra operadora</td>
+                <td><span class="table-price">R$ 19,90 / Mês</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">*Economia média de R$ 25.000 a R$ 60.000 em reformas e quebra de paredes para troca de cabos de interfone em condomínios.</p>
+        `
+      },
+      'diff-interfone': {
+        title: '⚡ Diferenciais Competitivos: Interfone Virtual QR Code',
+        badge: 'Inovação Condominial',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Zero Obras, Tubulações ou Fiação Predial</div>
+            <div class="diff-desc">Elimina o pesadelo de trocar cabeamento oxidado em tubulações entupidas de condomínios antigos. A instalação é feita em menos de 1 hora com a placa na entrada.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Atenda na Praia ou no Trabalho com Vídeo</div>
+            <div class="diff-desc">O entregador do Mercado Livre toca o interfone e você vê o rosto dele e libera a encomenda mesmo estando a quilômetros de distância pelo smartphone.</div>
+          </div>
+        `
+      },
+      'obj-interfone': {
+        title: '🛡️ Quebra de Objeções: Interfone Virtual QR Code',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "E os idosos no condomínio que têm dificuldade com tecnologia?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Pensamos nisso! Para o morador idoso, o interfone toca como uma chamada telefônica comum de celular. Ele não precisa abrir nada complexo: apenas atende e pressiona um dígito simples para abrir o portão. Além disso, filhos e parentes podem ser cadastrados para atender pelo idoso."</div>
+          </div>
+        `
+      },
+
+      // 05.3 POSTE DE MONITORAMENTO
+      'preco-poste': {
+        title: '📊 Tabela & Modelos: Poste de Monitoramento Inteligente',
+        badge: 'Segurança Ostensiva',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Modelo do Poste</th>
+                <th>Sensores & Câmeras</th>
+                <th>Conexão & Energia</th>
+                <th>Investimento</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Poste Vision Padrão</strong></td>
+                <td>Câmera 360° + Iluminação LED + Botão Pânico</td>
+                <td>Fibra Óptica Nuvv + Nobreak Interno</td>
+                <td><span class="table-price">A partir de R$ 299,00/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>Poste Vision LPR (Placas)</strong></td>
+                <td>Câmera LPR de alta velocidade + 360° + Alerta de Suspeitos</td>
+                <td>Fibra Óptica Nuvv + Nobreak Interno</td>
+                <td><span class="table-price">A partir de R$ 449,00/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>Modelo Vizinhança Solidária</strong></td>
+                <td>Rateio comunitário entre 15 e 30 vizinhos</td>
+                <td>App individual para cada morador</td>
+                <td><span class="table-price">Aprox. R$ 19,90/mês por residência</span></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      },
+      'diff-poste': {
+        title: '⚡ Diferenciais Competitivos: Poste Inteligente',
+        badge: 'Smart Cities',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Presença Ostensiva Inibidora</div>
+            <div class="diff-desc">A presença do poste com iluminação LED e identificação visual reduz comprovadamente invasões e furtos na rua em até 70%.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Conexão Direta em Fibra Óptica Nuvv</div>
+            <div class="diff-desc">Não depende de sinal instável de Wi-Fi de vizinho. Gravação contínua garantida 24h na nuvem com autonomia de nobreak em quedas de energia.</div>
+          </div>
+        `
+      },
+      'obj-poste': {
+        title: '🛡️ Quebra de Objeções: Poste Inteligente',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "A prefeitura ou a concessionária de energia autoriza colocar o poste?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Sim! A Nuvv possui engenharia própria e atua conforme a legislação de ocupação de solo e padrões de infraestrutura e telecomunicações. Em áreas privadas ou condomínios fechados a implantação é imediata."</div>
+          </div>
+        `
+      },
+
+      // 06. LAN TO LAN
+      'preco-lantolan': {
+        title: '📊 Parâmetros Técnicos: Lan to Lan (Redes Privadas)',
+        badge: 'Rede Privada L2',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Modalidade de Circuito</th>
+                <th>Topologia</th>
+                <th>Segurança</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Lan to Lan 100 Mbps</strong></td><td>Ponto a Ponto (Matriz - Filial)</td><td>100% Fora da Web / Camada 2</td><td><span class="table-price">Sob Consulta</span></td></tr>
+              <tr><td><strong>Lan to Lan 500 Mbps</strong></td><td>Ponto a Ponto ou Multiponto</td><td>100% Fora da Web / Camada 2</td><td><span class="table-price">Sob Consulta</span></td></tr>
+              <tr><td><strong>Lan to Lan 1 Gbps</strong></td><td>Anel Metropolitano Fechado</td><td>100% Fora da Web / Camada 2</td><td><span class="table-price">Sob Consulta</span></td></tr>
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">*Comportamento de rede local com latência menor que 2ms dentro da área metropolitana.</p>
+        `
+      },
+      'diff-lantolan': {
+        title: '⚡ Diferenciais Competitivos: Lan to Lan',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Imunidade a Ataques DDoS e Interceptação</div>
+            <div class="diff-desc">Como o tráfego não passa pela internet aberta, os dados bancários e ERPs da empresa não podem ser farejados ou derrubados por ataques da web.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Zero Sobrecarga de CPU em Roteadores</div>
+            <div class="diff-desc">Diferente de VPNs IPsec lentas que consomem o processamento dos roteadores nas pontas, o Lan to Lan entrega transporte transparente em Camada 2.</div>
+          </div>
+        `
+      },
+      'obj-lantolan': {
+        title: '🛡️ Quebra de Objeções: Lan to Lan',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Por que não fechar uma VPN simples pela internet que é mais barata?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "A VPN pela internet comum sofre com as oscilações de rota, lentidão e risco de ataques externos. Se a internet pública oscilar, os estoques e caixas das filiais travam. O Lan to Lan é um cabo virtual privativo entre suas unidades com velocidade de rede local."</div>
+          </div>
+        `
+      },
+
+      // 07. LINK TEMPORÁRIO
+      'preco-temp': {
+        title: '📊 Tabela de Diárias: Link Temporário para Eventos',
+        badge: 'Sob Demanda',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Período do Evento</th>
+                <th>Capacidade de Banda</th>
+                <th>Suporte Presencial</th>
+                <th>Contratação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Diária / 1 Dia</strong></td><td>100M a 1 Gbps Simétrico</td><td>Técnico de Plantão Local</td><td><span class="table-price">Sob Medida</span></td></tr>
+              <tr><td><strong>Fim de Semana (3 Dias)</strong></td><td>100M a 1 Gbps Simétrico</td><td>Engenheiro de Redes Dedicado</td><td><span class="table-price">Sob Medida</span></td></tr>
+              <tr><td><strong>Semanal / Congressos</strong></td><td>Wi-Fi Alta Densidade</td><td>Monitoramento Proativo 24h</td><td><span class="table-price">Sob Medida</span></td></tr>
+              <tr><td><strong>Mensal para Obras</strong></td><td>300M a 500M Corporativo</td><td>Ativação e Desmobilização Rápidas</td><td><span class="table-price">Sob Medida</span></td></tr>
+            </tbody>
+          </table>
+        `
+      },
+      'diff-temp': {
+        title: '⚡ Diferenciais Competitivos: Link Temporário',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Engenheiro Nuvv Presente no Local</div>
+            <div class="diff-desc">Não arrisque transmissões ao vivo ou eventos corporativos com suporte remoto. A Nuvv coloca um profissional no local para garantir sucesso total.</div>
+          </div>
+        `
+      },
+      'obj-temp': {
+        title: '🛡️ Quebra de Objeções: Link Temporário',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "A rede 4G/5G das operadoras de celular não dá conta do evento?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Em feiras com milhares de pessoas reunidas no mesmo local, as antenas de celular ficam congestionadas e as maquininhas de cartão param de passar na hora da venda. A fibra da Nuvv garante banda cabeada independente e sem risco de saturação."</div>
+          </div>
+        `
+      },
+
+      // 08. MULTIATENDIMENTO
+      'preco-multi': {
+        title: '📊 Tabela de Planos: Multiatendimento Omnichannel WhatsApp',
+        badge: 'Atendimento & CRM',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plano</th>
+                <th>Usuários / Atendentes</th>
+                <th>Recursos Integrados</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Starter Multi</strong></td>
+                <td>Até 3 Atendentes</td>
+                <td>1 WhatsApp Oficial + CRM Kanban + Respostas Rápidas</td>
+                <td><span class="table-price">R$ 149,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Pro Multi</strong> (Mais Vendido)</td>
+                <td>Até 10 Atendentes</td>
+                <td>WhatsApp + Instagram Direct + Agente de IA GPT 24/7</td>
+                <td><span class="table-price">R$ 299,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Enterprise Multi</strong></td>
+                <td>25+ Atendentes</td>
+                <td>Múltiplos Números + Automação Avançada + API Aberta</td>
+                <td><span class="table-price">R$ 599,90+</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">*Usuário adicional: R$ 29,90/mês. Inclui treinamento e parametrização inicial gratuita pela equipe Nuvv.</p>
+        `
+      },
+      'diff-multi': {
+        title: '⚡ Diferenciais Competitivos: Multiatendimento',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Coexistência Exclusiva com Celular</div>
+            <div class="diff-desc">Enquanto outras plataformas desconectam o celular ao abrir no computador, na Nuvv o gestor pode continuar usando o WhatsApp no celular normalmente.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Proteção da Carteira de Clientes</div>
+            <div class="diff-desc">Se o vendedor pedir demissão, as conversas e contatos ficam salvos na empresa, impedindo que o colaborador leve os clientes embora.</div>
+          </div>
+        `
+      },
+      'obj-multi': {
+        title: '🛡️ Quebra de Objeções: Multiatendimento',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Nós já usamos o WhatsApp Web gratuito nos computadores."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "O WhatsApp Web grátis só permite poucas conexões, desconecta toda semana e não tem relatórios de atendimento. Com o Multiatendimento Nuvv, você sabe quantos atendimentos foram feitos, o tempo de resposta e o robô responde clientes à noite e aos domingos."</div>
+          </div>
+        `
+      },
+
+      // 09. SOCIAL WI-FI
+      'preco-wifi': {
+        title: '📊 Tabela de Planos: Hotspot Social Wi-Fi Marketing',
+        badge: 'Varejo & Leads',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plano</th>
+                <th>Capacidade Simultânea</th>
+                <th>Recursos de Marketing</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Social Wi-Fi 50</strong></td>
+                <td>Até 50 Pessoas Conectadas</td>
+                <td>Captive Portal + Login LGPD + Captura Nome/WhatsApp</td>
+                <td><span class="table-price">R$ 59,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Social Wi-Fi 150</strong></td>
+                <td>Até 150 Pessoas Conectadas</td>
+                <td>Banners Promocionais + Disparo Aniversariantes + Reviews Google</td>
+                <td><span class="table-price">R$ 99,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Social Wi-Fi 300+</strong></td>
+                <td>300+ Conexões Simultâneas</td>
+                <td>Múltiplos APs + Integração com CRM de Marketing</td>
+                <td><span class="table-price">R$ 169,90</span></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      },
+      'diff-wifi': {
+        title: '⚡ Diferenciais Competitivos: Social Wi-Fi Marketing',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Blindagem Jurídica pelo Marco Civil & LGPD</div>
+            <div class="diff-desc">Deixar Wi-Fi aberto com senha na parede é crime se alguém cometer um ilícito na sua rede. O Social Wi-Fi armazena os logs com segurança jurídica para o comércio.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Multiplica Avaliações 5 Estrelas no Google</div>
+            <div class="diff-desc">Convida automaticamente o cliente que usou o Wi-Fi a avaliar a loja ou restaurante no Google Maps, elevando a pontuação do estabelecimento.</div>
+          </div>
+        `
+      },
+      'obj-wifi': {
+        title: '🛡️ Quebra de Objeções: Social Wi-Fi Marketing',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Eu só deixo uma plaquinha com a senha na parede do caixa."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Além do risco jurídico grave se alguém baixar conteúdo ilegal usando sua internet, você está jogando fora a chance de capturar o WhatsApp de centenas de clientes todos os meses para enviar promoções e trazê-los de volta."</div>
+          </div>
+        `
+      },
+
+      // 10. KASPERSKY
+      'preco-kasp': {
+        title: '📊 Tabela de Licenças: Segurança Digital & Endpoint Kaspersky',
+        badge: 'Cibersegurança',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pacote de Licenças</th>
+                <th>Dispositivos Cobertos</th>
+                <th>Recursos Inclusos</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Kaspersky Start 3</strong></td>
+                <td>Até 3 Computadores/Servidores</td>
+                <td>Anti-Ransomware + Proteção Web + Console Cloud</td>
+                <td><span class="table-price">R$ 29,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Kaspersky Office 5</strong></td>
+                <td>Até 5 Computadores/Servidores</td>
+                <td>Anti-Ransomware + Proteção Web + DNS Shield Nuvv</td>
+                <td><span class="table-price">R$ 49,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Kaspersky Business 10</strong></td>
+                <td>Até 10 Computadores/Servidores</td>
+                <td>Gestão de Vulnerabilidades + Bloqueio USB + Console Cloud</td>
+                <td><span class="table-price">R$ 89,90</span></td>
+              </tr>
+              <tr>
+                <td><strong>Kaspersky Enterprise 25+</strong></td>
+                <td>25+ Dispositivos Corporativos</td>
+                <td>EDR Básico + Relatório de Auditoria + Suporte Nuvv</td>
+                <td><span class="table-price">Sob Consulta</span></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      },
+      'diff-kasp': {
+        title: '⚡ Diferenciais Competitivos: Segurança Kaspersky',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Proteção Ativa Anti-Ransomware com Rollback</div>
+            <div class="diff-desc">Se um arquivo suspeito começar a criptografar os dados da empresa, a tecnologia da Kaspersky bloqueia o processo e reverte o arquivo para o estado original.</div>
+          </div>
+        `
+      },
+      'obj-kasp': {
+        title: '🛡️ Quebra de Objeções: Segurança Kaspersky',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "O antivírus gratuito do Windows já não protege a máquina?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "O antivírus comum pega apenas vírus antigos já catalogados. Ele não protege contra ataques avançados de ransomware que sequestram o banco de dados da sua empresa e exigem resgate em Bitcoin. A Kaspersky é a mais premiada do mundo em proteção corporativa proativa."</div>
+          </div>
+        `
+      },
+
+      // 11. MENSAGERIA (SMS & RCS)
+      'preco-mensageria': {
+        title: '📊 Tabela de Preços: Mensageria Corporativa (SMS & RCS Verificado)',
+        badge: 'Comunicação Móvel',
+        html: `
+          <h4 style="color: #fff; margin-bottom: 8px;">1. SMS Corporativo (Shortcode Oficial Anatel)</h4>
+          <table class="data-table" style="margin-bottom: 22px;">
+            <thead>
+              <tr>
+                <th>Modalidade SMS</th>
+                <th>Finalidade</th>
+                <th>Custo por Envio</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>SMS 1-Way (Disparo em Massa)</strong></td><td>Alertas, avisos de cobrança e notificações</td><td><span class="table-price">R$ 0,055 a R$ 0,075</span></td></tr>
+              <tr><td><strong>SMS 2-Way (Com Resposta)</strong></td><td>Confirmação com 'SIM' ou 'NAO' do cliente</td><td><span class="table-price">R$ 0,085 a R$ 0,099</span></td></tr>
+              <tr><td><strong>SMS OTP / Token 2FA</strong></td><td>Autenticação rápida de senhas temporárias</td><td><span class="table-price">R$ 0,060</span></td></tr>
+            </tbody>
+          </table>
+
+          <h4 style="color: #69F0AE; margin-bottom: 8px;">2. RCS Corporativo Verificado Google (O "Novo SMS")</h4>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Modalidade RCS</th>
+                <th>Recursos Visuais</th>
+                <th>Custo por Mensagem Entregue</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Setup & Homologação de Marca Google</strong></td><td>Criação do perfil com logo, cores oficiais e selo verde de autenticidade</td><td><span class="table-price">R$ 350,00 (Taxa Única)</span></td></tr>
+              <tr><td><strong>RCS Básico</strong></td><td>Texto rico + Selo Verificado + Botões de Ação Clicáveis</td><td><span class="table-price">R$ 0,085 a R$ 0,11</span></td></tr>
+              <tr><td><strong>RCS Rich Card / Carrossel</strong></td><td>Carrossel interativo com fotos HD de produtos e links nativos</td><td><span class="table-price">R$ 0,130 a R$ 0,16</span></td></tr>
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">*Com fallback automático para SMS comum se o aparelho for antigo. Sem desperdício de créditos.</p>
+        `
+      },
+      'diff-mensageria': {
+        title: '⚡ Diferenciais Competitivos: Mensageria (SMS & RCS)',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Selo Oficial de Remetente Verificado Google</div>
+            <div class="diff-desc">Elimina o receio de golpes. O cliente vê o nome exato da empresa, o logotipo oficial e o selo de autenticidade Google no aplicativo nativo de mensagens.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Botões Nativos ("Copiar PIX", "Ligar", "Confirmar")</div>
+            <div class="diff-desc">O cliente realiza a ação desejada com 1 único toque na tela sem precisar abrir navegadores lentos ou digitar chaves longas.</div>
+          </div>
+        `
+      },
+      'obj-mensageria': {
+        title: '🛡️ Quebra de Objeções: Mensageria (SMS & RCS)',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Por que não mandar tudo por WhatsApp em vez de RCS ou SMS?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "O WhatsApp é excelente, mas tem risco constante de bloqueio do chip e o cliente pode silenciar ou bloquear a conversa. O RCS e o SMS chegam na caixa de entrada nativa do sistema operacional com 98% de taxa de abertura nos primeiros 3 minutos, com selo verificado do Google que o WhatsApp não possui no modelo comum."</div>
+          </div>
+        `
+      },
+
+      // 11.2 VOICE AI
+      'preco-voiceai': {
+        title: '📊 Tabela de Planos: Voice AI (Agentes Virtuais de Voz)',
+        badge: 'Voz & Inteligência Artificial',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pacote de Voz IA</th>
+                <th>Franquia de Minutos</th>
+                <th>Recursos & Integrações</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Setup & Treinamento do Agente</strong></td><td>Taxa Única</td><td>Criação de persona, voz humanizada e integração via Webhook</td><td><span class="table-price">A partir de R$ 990,00</span></td></tr>
+              <tr><td><strong>Pacote Starter Voice AI</strong></td><td>2.000 Minutos Falados</td><td>Confirmação de consultas e cobrança preventiva</td><td><span class="table-price">R$ 890,00/mês</span></td></tr>
+              <tr><td><strong>Pacote Pro Voice AI</strong></td><td>5.000 Minutos Falados</td><td>Agendamento em tempo real + Pesquisas NPS</td><td><span class="table-price">R$ 1.950,00/mês</span></td></tr>
+              <tr><td><strong>Pacote Enterprise Voice AI</strong></td><td>15.000+ Minutos Falados</td><td>Capacidade para 10.000 chamadas simultâneas</td><td><span class="table-price">R$ 4.990,00/mês</span></td></tr>
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">*Minuto adicional com sucesso: R$ 0,39 a R$ 0,49. Ligações não completadas ou em caixa postal não consomem tarifa cheia.</p>
+        `
+      },
+      'diff-voiceai': {
+        title: '⚡ Diferenciais Competitivos: Voice AI',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Diálogo Humanizado sem Roteiro Robótico Engessado</div>
+            <div class="diff-desc">A IA compreende interrupções, hesitações e responde com empatia e tom natural de voz, conseguindo resolver mais de 70% dos casos sem transbordo humano.</div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-title">✔ Redução Drástica de No-Show em Clínicas</div>
+            <div class="diff-desc">Reduz as faltas de pacientes em consultas de 25% para menos de 5%, preenchendo automaticamente as desistências com a fila de espera.</div>
+          </div>
+        `
+      },
+      'obj-voiceai': {
+        title: '🛡️ Quebra de Objeções: Voice AI',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "As pessoas odeiam robôs ligando e desligam imediatamente."</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Elas odeiam aquela gravação antiga de telemarketing que fica muda 3 segundos e fala com voz metálica. O Voice AI da Nuvv usa sintetizadores neurais de ponta e dialoga de forma inteligente. Posso colocar a nossa IA para ligar no seu celular agora em 30 segundos para você ver a diferença real?"</div>
+          </div>
+        `
+      },
+
+      // 12. DATA CENTER & CO-LOCATION
+      'preco-dc': {
+        title: '📊 Tabela & Parâmetros: Data Center & Co-location',
+        badge: 'Tier III Nacional',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Serviço de Nuvem</th>
+                <th>Configuração / Espaço</th>
+                <th>Conexão & Energia</th>
+                <th>Valor Mensal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Cloud VPS NVMe</strong></td><td>2 vCPU, 4GB RAM, 80GB NVMe</td><td>Tráfego ilimitado no backbone Nuvv</td><td><span class="table-price">A partir de R$ 99,90</span></td></tr>
+              <tr><td><strong>Cloud VPS Pro</strong></td><td>4 vCPU, 8GB RAM, 160GB NVMe</td><td>IP Fixo público + Backup semanal</td><td><span class="table-price">R$ 199,90</span></td></tr>
+              <tr><td><strong>Co-location 1U</strong></td><td>Espaço de 1U em Rack Tier III</td><td>Tomada redundante (A+B) + Link 100M</td><td><span class="table-price">R$ 350,00</span></td></tr>
+              <tr><td><strong>Meio Rack / Rack Inteiro</strong></td><td>20U a 42U Dedicados</td><td>Gaiola com biometria + Circuito Metro</td><td><span class="table-price">Sob Consulta</span></td></tr>
+            </tbody>
+          </table>
+        `
+      },
+      'diff-dc': {
+        title: '⚡ Diferenciais Competitivos: Data Center Nuvv',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Conexão Direta ao Backbone Óptico Nuvv</div>
+            <div class="diff-desc">Se a empresa já usa fibra da Nuvv, o servidor no data center responde com latência praticamente zero, como se estivesse no mesmo prédio.</div>
+          </div>
+        `
+      },
+      'obj-dc': {
+        title: '🛡️ Quebra de Objeções: Data Center',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "Por que não contratar direto na AWS ou Google Cloud?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Na AWS e no Google você paga faturas imprevisíveis em dólar com cobrança de tráfego de dados (egress) que assustam o financeiro no fim do mês. Na Nuvv a fatura é 100% fixa em reais, com suporte técnico humano em português e conexão direta na sua fibra."</div>
+          </div>
+        `
+      },
+
+      // 13. ENGENHARIA DE TELECOM
+      'preco-eng': {
+        title: '📊 Capacidades de Engenharia Consultiva Nuvv',
+        badge: 'Projetos Especiais',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Capacidade Técnica</th>
+                <th>Aplicação Prática</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Fibra Apagada (Dark Fiber)</strong></td><td>Locação de infraestrutura óptica dedicada para tráfego privado e ilimitado de dados.</td></tr>
+              <tr><td><strong>Redes Metropolitanas DWDM</strong></td><td>Canais de 10G a 100 Gbps com multiplexação óptica de alta densidade.</td></tr>
+              <tr><td><strong>Dupla Abordagem Física</strong></td><td>Entrada do circuito por postes e rotas opostas para tolerância zero a acidentes na rua.</td></tr>
+              <tr><td><strong>AS-Built & Georreferenciamento</strong></td><td>Mapeamento completo da rota óptica entregue à equipe técnica do cliente.</td></tr>
+            </tbody>
+          </table>
+        `
+      },
+      'diff-eng': {
+        title: '⚡ Diferenciais Competitivos: Engenharia Nuvv',
+        badge: 'Vantagens Nuvv',
+        html: `
+          <div class="diff-item">
+            <div class="diff-title">✔ Engenheiros Próprios com Credenciamento CREA</div>
+            <div class="diff-desc">Não sublocamos obras a empreiteiras desconhecidas. A execução e a fusão de fibras são realizadas pelo corpo técnico interno da Nuvv.</div>
+          </div>
+        `
+      },
+      'obj-eng': {
+        title: '🛡️ Quebra de Objeções: Engenharia de Telecom',
+        badge: 'Argumentação',
+        html: `
+          <div class="obj-item">
+            <div class="obj-question">❓ "A Nuvv tem capacidade técnica para obras e projetos pesados de engenharia?"</div>
+            <div class="obj-answer"><strong>Resposta Consultiva:</strong> "Sim, a Nuvv possui mais de uma década de engenharia de rede construída no Alto Tietê com ASN próprio, conexão direta ao IX.br e infraestrutura óptica que atende desde órgãos públicos até grandes indústrias da região."</div>
+          </div>
+        `
+      },
+
+      // COMBOS COMPARATIVOS
+      'preco-combos': {
+        title: '📊 Comparativo de Combos Corporativos B2B',
+        badge: 'Estratégia de Alto Ticket',
+        html: `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pacote B2B</th>
+                <th>Soluções Integradas</th>
+                <th>Ticket Médio</th>
+                <th>Economia vs Avulso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Combo PME 360°</strong></td>
+                <td>Semi-Dedicado 300M + PABX 5 Ramais + Multiatendimento Pro + Social Wi-Fi</td>
+                <td><span class="table-price">R$ 689,60/mês</span></td>
+                <td><span class="badge badge-green">Economia de R$ 140/mês</span></td>
+              </tr>
+              <tr>
+                <td><strong>Combo Condomínio Blindado</strong></td>
+                <td>Fibra Portaria 400M + Interfone Virtual QR + 8 Câmeras Nuvem + Poste Inteligente</td>
+                <td><span class="table-price">R$ 558,10/mês</span></td>
+                <td><span class="badge badge-green">Elimina obras de R$ 30k</span></td>
+              </tr>
+              <tr>
+                <td><strong>Combo Clínica & Saúde</strong></td>
+                <td>Semi-Dedicado 500M + Voice AI (2.000 min) + RCS Verificado + PABX Cloud</td>
+                <td><span class="table-price">R$ 1.290,00/mês</span></td>
+                <td><span class="badge badge-green">Reduz no-show para <5%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        `
+      }
+    };
+
+    function openModal(id) {
+      const data = modalData[id];
+      if (!data) return;
+      document.getElementById('modalTitle').innerText = data.title;
+      document.getElementById('modalBadge').innerText = data.badge;
+      document.getElementById('modalBody').innerHTML = data.html;
+      modalOverlayEl.classList.add('open');
+    }
+
+    function closeModal() {
+      modalOverlayEl.classList.remove('open');
+    }
+
+    function handleBackdropClick(e) {
+      if (e.target === modalOverlayEl) {
+        closeModal();
+      }
+    }
+
+    /* Keyboard Navigation */
     document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        return;
+      }
+      if (modalOverlayEl.classList.contains('open')) return;
+
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
         e.preventDefault();
         nextSlide();
@@ -1245,11 +2619,13 @@
       }
     });
 
+    /* Touch Navigation */
     let touchStartX = 0;
     document.addEventListener('touchstart', (e) => {
       touchStartX = e.changedTouches[0].screenX;
     });
     document.addEventListener('touchend', (e) => {
+      if (modalOverlayEl.classList.contains('open')) return;
       const touchEndX = e.changedTouches[0].screenX;
       if (touchStartX - touchEndX > 50) nextSlide();
       if (touchEndX - touchStartX > 50) prevSlide();
