@@ -19,6 +19,7 @@ import {
   Building2,
   GitBranch,
   Layers,
+  Sparkles,
   ArrowRight,
   RefreshCw,
   Eye,
@@ -364,7 +365,7 @@ export const PortalColaborador: React.FC = () => {
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            <span>Manuais & Documentação (.md)</span>
+            <span>Manuais & Documentação</span>
             {docs.length > 0 && (
               <span
                 className={`text-[10px] px-1.5 py-0.2 rounded-full ${
@@ -400,8 +401,46 @@ export const PortalColaborador: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Card 1: Treinamento Residencial */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Card 1: Treinamento Geral de Produtos */}
+              <div className="bg-slate-900/70 border border-slate-800 hover:border-purple-500/50 rounded-3xl p-6 flex flex-col justify-between space-y-5 transition-all group hover:shadow-2xl hover:shadow-purple-500/10">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/15 text-purple-400 border border-purple-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider">
+                      10 SLIDES // VISÃO GERAL & COMBOS
+                    </div>
+                    <h3 className="text-xl font-bold text-white mt-1 group-hover:text-purple-300 transition-colors">
+                      Treinamento Geral
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Visão unificada de todo o portfólio Nuvv: Fibra Residencial, Conectividade PME e Dedicada,
+                    Telefonia & PABX, Segurança Guard e a Matriz Completa de Combos.
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    <span className="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300">Portfólio 360°</span>
+                    <span className="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300">Matriz de Combos</span>
+                    <span className="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300">Argumentos-Chave</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800/80">
+                  <a
+                    href="/treinamento/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-600/20"
+                  >
+                    <span>Abrir Apresentação Geral</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Card 2: Treinamento Residencial */}
               <div className="bg-slate-900/70 border border-slate-800 hover:border-cyan-500/50 rounded-3xl p-6 flex flex-col justify-between space-y-5 transition-all group hover:shadow-2xl hover:shadow-cyan-500/10">
                 <div className="space-y-4">
                   <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -569,7 +608,7 @@ export const PortalColaborador: React.FC = () => {
                       >
                         <div className="space-y-0.5 min-w-0">
                           <div className="font-semibold text-xs truncate leading-snug">{doc.title}</div>
-                          <div className="text-[10px] text-slate-500 font-mono truncate">{doc.filename}</div>
+                          <div className="text-[10px] text-slate-500 font-mono truncate">{doc.slug}</div>
                         </div>
                         <ChevronRight
                           className={`w-4 h-4 flex-shrink-0 transition-transform ${
@@ -593,7 +632,7 @@ export const PortalColaborador: React.FC = () => {
                       MANUAL OFICIAL
                     </span>
                     <span className="text-xs text-slate-400 font-mono print:text-gray-600">
-                      {selectedDoc?.filename}
+                      {selectedDoc?.slug}
                     </span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-black text-white mt-1 print:text-black">
