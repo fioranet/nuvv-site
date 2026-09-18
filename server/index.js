@@ -744,12 +744,15 @@ if (fs.existsSync(distPath)) {
   console.log(`📦 Serving static files from: ${distPath}`);
   app.use(express.static(distPath));
 
-  // SPA fallback for non-API routes
-  app.get('*', (req, res, next) => {
+  // SPA fallback for non-API routes (Express 5 compatible)
+  app.use((req, res, next) => {
     if (req.path.startsWith('/api')) {
-      return next();
+      return res.status(404).json({ error: 'Endpoint não encontrado' });
     }
-    res.sendFile(path.join(distPath, 'index.html'));
+    if (req.method === 'GET' || req.method === 'HEAD') {
+      return res.sendFile(path.join(distPath, 'index.html'));
+    }
+    next();
   });
 }
 
