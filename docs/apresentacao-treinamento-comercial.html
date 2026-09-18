@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Treinamento Comercial de Produtos — Nuvv Telecom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #5A45DE;
+      --primary-light: #7E6DFF;
+      --primary-dark: #3F2EB3;
+      --accent: #00C853;
+      --accent-light: #69F0AE;
+      --cyan: #06B6D4;
+      --amber: #F59E0B;
+      --bg: #0B0E17;
+      --bg-card: rgba(22, 27, 46, 0.75);
+      --bg-card-hover: rgba(30, 38, 66, 0.9);
+      --border: rgba(255, 255, 255, 0.1);
+      --border-accent: rgba(90, 69, 222, 0.4);
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --font-main: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* Background Ambient Glows */
+    .ambient-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(140px);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+    .glow-1 {
+      top: -15%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    }
+    .glow-2 {
+      bottom: -20%;
+      right: -10%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, #00C853 0%, transparent 70%);
+    }
+
+    /* Presentation Header & Status */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 65px;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11, 14, 23, 0.8);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-badge {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .slide-indicator {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .slide-indicator span {
+      color: var(--accent);
+    }
+    .btn-icon {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover {
+      background: var(--primary);
+      border-color: var(--primary-light);
+    }
+
+    /* Progress Bar */
+    .progress-track {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 51;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+
+    /* Slide Deck Viewport */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: calc(100vh - 65px);
+      margin-top: 65px;
+      z-index: 10;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 40px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.98);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Typography & Hierarchy */
+    .slide-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .slide-title {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #FFFFFF 30%, #CBD5E1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .slide-subtitle {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 850px;
+      line-height: 1.5;
+      margin-bottom: 30px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      align-items: center;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* Glass Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-4px);
+    }
+    .card-accent {
+      border-color: rgba(0, 200, 83, 0.35);
+      background: rgba(0, 200, 83, 0.04);
+    }
+    .card-primary {
+      border-color: rgba(90, 69, 222, 0.4);
+      background: rgba(90, 69, 222, 0.06);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(90, 69, 222, 0.2);
+      color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+    .card-icon.accent {
+      background: rgba(0, 200, 83, 0.2);
+      color: var(--accent);
+    }
+    .card-icon.amber {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--amber);
+    }
+    .card-icon.cyan {
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--cyan);
+    }
+
+    .card h3 {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .badge-purple { background: rgba(90, 69, 222, 0.25); color: #A5B4FC; }
+    .badge-green { background: rgba(0, 200, 83, 0.2); color: #69F0AE; }
+    .badge-amber { background: rgba(245, 158, 11, 0.2); color: #FCD34D; }
+
+    /* Media Box with Image Preview */
+    .media-box {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      background: #000;
+    }
+    .media-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .media-box:hover img {
+      transform: scale(1.03);
+    }
+    .media-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 16px 20px;
+      background: linear-gradient(to top, rgba(11, 14, 23, 0.95), transparent);
+      font-size: 13px;
+      color: #CBD5E1;
+    }
+
+    /* Value Highlights List */
+    .value-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .value-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: #E2E8F0;
+    }
+    .value-icon {
+      color: var(--accent);
+      font-size: 16px;
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Price Table Box */
+    .price-pill {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      margin: 10px 0;
+    }
+    .price-pill small {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+    .old-price {
+      text-decoration: line-through;
+      color: #64748B;
+      font-size: 13px;
+      margin-right: 6px;
+    }
+
+    /* Sales Script Box */
+    .script-box {
+      background: rgba(90, 69, 222, 0.1);
+      border-left: 4px solid var(--primary);
+      padding: 14px 18px;
+      border-radius: 0 10px 10px 0;
+      margin-top: 12px;
+      font-style: italic;
+      color: #E0E7FF;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .script-box strong {
+      color: var(--accent-light);
+      font-style: normal;
+    }
+
+    /* Comparison Table in Slide */
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 13px;
+    }
+    .table-custom th, .table-custom td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-custom th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+    .table-custom tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Floating Navigation Controls */
+    .bottom-nav {
+      position: fixed;
+      bottom: 20px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 50;
+    }
+    .nav-btn {
+      background: rgba(22, 27, 46, 0.85);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    /* Keybind Hint */
+    .keybind-hint {
+      position: fixed;
+      bottom: 25px;
+      left: 40px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 50;
+    }
+    .key-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Ambient -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-container">
+      <img src="/images/external/nuvv_logo_dark.png" alt="Nuvv Logo" height="28" style="filter: brightness(1.2);" onerror="this.src='/images/external/nuvv_logo.png'">
+      <div class="logo-badge">Treinamento Comercial Oficial</div>
+    </div>
+    <div class="nav-controls">
+      <div class="slide-indicator" id="slideIndicator">Slide <span id="currentSlideNum">1</span> de <span id="totalSlidesNum">17</span></div>
+      <button class="btn-icon" onclick="toggleFullScreen()" title="Tela Cheia">⛶</button>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-track">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Slides Container -->
+  <main class="deck-container">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide active" id="slide-1">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">🚀 IMERSÃO COMERCIAL 2026</div>
+          <h1 class="slide-title" style="font-size: 52px;">Do Provedor de Internet ao Ecossistema de Soluções</h1>
+          <p class="slide-subtitle">
+            Manual prático de produtos, proposta de valor, combate a objeções e estratégias de cross-sell para consultores campeões de vendas da Nuvv Telecom.
+          </p>
+          <div style="display: flex; gap: 16px; margin-top: 20px;">
+            <div class="badge badge-purple" style="font-size: 13px; padding: 8px 16px;">B2C Residencial</div>
+            <div class="badge badge-green" style="font-size: 13px; padding: 8px 16px;">B2B Corporativo</div>
+            <div class="badge badge-amber" style="font-size: 13px; padding: 8px 16px;">Condomínios & Smart Cities</div>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 420px;">
+            <img src="/images/services/business_scheduling_meet.png" alt="Equipe Nuvv Telecom" onerror="this.src='/images/hero/home_1.png'">
+            <div class="media-caption">
+              <strong>Nuvv Telecom:</strong> Conectando pessoas, impulsionando empresas e blindando condomínios.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: PRINCÍPIO FUNDAMENTAL: VALOR VS TECNOLOGIA -->
+    <section class="slide" id="slide-2">
+      <div class="slide-tag">🧠 MINDSET DO VENDEDOR CONSULTIVO</div>
+      <h2 class="slide-title">Não Vendemos Equipamentos. Vendemos Resultados.</h2>
+      <p class="slide-subtitle">
+        O cliente não quer saber o modelo do roteador ou o protocolo da fibra. Ele quer saber como a Nuvv resolve o problema dele e economiza tempo e dinheiro.
+      </p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-icon">❌</div>
+          <h3 style="color: #F87171;">O Que o Concorrente Vende</h3>
+          <p style="margin-top: 10px;">"Vendo 500 Mega de fibra óptica com roteador dual band e taxa de instalação."</p>
+          <div class="script-box" style="border-color: #EF4444; background: rgba(239, 68, 68, 0.08); color: #FCA5A5;">
+            Resultado: O cliente compara apenas por preço e fecha com o mais barato.
+          </div>
+        </div>
+        <div class="card card-accent">
+          <div class="card-icon accent">✅</div>
+          <h3 style="color: #4ADE80;">O Que o Consultor Nuvv Vende</h3>
+          <p style="margin-top: 10px;">"Entrego sua casa inteira conectada sem ponto cego com Wi-Fi 6, toda a grade de futebol e filmes para a família e médico 24h na palma da mão."</p>
+          <div class="script-box">
+            Resultado: O cliente percebe valor real, fecha combo completo e não cancela.
+          </div>
+        </div>
+        <div class="card card-primary">
+          <div class="card-icon">⚡</div>
+          <h3>A Regra de Ouro da Nuvv</h3>
+          <ul class="value-list">
+            <li class="value-item"><span class="value-icon">1.</span> <strong>Problema:</strong> Entenda a dor real do cliente</li>
+            <li class="value-item"><span class="value-icon">2.</span> <strong>Solução:</strong> Conecte o produto certo</li>
+            <li class="value-item"><span class="value-icon">3.</span> <strong>Benefício:</strong> Explique o ganho prático</li>
+            <li class="value-item"><span class="value-icon">4.</span> <strong>Resultado:</strong> Mostre a transformação</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: O ECOSSISTEMA COMPLETO -->
+    <section class="slide" id="slide-3">
+      <div class="slide-tag">🌐 MAPA DO PORTFÓLIO</div>
+      <h2 class="slide-title">O Ecossistema Integrado de Soluções</h2>
+      <p class="slide-subtitle">
+        Uma suíte completa para atender clientes do início ao fim de sua jornada digital.
+      </p>
+      <div class="grid-4">
+        <div class="card">
+          <div class="badge badge-purple">Conectividade</div>
+          <h3>Fibra & Links</h3>
+          <p>400M e 800M Wi-Fi 6 residencial, Banda Larga PME, Semi-Dedicado com IP Fixo e Link Dedicado 100% Simétrico.</p>
+        </div>
+        <div class="card">
+          <div class="badge badge-green">Comunicação</div>
+          <h3>Voz & WhatsApp</h3>
+          <p>PABX em Nuvem com ramais móveis, WhatsApp Multiagente (Multiatendimento), Voice AI e RCS Verificado Google.</p>
+        </div>
+        <div class="card">
+          <div class="badge badge-amber">Segurança</div>
+          <h3>Condomínios & Rua</h3>
+          <p>Nuvv Guard (CFTV Nuvem anti-furto de DVR, Interfone Virtual QR Code sem fio) e Poste de Monitoramento Inteligente.</p>
+        </div>
+        <div class="card">
+          <div class="badge badge-purple">Serviços Digitais</div>
+          <h3>Saúde & Mídia</h3>
+          <p>NuvvPlay Watch TV, TurboMed Telemedicina 24h, Kaspersky Plus com Safe Kids e Social Wi-Fi para captação de leads.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: FIBRA RESIDENCIAL & WI-FI 6 -->
+    <section class="slide" id="slide-4">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">🏠 B2C CORE</div>
+          <h2 class="slide-title">Internet Fibra Residencial & Wi-Fi 6</h2>
+          <p class="slide-subtitle">
+            Tecnologia FTTH pura até dentro da residência com roteadores de altíssima densidade.
+          </p>
+          <div class="grid-2" style="gap: 16px;">
+            <div class="card card-primary">
+              <div class="badge badge-purple">Mais Vendido</div>
+              <h3>Fibra 400 Mega</h3>
+              <div class="price-pill"><span class="old-price">R$ 119,90</span>R$ 99,90 <small>/mês</small></div>
+              <p>Ideal para streaming Full HD, home office e famílias de 2 a 3 pessoas.</p>
+            </div>
+            <div class="card card-accent">
+              <div class="badge badge-green">Alta Potência</div>
+              <h3>Fibra 800 Mega</h3>
+              <div class="price-pill"><span class="old-price">R$ 149,90</span>R$ 129,90 <small>/mês</small></div>
+              <p>Roteador Wi-Fi de alta capacidade, múltiplos dispositivos, 4K e games online.</p>
+            </div>
+          </div>
+          <div class="script-box">
+            <strong>Dica de Venda:</strong> "Por apenas R$ 1,00 a mais por dia (R$ 30/mês), o senhor dobra a velocidade de 400 para 800 Mega e leva um roteador parrudo que não esquenta nem trava."
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 380px;">
+            <img src="/images/services/wifi_coverage_hero.png" alt="Wi-Fi Coverage Nuvv" onerror="this.src='/images/hero/res_1.png'">
+            <div class="media-caption">
+              <strong>Wi-Fi 6 de Alta Capacidade:</strong> Conexão sem oscilações em todos os cômodos.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: COMBOS DE ENTRETENIMENTO NUVVPLAY -->
+    <section class="slide" id="slide-5">
+      <div class="slide-tag">📺 ENTRETENIMENTO & STREAMING</div>
+      <h2 class="slide-title">NuvvPlay (Watch): A TV que o Cliente Leva Onde For</h2>
+      <p class="slide-subtitle">
+        Até 99 canais ao vivo, filmes, séries e os maiores esportes do mundo em um único app sem decodificador trambolho.
+      </p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="badge badge-purple">Básico & Essencial</div>
+          <h3>Hub Play & Power Play</h3>
+          <p>De 28 a 68 canais com <strong>Canais Globo</strong>, Sony One, Universal+ e Awdio inclusos.</p>
+          <div class="price-pill">R$ 109,80 <small>a R$ 129,80/mês</small></div>
+          <ul class="value-list">
+            <li class="value-item"><span class="value-icon">✔</span> App nativo para Smart TV e celular</li>
+            <li class="value-item"><span class="value-icon">✔</span> Elimina custos com TV a cabo cara</li>
+          </ul>
+        </div>
+        <div class="card card-accent">
+          <div class="badge badge-green">Futebol & UFC</div>
+          <h3>Power Seleção Esportes</h3>
+          <p>93 canais ao vivo com <strong>Premiere</strong> (Brasileirão Séries A e B) e <strong>Combate</strong> inclusos.</p>
+          <div class="price-pill">R$ 159,80 <small>/mês (com 400M)</small></div>
+          <ul class="value-list">
+            <li class="value-item"><span class="value-icon">✔</span> Todos os jogos do time de coração</li>
+            <li class="value-item"><span class="value-icon">✔</span> Mais de 40% de economia vs. Premiere avulso</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="badge badge-amber">Cinema & Família</div>
+          <h3>Completão Família</h3>
+          <p>O pacote definitivo: 99 canais + <strong>Premiere + Combate + Telecine + HBO Max</strong>.</p>
+          <div class="price-pill">R$ 189,80 <small>/mês (com 400M)</small></div>
+          <ul class="value-list">
+            <li class="value-item"><span class="value-icon">✔</span> Estreias do cinema e campeonatos europeus</li>
+            <li class="value-item"><span class="value-icon">✔</span> Entretenimento completo para todas as idades</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: SAÚDE & CIBERSEGURANÇA -->
+    <section class="slide" id="slide-6">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">🛡️ PROTEÇÃO & CUIDADO</div>
+          <h2 class="slide-title">TurboMed e Kaspersky: Os Super Add-ons</h2>
+          <p class="slide-subtitle">
+            Serviços essenciais que transformam a Nuvv em indispensável dentro da casa do cliente.
+          </p>
+          <div class="card" style="margin-bottom: 16px;">
+            <div class="badge badge-green">Saúde sem Filas</div>
+            <h3>TurboMed Telemedicina 24h</h3>
+            <p>Consultas médicas com clínico geral e 19 especialidades em até 10 minutos pelo celular, sem limite de uso.</p>
+            <div class="price-pill">R$ 9,90 <small>Indiv.</small> | R$ 19,90 <small>Familiar/mês</small></div>
+            <div class="script-box">
+              <strong>Argumento:</strong> "Quanto custa um Uber e 4 horas numa fila de pronto-socorro para pegar uma receita? Por R$ 19,90 a família toda se consulta de casa 24 horas por dia."
+            </div>
+          </div>
+          <div class="card">
+            <div class="badge badge-purple">Segurança Digital</div>
+            <h3>Kaspersky Plus + Safe Kids</h3>
+            <p>5 a 10 aparelhos protegidos contra vírus, golpes de Pix, VPN ilimitada e rastreamento GPS dos filhos.</p>
+            <div class="price-pill">R$ 9,90 <small>(5 disp.)</small> | R$ 15,90 <small>(10 disp.)/mês</small></div>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 420px;">
+            <img src="/images/services/security_hero.png" alt="Segurança Nuvv" onerror="this.src='/images/hero/home_2.png'">
+            <div class="media-caption">
+              <strong>Proteção Total:</strong> Cuidando da saúde física e da blindagem digital da família.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: CONECTIVIDADE CORPORATIVA B2B -->
+    <section class="slide" id="slide-7">
+      <div class="slide-tag">🏢 B2B ESSENCIAL</div>
+      <h2 class="slide-title">Conectividade Empresarial: A Conexão que Não Para</h2>
+      <p class="slide-subtitle">
+        Não venda plano residencial para CNPJ. Conheça as três armas de conectividade corporativa da Nuvv:
+      </p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="badge badge-purple">PME & Lojas</div>
+          <h3>Banda Larga PME</h3>
+          <p>Prioridade de tráfego superior ao residencial, Wi-Fi Plus corporativo e 1 Linha Fixa Ilimitada Brasil inclusa.</p>
+          <div class="price-pill">A partir de R$ 99,90 <small>/mês</small></div>
+          <ul class="value-list">
+            <li class="value-item"><span class="value-icon">✔</span> 400M, 800M ou 1 Giga</li>
+            <li class="value-item"><span class="value-icon">✔</span> SLA 48h / Atendimento PJ</li>
+          </ul>
+        </div>
+        <div class="card card-accent">
+          <div class="badge badge-green">Alta Estabilidade</div>
+          <h3>Link Semi-Dedicado</h3>
+          <p><strong>1 IP Fixo IPv4 Público</strong> incluso, 80% de garantia de banda (CIR) e SLA ágil de 12 horas.</p>
+          <div class="price-pill">A partir de R$ 199,90 <small>/mês</small></div>
+          <ul class="value-list">
+            <li class="value-item"><span class="value-icon">✔</span> Perfeito para PDVs, VPNs e CFTV</li>
+            <li class="value-item"><span class="value-icon">✔</span> 300M, 500M e 700M</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="badge badge-amber">Missão Crítica</div>
+          <h3>Link Dedicado Carrier-Grade</h3>
+          <p>100% Simétrico Real (1:1), Bloco de IPs (/29, /28), BGP com ASN próprio, conexão IX.br e <strong>SLA de 4 horas</strong>.</p>
+          <div class="price-pill">Sob Consulta <small>(Projeto Especial)</small></div>
+          <ul class="value-list">
+            <li class="value-item"><span class="value-icon">✔</span> 99,9% Uptime contratual</li>
+            <li class="value-item"><span class="value-icon">✔</span> Monitoramento NOC 24/7 proativo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: TELEFONIA DIGITAL & PABX EM NUVEM -->
+    <section class="slide" id="slide-8">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">📞 VOZ CORPORATIVA</div>
+          <h2 class="slide-title">PABX em Nuvem: Modernidade Sem Aparelho Velho</h2>
+          <p class="slide-subtitle">
+            Acabe com fiações oxidadas e centrais de parede caras. A telefonia corporativa da Nuvv funciona no computador e no celular.
+          </p>
+          <div class="card card-primary" style="margin-bottom: 16px;">
+            <h3>Recursos que Encantam o Cliente:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">✔</span> <strong>URA Inteligente com Áudio Profissional:</strong> "Digite 1 para Vendas..."</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Gravação de 100% das Chamadas na Nuvem:</strong> Segurança jurídica</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Ramais Móveis:</strong> O ramal da empresa toca no celular do vendedor na rua</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Portabilidade Gratuita:</strong> Mantém o mesmo número fixo de 15 anos</li>
+            </ul>
+          </div>
+          <div class="grid-2" style="gap: 12px;">
+            <div class="card">
+              <div class="badge badge-purple">PABX 2 a 5 Ramais</div>
+              <div class="price-pill" style="font-size: 20px;">R$ 59,90 <small>a R$ 129,90/mês</small></div>
+              <p>Pequenos negócios e escritórios.</p>
+            </div>
+            <div class="card card-accent">
+              <div class="badge badge-green">PABX 10 Ramais (Top)</div>
+              <div class="price-pill" style="font-size: 20px;">R$ 249,90 <small>/mês</small></div>
+              <p>Clínicas, médias empresas e comércio.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 420px;">
+            <img src="/images/services/telephony_sip_hero.png" alt="PABX em Nuvem Nuvv" onerror="this.src='/images/services/office_1.png'">
+            <div class="media-caption">
+              <strong>Mobilidade Total:</strong> Telefone IP físico, computador ou smartphone integrados.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: VOICE AI & RCS VERIFICADO -->
+    <section class="slide" id="slide-9">
+      <div class="slide-tag">🤖 INOVAÇÃO & IA</div>
+      <h2 class="slide-title">Voice AI & RCS: A Nova Era do Atendimento</h2>
+      <p class="slide-subtitle">
+        Elimine o custo com equipes manuais de discagem e o medo de golpes em mensagens comuns.
+      </p>
+      <div class="grid-2">
+        <div class="card card-accent">
+          <div class="card-icon accent">🎙️</div>
+          <h3>Voice AI (Agente Virtual de Voz)</h3>
+          <p>IA com voz ultrarrealista em português que liga, entende respostas e agenda compromissos.</p>
+          <ul class="value-list" style="margin-top: 14px;">
+            <li class="value-item"><span class="value-icon">✔</span> <strong>Confirmação de Consultas:</strong> Reduz faltas de pacientes em até 80%</li>
+            <li class="value-item"><span class="value-icon">✔</span> <strong>Cobrança Amigável:</strong> Lembra vencimentos e negocia débitos</li>
+            <li class="value-item"><span class="value-icon">✔</span> <strong>Pesquisa NPS:</strong> Coleta notas de atendimento na hora</li>
+          </ul>
+          <div class="price-pill" style="font-size: 18px; margin-top: 16px;">
+            A partir de R$ 0,39 <small>/ minuto falado com sucesso</small>
+          </div>
+        </div>
+        <div class="card card-primary">
+          <div class="card-icon">💬</div>
+          <h3>RCS Corporativo Verificado</h3>
+          <p>O substituto oficial do SMS com o selo verde de verificação do Google e botões interativos.</p>
+          <ul class="value-list" style="margin-top: 14px;">
+            <li class="value-item"><span class="value-icon">✔</span> <strong>35x Mais Engajamento:</strong> Fotos, carrosséis e botões de ação rápida</li>
+            <li class="value-item"><span class="value-icon">✔</span> <strong>Anti-Golpe:</strong> Cliente vê o nome oficial da empresa e confia</li>
+            <li class="value-item"><span class="value-icon">✔</span> <strong>98% de Taxa de Leitura:</strong> Lido nos primeiros 3 minutos</li>
+          </ul>
+          <div class="price-pill" style="font-size: 18px; margin-top: 16px;">
+            A partir de R$ 0,085 <small>/ mensagem entregue</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: MULTIATENDIMENTO OMNICHANNEL -->
+    <section class="slide" id="slide-10">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">💬 WHATSAPP MULTIAGENTE</div>
+          <h2 class="slide-title">Multiatendimento: Toda a Equipe em 1 Número</h2>
+          <p class="slide-subtitle">
+            Acabe com o caos de vários celulares na empresa e funcionários levando contatos de clientes embora.
+          </p>
+          <div class="card" style="margin-bottom: 16px;">
+            <div class="badge badge-green">Recurso Exclusivo</div>
+            <h3>Coexistência WhatsApp Oficial</h3>
+            <p>Use a plataforma no computador e continue olhando o WhatsApp no celular ao mesmo tempo sem desconexões.</p>
+          </div>
+          <div class="grid-2" style="gap: 12px;">
+            <div class="card">
+              <div class="badge badge-purple">Plano Essencial</div>
+              <h3>Até 3 Atendentes</h3>
+              <div class="price-pill" style="font-size: 20px;">R$ 149,90 <small>/mês</small></div>
+              <p>1 WhatsApp, CRM Kanban e menus automáticos.</p>
+            </div>
+            <div class="card card-accent">
+              <div class="badge badge-green">Plano Pro (Mais Vendido)</div>
+              <h3>Até 10 Atendentes + IA</h3>
+              <div class="price-pill" style="font-size: 20px;">R$ 299,90 <small>/mês</small></div>
+              <p>Agente GPT, Instagram Direct e automações.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 400px;">
+            <img src="/images/services/multiatendimento_hero.png" alt="Multiatendimento WhatsApp" onerror="this.src='/images/services/smart_communication.png'">
+            <div class="media-caption">
+              <strong>CRM Kanban Integrado:</strong> Arraste conversas pelo funil de vendas em tempo real.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: SOCIAL WI-FI MARKETING -->
+    <section class="slide" id="slide-11">
+      <div class="grid-2">
+        <div>
+          <div class="media-box" style="height: 400px;">
+            <img src="/images/services/social_wifi_hero.png" alt="Social Wi-Fi Marketing" onerror="this.src='/images/services/wifi_1.png'">
+            <div class="media-caption">
+              <strong>Captive Portal Personalizado:</strong> Sua marca na tela de todo cliente que conecta.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="slide-tag">🎯 MARKETING NO VAREJO</div>
+          <h2 class="slide-title">Social Wi-Fi: A Senha que Vende</h2>
+          <p class="slide-subtitle">
+            Transforme o Wi-Fi gratuito que o comércio oferece em uma máquina automática de captação de clientes.
+          </p>
+          <div class="card card-accent" style="margin-bottom: 16px;">
+            <h3>Como Funciona o Fluxo Lucrativo:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">1.</span> <strong>Login sem Senha:</strong> Cliente entra via WhatsApp, Google ou Instagram.</li>
+              <li class="value-item"><span class="value-icon">2.</span> <strong>Captura LGPD:</strong> Coleta nome, WhatsApp, e-mail e data de aniversário.</li>
+              <li class="value-item"><span class="value-icon">3.</span> <strong>Automações:</strong> Mensagem de boas-vindas e cupom no aniversário.</li>
+              <li class="value-item"><span class="value-icon">4.</span> <strong>Google Reviews:</strong> Convida o cliente a avaliar com 5 estrelas no Google Maps.</li>
+            </ul>
+          </div>
+          <div class="price-pill">
+            Apenas R$ 59,90 <small>/mês (Plano 50 conexões simultâneas)</small>
+          </div>
+          <div class="script-box">
+            <strong>Argumento Matador:</strong> "Em vez de gastar R$ 500 em panfleto, por R$ 59 você cria uma base própria com centenas de clientes que já visitam a sua loja para mandar promoções pelo WhatsApp."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: NUVV GUARD (SEGURANÇA CONDOMINIAL) -->
+    <section class="slide" id="slide-12">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">🛡️ CONDOMÍNIOS & CASAS</div>
+          <h2 class="slide-title">Nuvv Guard: Segurança Sem Fio Que Não Quebra</h2>
+          <p class="slide-subtitle">
+            A solução que síndicos e moradores amam: elimina interfones mudos e protege gravações de câmeras.
+          </p>
+          <div class="card" style="margin-bottom: 14px;">
+            <div class="badge badge-purple">Adeus Fiação Antiga</div>
+            <h3>Interfone Virtual por QR Code</h3>
+            <p>Visitante aponta a câmera e o interfone toca com chamada de vídeo no celular do morador onde quer que ele esteja.</p>
+            <div class="price-pill" style="font-size: 18px;">
+              Taxa única R$ 79,90 | <strong>Mensalidade R$ 0,00</strong> <small>(para clientes de fibra Nuvv)</small>
+            </div>
+          </div>
+          <div class="card card-accent">
+            <div class="badge badge-green">Blindagem Anti-Furto</div>
+            <h3>CFTV em Nuvem (3 a 30 Dias)</h3>
+            <p>Se o criminoso arrombar a guarita e roubar o aparelho DVR, todas as imagens continuam 100% salvas na nuvem.</p>
+            <div class="price-pill" style="font-size: 18px;">
+              Apenas R$ 19,90/mês <small>(Câmera própria)</small> ou R$ 44,90/mês <small>(Comodato Full HD incluso)</small>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="media-box" style="height: 420px;">
+            <img src="/images/guard/interfone-virtual-showcase.jpg" alt="Interfone Virtual Nuvv" onerror="this.src='/images/guard/camera-outdoor-showcase.jpg'">
+            <div class="media-caption">
+              <strong>Interfone no Smartphone:</strong> Atenda entregadores e visitantes de qualquer lugar.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: POSTE DE MONITORAMENTO INTELIGENTE -->
+    <section class="slide" id="slide-13">
+      <div class="grid-2">
+        <div>
+          <div class="media-box" style="height: 420px;">
+            <img src="/images/services/poste_monitoramento.png" alt="Poste Nuvv Vision" onerror="this.src='/images/services/poste_nuvv_condominio.jpg'">
+            <div class="media-caption">
+              <strong>Poste Nuvv Vision:</strong> Presença ostensiva e inteligência urbana perimetral.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="slide-tag">🏙️ SMART CITIES & VIZINHANÇA</div>
+          <h2 class="slide-title">Poste de Monitoramento Inteligente</h2>
+          <p class="slide-subtitle">
+            Não é uma câmera num cano. É uma Estação Autônoma de Segurança Perimetral de alta inibição criminal.
+          </p>
+          <div class="card card-primary" style="margin-bottom: 16px;">
+            <h3>Diferenciais Estratégicos:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Leitura de Placas (LPR):</strong> Registra veículos que entram e saem da rua</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Câmeras 360° e Iluminação LED:</strong> Sem pontos cegos nem escuridão</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Botão de Pânico com Viva-Voz:</strong> Socorro imediato em emergências</li>
+              <li class="value-item"><span class="value-icon">✔</span> <strong>Fibra Nuvv + Nobreak:</strong> Grava mesmo se faltar energia na rua</li>
+            </ul>
+          </div>
+          <div class="script-box">
+            <strong>Modelo de Venda Vizinhança Solidária:</strong> "Dividindo o custo do poste entre 15 a 20 vizinhos da rua, fica menos de uma pizza por mês por casa para ter a rua inteira vigiada no celular antes de entrar na garagem."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: ESTRATÉGIA DE COMBOS (CROSS-SELL) -->
+    <section class="slide" id="slide-14">
+      <div class="slide-tag">💰 TÉCNICA DE AUMENTO DE TICKET</div>
+      <h2 class="slide-title">A Arte dos Combos: Como Vender Mais por Cliente</h2>
+      <p class="slide-subtitle">
+        Nunca feche uma venda oferecendo apenas um produto isolado. Apresente o combo como uma solução integrada.
+      </p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="badge badge-purple">Combo Residencial Campeão</div>
+          <h3>Família Protegida & Conectada</h3>
+          <ul class="value-list" style="margin-top: 10px;">
+            <li class="value-item"><span class="value-icon">1.</span> Fibra 800 Mega com Wi-Fi 6 de Alta Capacidade</li>
+            <li class="value-item"><span class="value-icon">2.</span> NuvvPlay Combo Completo (Premiere + Combate + Globo)</li>
+            <li class="value-item"><span class="value-icon">3.</span> TurboMed Telemedicina 24h Familiar</li>
+            <li class="value-item"><span class="value-icon">4.</span> Kaspersky Proteção Família (5 aparelhos protegidos)</li>
+          </ul>
+          <div class="price-pill" style="color: var(--accent-light); margin-top: 16px;">
+            R$ 218,60 <small>/mês</small>
+          </div>
+          <p style="font-size: 12px; color: #CBD5E1;">O cliente economizaria R$ 130 se comprasse tudo separado no cartão.</p>
+        </div>
+        <div class="card card-accent">
+          <div class="badge badge-green">Combo Empresarial PME</div>
+          <h3>Empresa Moderna 360°</h3>
+          <ul class="value-list" style="margin-top: 10px;">
+            <li class="value-item"><span class="value-icon">1.</span> Link Semi-Dedicado 300M (com 1 IP Fixo IPv4)</li>
+            <li class="value-item"><span class="value-icon">2.</span> PABX em Nuvem 5 Ramais com URA Inteligente</li>
+            <li class="value-item"><span class="value-icon">3.</span> Multiatendimento WhatsApp Pro (10 atendentes + IA)</li>
+            <li class="value-item"><span class="value-icon">4.</span> Social Wi-Fi 50 (Captura de Leads e Google Reviews)</li>
+          </ul>
+          <div class="price-pill" style="color: #69F0AE; margin-top: 16px;">
+            R$ 689,60 <small>/mês</small>
+          </div>
+          <p style="font-size: 12px; color: #CBD5E1;">A empresa resolve internet, telefonia, WhatsApp e marketing num só contrato.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15: MANUAL DE OBJEÇÕES -->
+    <section class="slide" id="slide-15">
+      <div class="slide-tag">🛡️ MATANDO OBJEÇÕES</div>
+      <h2 class="slide-title">Como o Consultor Nuvv Rebate as Desculpas Comuns</h2>
+      <p class="slide-subtitle">
+        Objeção não é recusa; é pedido de mais informação. Aprenda as respostas certas:
+      </p>
+      <div class="grid-3">
+        <div class="card">
+          <h3 style="color: var(--amber);">"Achei caro, tem outro mais barato."</h3>
+          <p style="margin-top: 8px;"><strong>Resposta:</strong> "Entendo sua preocupação com o preço. Mas o barato sai caro quando a internet cai no meio da reunião ou no final de semana. Na Nuvv você tem fibra pura, Wi-Fi 6 de verdade e suporte que te atende pelo WhatsApp em 2 minutos. Quanto vale a sua tranquilidade?"</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--cyan);">"Já tenho plano na Vivo/Claro."</h3>
+          <p style="margin-top: 8px;"><strong>Resposta:</strong> "Excelente operadora! Mas quando você precisa de suporte ou quer falar sobre a sua fatura, você consegue falar direto com quem resolve ou fica 40 minutos ouvindo música? Na Nuvv nós somos daqui, com equipe própria e suporte humanizado rápido."</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--accent);">"Vou pensar e te retorno depois."</h3>
+          <p style="margin-top: 8px;"><strong>Resposta:</strong> "Perfeito! Só para eu entender: o que falta para fecharmos agora? É a velocidade, o valor ou alguma dúvida do combo? Nossa rota nessa rua está com taxa de instalação gratuita apenas para este lote de ativação desta semana."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16: CHECKLIST DE FECHAMENTO -->
+    <section class="slide" id="slide-16">
+      <div class="grid-2">
+        <div>
+          <div class="slide-tag">📋 AGILIDADE OPERACIONAL</div>
+          <h2 class="slide-title">Checklist de Fechamento & Implantação</h2>
+          <p class="slide-subtitle">
+            Contrato bem cadastrado é instalação rápida e cliente satisfeito desde o primeiro dia.
+          </p>
+          <div class="card card-primary">
+            <h3>Checklist Obrigatório no Hubsoft:</h3>
+            <ul class="value-list">
+              <li class="value-item"><span class="value-icon">☑</span> <strong>Dados Pessoais/CNPJ:</strong> CPF/CNPJ válidos e nome completo da mãe</li>
+              <li class="value-item"><span class="value-icon">☑</span> <strong>Endereço Preciso:</strong> CEP, rua, número, bloco, apto e ponto de referência</li>
+              <li class="value-item"><span class="value-icon">☑</span> <strong>E-mail Ativo:</strong> Fundamental para envio de faturas e ativação de apps (Watch/Kaspersky)</li>
+              <li class="value-item"><span class="value-icon">☑</span> <strong>Telefones de Contato:</strong> WhatsApp principal + telefone de recado</li>
+              <li class="value-item"><span class="value-icon">☑</span> <strong>Data e Período:</strong> Manhã (08h às 12h) ou Tarde (13h às 18h)</li>
+              <li class="value-item"><span class="value-icon">☑</span> <strong>Portabilidade Telefônica:</strong> Anexar cópia legível da última fatura da concorrente</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="card card-accent" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+            <div class="badge badge-green">Pós-Venda que Fideliza</div>
+            <h3>O Roteiro dos 3 Dias</h3>
+            <p style="margin-top: 12px; font-size: 15px; line-height: 1.6;">
+              <strong>Dia 1 (Instalação):</strong> Mande mensagem no WhatsApp dando boas-vindas e confirmando que o técnico finalizou.<br><br>
+              <strong>Dia 3 (Checagem):</strong> Pergunte se a velocidade e o Wi-Fi estão atendendo as expectativas.<br><br>
+              <strong>Dia 15 (Indicação):</strong> Peça 2 indicações de amigos ou vizinhos. Um cliente satisfeito é a sua melhor fonte de novos contratos!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 17: ENCERRAMENTO -->
+    <section class="slide" id="slide-17">
+      <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+        <div class="slide-tag" style="justify-content: center;">🏆 VAMOS PRA CIMA!</div>
+        <h1 class="slide-title" style="font-size: 56px; margin-bottom: 20px;">Você É a Voz e a Força da Nuvv Telecom</h1>
+        <p class="slide-subtitle" style="margin: 0 auto 36px auto;">
+          Conhecimento técnico dá segurança. Segurança gera confiança. E confiança fecha contratos de alto valor. Use os manuais de produtos e boas vendas!
+        </p>
+        <div style="display: flex; justify-content: center; gap: 20px;">
+          <button class="nav-btn" onclick="goToSlide(1)" style="background: var(--primary); padding: 14px 28px; font-size: 15px;">
+            🔄 Reiniciar Apresentação
+          </button>
+        </div>
+        <div style="margin-top: 40px; color: var(--text-muted); font-size: 13px;">
+          Documento elaborado para treinamento interno da equipe de vendas da Nuvv Telecom • 2026
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Floating Nav Controls -->
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="prevSlide()">◀ Anterior</button>
+    <button class="nav-btn" onclick="nextSlide()" style="background: var(--primary);">Próximo ▶</button>
+  </div>
+
+  <!-- Keybind Hint -->
+  <div class="keybind-hint">
+    <span>Navegação:</span>
+    <span><span class="key-badge">◄</span> <span class="key-badge">►</span> Setas</span>
+    <span><span class="key-badge">Espaço</span> Avançar</span>
+    <span><span class="key-badge">F</span> Tela Cheia</span>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 17;
+
+    const currentSlideNumEl = document.getElementById('currentSlideNum');
+    const totalSlidesNumEl = document.getElementById('totalSlidesNum');
+    const progressBarEl = document.getElementById('progressBar');
+
+    totalSlidesNumEl.innerText = totalSlides;
+
+    function updateSlide() {
+      // Toggle active class
+      document.querySelectorAll('.slide').forEach((slide, idx) => {
+        if (idx + 1 === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      // Update counters
+      currentSlideNumEl.innerText = currentSlide;
+      const progressPercent = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+      progressBarEl.style.width = progressPercent + '%';
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(n) {
+      if (n >= 1 && n <= totalSlides) {
+        currentSlide = n;
+        updateSlide();
+      }
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullScreen();
+      } else if (e.key === 'Home') {
+        goToSlide(1);
+      } else if (e.key === 'End') {
+        goToSlide(totalSlides);
+      }
+    });
+
+    // Touch swipe support for tablets / touch monitors
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 50) nextSlide();
+      if (touchEndX - touchStartX > 50) prevSlide();
+    });
+
+    // Initialize
+    updateSlide();
+  </script>
+</body>
+</html>
