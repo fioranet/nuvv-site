@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { SEO } from '../components/common/SEO';
+import { siteConfig } from '../data/siteConfig';
 import {
   FileText,
   QrCode,
@@ -548,7 +549,7 @@ export const SegundaVia: React.FC = () => {
               </p>
             </div>
             <a
-              href="https://wa.me/551147414000?text=Olá,%20preciso%20de%20ajuda%20com%20uma%20fatura%20Nuvv"
+              href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá, preciso de ajuda com uma fatura Nuvv')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center space-x-1.5 text-xs font-extrabold text-emerald-700 hover:text-emerald-800 pt-1"

@@ -143,7 +143,7 @@ export const FeasibilityEngine = {
         coordinates: coords,
         availablePlans,
         headline: 'Viabilidade Técnica Confirmada!',
-        message: apiRes.message || `Excelente notícia! Seu endereço está 100% dentro da nossa área de cobertura para ${serviceTitle}. Fibra óptica disponível para instalação imediata.`,
+        message: apiRes.message || `Excelente notícia! Temos cobertura de Fibra Óptica de ultravelocidade para o seu endereço. Planos disponíveis para instalação imediata.`,
       };
     }
 
@@ -161,8 +161,8 @@ export const FeasibilityEngine = {
         address: addressData,
         coordinates: coords,
         availablePlans,
-        headline: 'Em Análise Técnica / Extensão Próxima',
-        message: apiRes.message || `Seu endereço está a apenas ${distanceMeters}m da nossa rede ativa. Nossa engenharia verificará a viabilidade de atendimento imediato.`,
+        headline: 'Consulta em Análise Técnica',
+        message: apiRes.message || `Seu endereço foi encaminhado para análise técnica da nossa equipe para verificar as condições de atendimento.`,
       };
     }
 
@@ -181,8 +181,8 @@ export const FeasibilityEngine = {
         address: addressData,
         coordinates: coords,
         availablePlans,
-        headline: 'Estudo de Viabilidade Especial Corporativa',
-        message: apiRes.message || `Para conexões corporativas (Link Dedicado e Semi-Dedicado), nossa engenharia elabora projetos especiais de extensão de fibra e anel óptico sob medida.`,
+        headline: 'Projeto Corporativo sob Medida',
+        message: apiRes.message || `Para empresas e links corporativos, nossa engenharia desenvolve projetos personalizados de atendimento sob medida.`,
       };
     }
 
@@ -200,7 +200,7 @@ export const FeasibilityEngine = {
       coordinates: coords,
       availablePlans: [],
       headline: 'Área em Expansão de Rede',
-      message: apiRes.message || `Ainda não temos cabeamento residencial ativo neste ponto exato (${distanceMeters > 0 ? `rede mais próxima a ${(distanceMeters / 1000).toFixed(1)} km` : 'fora da mancha atual'}). Cadastre-se na lista de espera prioritária para ser avisado assim que expandirmos!`,
+      message: apiRes.message || `No momento ainda não identificamos disponibilidade imediata para este endereço. Registramos seu contato com prioridade para expansões futuras.`,
     };
   },
 };

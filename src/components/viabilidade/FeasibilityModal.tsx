@@ -712,16 +712,10 @@ export const FeasibilityModal: React.FC<FeasibilityModalProps> = ({
                       <p className="text-xs opacity-90 mt-0.5">
                         {street ? `${street}${number ? `, ${number}` : ''} - ${neighborhood}, ${city}` : city}
                       </p>
-                      {result.matchedZone && (
-                        <div className="mt-1.5 inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-md bg-white/70 border border-current text-[10px] font-bold">
-                          <span>Mancha Atendida:</span>
-                          <span className="font-extrabold">{result.matchedZone}</span>
-                        </div>
-                      )}
-                      {!result.isAvailable && result.distanceMeters > 0 && (
-                        <div className="mt-1 text-[11px] text-gray-600 font-semibold">
-                          Distância até a mancha mais próxima: <strong>{result.distanceMeters > 1000 ? `${(result.distanceMeters / 1000).toFixed(1)} km` : `${result.distanceMeters}m`}</strong>
-                        </div>
+                      {result.message && (
+                        <p className="text-xs font-medium opacity-95 mt-1">
+                          {result.message}
+                        </p>
                       )}
                     </div>
                   </div>

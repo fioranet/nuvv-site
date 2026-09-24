@@ -474,6 +474,15 @@ app.post('/api/viability/check', async (req, res) => {
       }).catch(console.error);
     }
 
+    let userFriendlyMessage = '';
+    if (status === 'VIAVEL') {
+      userFriendlyMessage = 'Viabilidade Confirmada! Temos cobertura de Fibra Óptica de ultravelocidade para o seu endereço.';
+    } else if (status === 'EM_ANALISE') {
+      userFriendlyMessage = 'Endereço em estudo de viabilidade técnica pela nossa equipe.';
+    } else {
+      userFriendlyMessage = 'No momento não identificamos cobertura imediata para este endereço.';
+    }
+
     res.json({
       success: true,
       query_id: info.lastInsertRowid,
@@ -487,7 +496,7 @@ app.post('/api/viability/check', async (req, res) => {
       all_matched_polygons: externalRes.all_matched_polygons || [],
       distance_to_nearest_meters: distanceMeters,
       consulted_layers: externalRes.consulted_layers || [configuredLayer],
-      message: externalRes.message || '',
+      message: userFriendlyMessage,
     });
   } catch (err) {
     console.error('❌ Erro no endpoint /api/viability/check:', err);

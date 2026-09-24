@@ -18,7 +18,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'faq-2',
     category: 'financeiro',
     question: 'Como emito a 2ª via do boleto ou código Pix?',
-    answer: 'Você pode emitir sua fatura atualizada em menos de 1 minuto acessando a Área do Cliente em nosso site ou solicitando diretamente pelo WhatsApp no número (11) 99999-9999 informando seu CPF/CNPJ.',
+    answer: 'Você pode emitir sua fatura atualizada em menos de 1 minuto acessando a Área do Cliente em nosso site ou solicitando diretamente pelo WhatsApp no número 0800 800 6888 informando seu CPF/CNPJ.',
     keywords: ['2 via', 'segunda via', 'boleto', 'pix', 'fatura', 'pagamento', 'debito', 'vencimento', 'financeiro'],
   },
   {
