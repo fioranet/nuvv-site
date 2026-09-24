@@ -103,16 +103,14 @@
 
 ---
 
-## 5. Próximo Passo: Ativação do Certificado SSL (HTTPS)
+## 5. Ativação do Certificado SSL (HTTPS) — Concluído com Sucesso ✅
 
-Assim que as entradas de DNS do domínio estiverem apontadas para o servidor:
+O apontamento de DNS foi propagado e o certificado SSL/TLS Let's Encrypt foi instalado e validado com sucesso.
 
-1. **Configuração DNS:**
-   - Tipo **A**: `nuvv.com.br` ➔ `200.6.48.3`
-   - Tipo **A** ou **CNAME**: `www.nuvv.com.br` ➔ `200.6.48.3`
-2. **Comando de Emissão SSL:**
-   Conecte-se via SSH na VPS e execute:
-   ```bash
-   sudo certbot --nginx -d nuvv.com.br -d www.nuvv.com.br
-   ```
-   O Certbot configurará os certificados Let's Encrypt, o redirecionamento automático de HTTP para HTTPS e agendará a renovação automática periódica.
+1. **Domínios Cobertos:** `nuvv.com.br` e `www.nuvv.com.br`
+2. **Emissor:** Let's Encrypt Authority (Certbot 2.9.0 com plugin `python3-certbot-nginx`)
+3. **Caminhos dos Certificados:**
+   - Certificado: `/etc/letsencrypt/live/nuvv.com.br/fullchain.pem`
+   - Chave Privada: `/etc/letsencrypt/live/nuvv.com.br/privkey.pem`
+4. **Redirecionamento Automático:** Todas as requisições em porta 80 (`http://`) são redirecionadas com status `301 Moved Permanently` para `https://`.
+5. **Renovação Automática:** Configurada via `certbot.timer` do systemd.
