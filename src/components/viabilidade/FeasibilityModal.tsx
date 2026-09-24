@@ -268,24 +268,23 @@ export const FeasibilityModal: React.FC<FeasibilityModalProps> = ({
         city: data.address?.city,
         state: data.address?.state,
         number: data.address?.number,
+        name: name.trim(),
+        phone: phone.trim(),
       });
 
       setResult(res);
 
-      apiService.logViabilityQuery({
-        name: name.trim(),
-        phone: phone.trim(),
-        cep: (data.address?.cep || 'GPS').replace(/\D/g, ''),
-        street: data.address?.street || '',
-        number: data.address?.number || '',
-        neighborhood: data.address?.neighborhood || '',
-        city: data.address?.city || city,
-        state: data.address?.state || 'SP',
-        service_type: selectedService,
-        has_feasibility: res.isAvailable,
-        plan_interested: res.availablePlans?.[0]?.name,
-        notes: `GPS | Zona: ${res.matchedZone || 'Fora da Mancha'}`,
-      });
+      if (res.queryId) {
+        apiService.logViabilityQuery({
+          query_id: res.queryId,
+          name: name.trim(),
+          phone: phone.trim(),
+          plan_interested: res.availablePlans?.[0]?.name,
+          notes: `GPS | Zona: ${res.matchedZone || 'Fora da Mancha'} | Distância: ${res.distanceMeters}m`,
+          has_feasibility: res.isAvailable,
+          cep: (data.address?.cep || 'GPS').replace(/\D/g, ''),
+        });
+      }
     } else {
       alert('Não foi possível obter sua localização GPS. Digite o CEP ou endereço.');
     }
@@ -319,24 +318,24 @@ export const FeasibilityModal: React.FC<FeasibilityModalProps> = ({
         neighborhood,
         city,
         state,
+        name: name.trim(),
+        phone: phone.trim(),
+        notes: complement ? `Complemento: ${complement}` : undefined,
       });
 
       setResult(res);
 
-      apiService.logViabilityQuery({
-        name: name.trim(),
-        phone: phone.trim(),
-        cep: cep.replace(/\D/g, '') || 'S/CEP',
-        street: street || '',
-        number: number || '',
-        neighborhood: neighborhood || '',
-        city: city || 'Suzano',
-        state: state || 'SP',
-        service_type: selectedService,
-        has_feasibility: res.isAvailable,
-        plan_interested: res.availablePlans?.[0]?.name,
-        notes: `Complemento: ${complement || 'N/A'} | Zona: ${res.matchedZone || 'Manual'}`,
-      });
+      if (res.queryId) {
+        apiService.logViabilityQuery({
+          query_id: res.queryId,
+          name: name.trim(),
+          phone: phone.trim(),
+          plan_interested: res.availablePlans?.[0]?.name,
+          notes: `Complemento: ${complement || 'N/A'} | Zona: ${res.matchedZone || 'Manual'} | Distância: ${res.distanceMeters}m`,
+          has_feasibility: res.isAvailable,
+          cep: cep.replace(/\D/g, '') || 'S/CEP',
+        });
+      }
     } catch {
       // Fallback
     } finally {
@@ -693,24 +692,37 @@ export const FeasibilityModal: React.FC<FeasibilityModalProps> = ({
                   className={`p-4 rounded-2xl border ${
                     result.isAvailable
                       ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                      : result.rawStatus === 'EM_ANALISE'
+                      ? 'bg-blue-50 border-blue-300 text-blue-950'
                       : 'bg-amber-50 border-amber-300 text-amber-950'
                   }`}
                 >
                   <div className="flex items-center space-x-3">
                     {result.isAvailable ? (
                       <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0" />
+                    ) : result.rawStatus === 'EM_ANALISE' ? (
+                      <Sparkles className="w-6 h-6 text-blue-600 flex-shrink-0" />
                     ) : (
                       <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
                     )}
                     <div>
                       <h5 className="text-sm font-black">
-                        {result.isAvailable
-                          ? 'Excelente notícia! Fibra Óptica Disponível no seu Endereço!'
-                          : 'Endereço em Análise de Expansão'}
+                        {result.headline}
                       </h5>
                       <p className="text-xs opacity-90 mt-0.5">
                         {street ? `${street}${number ? `, ${number}` : ''} - ${neighborhood}, ${city}` : city}
                       </p>
+                      {result.matchedZone && (
+                        <div className="mt-1.5 inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-md bg-white/70 border border-current text-[10px] font-bold">
+                          <span>Mancha Atendida:</span>
+                          <span className="font-extrabold">{result.matchedZone}</span>
+                        </div>
+                      )}
+                      {!result.isAvailable && result.distanceMeters > 0 && (
+                        <div className="mt-1 text-[11px] text-gray-600 font-semibold">
+                          Distância até a mancha mais próxima: <strong>{result.distanceMeters > 1000 ? `${(result.distanceMeters / 1000).toFixed(1)} km` : `${result.distanceMeters}m`}</strong>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

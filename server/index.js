@@ -29,6 +29,26 @@ app.use(express.json());
 // Initialize DB schema on startup
 initDatabase();
 
+// External Viability Engine URL (Easypanel)
+const EXTERNAL_VIABILITY_URL = process.env.VIABILITY_API_URL || 'https://nuvv-digital-viabilidade.yuajnb.easypanel.host';
+
+function getSetting(key, defaultValue = null) {
+  try {
+    const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key);
+    return row && row.value ? row.value : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+}
+
+function setSetting(key, value) {
+  db.prepare(`
+    INSERT INTO settings (key, value, updated_at)
+    VALUES (?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+  `).run(key, value);
+}
+
 // -------------------------------------------------------------
 // 1. HEALTH & DIAGNOSTICS
 // -------------------------------------------------------------
@@ -169,15 +189,22 @@ app.get('/api/admin/metrics', (req, res) => {
 // -------------------------------------------------------------
 app.get('/api/admin/viability', (req, res) => {
   try {
-    const { status, city, limit = 50, offset = 0 } = req.query;
+    const { status, service_type, city, limit = 50, offset = 0 } = req.query;
 
     let query = 'SELECT * FROM viability_queries WHERE 1=1';
     const params = [];
 
-    if (status === 'yes') {
-      query += ' AND has_feasibility = 1';
-    } else if (status === 'no') {
-      query += ' AND has_feasibility = 0';
+    if (status === 'yes' || status === 'VIAVEL') {
+      query += " AND (has_feasibility = 1 OR status = 'VIAVEL')";
+    } else if (status === 'no' || status === 'INVIAVEL') {
+      query += " AND (has_feasibility = 0 AND (status = 'INVIAVEL' OR status IS NULL))";
+    } else if (status === 'EM_ANALISE') {
+      query += " AND status = 'EM_ANALISE'";
+    }
+
+    if (service_type) {
+      query += ' AND service_type = ?';
+      params.push(service_type);
     }
 
     if (city) {
@@ -192,14 +219,15 @@ app.get('/api/admin/viability', (req, res) => {
 
     // Summary stats
     const total = db.prepare('SELECT COUNT(*) as count FROM viability_queries').get().count;
-    const withFeasibility = db.prepare('SELECT COUNT(*) as count FROM viability_queries WHERE has_feasibility = 1').get().count;
-    const withoutFeasibility = db.prepare('SELECT COUNT(*) as count FROM viability_queries WHERE has_feasibility = 0').get().count;
+    const withFeasibility = db.prepare("SELECT COUNT(*) as count FROM viability_queries WHERE has_feasibility = 1 OR status = 'VIAVEL'").get().count;
+    const emAnalise = db.prepare("SELECT COUNT(*) as count FROM viability_queries WHERE status = 'EM_ANALISE'").get().count;
+    const withoutFeasibility = db.prepare("SELECT COUNT(*) as count FROM viability_queries WHERE (has_feasibility = 0 AND status != 'EM_ANALISE')").get().count;
 
     // Top Unmet Neighborhoods (Demanda Reprimida)
     const unmetNeighborhoods = db.prepare(`
       SELECT neighborhood, city, COUNT(*) as demand_count
       FROM viability_queries
-      WHERE has_feasibility = 0 AND neighborhood IS NOT NULL AND neighborhood != ''
+      WHERE (has_feasibility = 0 AND status != 'EM_ANALISE') AND neighborhood IS NOT NULL AND neighborhood != ''
       GROUP BY neighborhood, city
       ORDER BY demand_count DESC
       LIMIT 8
@@ -212,6 +240,7 @@ app.get('/api/admin/viability', (req, res) => {
         stats: {
           total,
           withFeasibility,
+          emAnalise,
           withoutFeasibility,
           coverageRate: total > 0 ? Math.round((withFeasibility / total) * 100) : 0,
         },
@@ -293,9 +322,236 @@ app.get('/api/admin/viability/heatmap', (req, res) => {
   }
 });
 
+// -------------------------------------------------------------
+// 4.1 MOTOR EXTERNO DE VIABILIDADE TÉCNICA (EASYPANEL)
+// -------------------------------------------------------------
+
+app.post('/api/viability/check', async (req, res) => {
+  try {
+    const {
+      query,
+      number,
+      service_type = 'residencial',
+      latitude,
+      longitude,
+      name,
+      phone,
+      email,
+      notes,
+      plan_interested,
+    } = req.body;
+
+    if (!query && (latitude === undefined || latitude === null)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Endereço textual, CEP ou coordenadas geográficas são obrigatórios para a consulta.',
+      });
+    }
+
+    // Camadas configuradas no sistema
+    const configuredLayer = service_type === 'empresarial'
+      ? (getSetting('viability_layer_empresarial') || 'ihs___sp')
+      : (getSetting('viability_layer_residencial') || 'suzano_poa');
+
+    // Monta o payload para a API externa de alta precisão (Shapely 2.0)
+    const externalPayload = {
+      query: query ? String(query).trim() : undefined,
+      number: number ? String(number).trim() : undefined,
+      latitude: latitude !== undefined && latitude !== null ? Number(latitude) : undefined,
+      longitude: longitude !== undefined && longitude !== null ? Number(longitude) : undefined,
+      layers: [configuredLayer],
+    };
+
+    let externalRes;
+    try {
+      const resp = await fetch(`${EXTERNAL_VIABILITY_URL}/api/viability/check`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(externalPayload),
+      });
+
+      if (!resp.ok) {
+        const errorText = await resp.text();
+        throw new Error(`API Externa HTTP ${resp.status}: ${errorText}`);
+      }
+      externalRes = await resp.json();
+    } catch (apiErr) {
+      console.error('❌ Falha na chamada da API externa de viabilidade:', apiErr);
+      return res.status(502).json({
+        success: false,
+        error: 'Não foi possível conectar ao motor externo de viabilidade.',
+        details: apiErr.message,
+      });
+    }
+
+    const status = externalRes.status || 'EM_ANALISE'; // VIAVEL, INVIAVEL, EM_ANALISE
+    const hasFeasibility = status === 'VIAVEL' ? 1 : 0;
+    const lat = externalRes.location?.latitude ?? (latitude !== undefined ? Number(latitude) : null);
+    const lng = externalRes.location?.longitude ?? (longitude !== undefined ? Number(longitude) : null);
+    const matchedPolygonName = externalRes.matched_polygon?.polygon_name || externalRes.matched_polygon?.polygon_id || null;
+    const matchedLayerId = externalRes.matched_polygon?.layer_id || configuredLayer;
+    const distanceMeters = typeof externalRes.distance_to_nearest_meters === 'number'
+      ? Math.round(externalRes.distance_to_nearest_meters * 10) / 10
+      : 0;
+    const displayName = externalRes.display_name || query || '';
+
+    // Extração de dados de endereço se vieram do Nominatim
+    let street = '';
+    let neighborhood = '';
+    let city = service_type === 'empresarial' ? 'São Paulo' : 'Suzano';
+    let state = 'SP';
+    let cep = '';
+
+    if (query && /^\d{5}-?\d{3}$/.test(query.trim())) {
+      cep = query.trim().replace(/\D/g, '');
+    }
+
+    if (displayName) {
+      const parts = displayName.split(',').map((p) => p.trim());
+      if (parts.length >= 1) street = parts[0];
+      const cepMatch = displayName.match(/\b\d{5}-\d{3}\b/);
+      if (cepMatch && !cep) {
+        cep = cepMatch[0].replace(/\D/g, '');
+      }
+      const knownCities = ['Suzano', 'Poá', 'Mogi das Cruzes', 'Ferraz de Vasconcelos', 'Itaquaquecetuba', 'Arujá', 'São Paulo', 'Guarulhos'];
+      for (const kc of knownCities) {
+        if (displayName.toLowerCase().includes(kc.toLowerCase())) {
+          city = kc;
+          break;
+        }
+      }
+    }
+
+    // Armazena no banco de dados SQLite (histórico completo de retornos)
+    const insertStmt = db.prepare(`
+      INSERT INTO viability_queries (
+        name, phone, email, cep, street, number, neighborhood, city, state,
+        service_type, has_feasibility, status, matched_layer, matched_polygon,
+        distance_meters, latitude, longitude, raw_response, plan_interested, notes
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const info = insertStmt.run(
+      name || null,
+      phone || null,
+      email || null,
+      cep || (query ? query.slice(0, 20) : 'GPS'),
+      street || query || '',
+      number || null,
+      neighborhood || '',
+      city,
+      state,
+      service_type,
+      hasFeasibility,
+      status,
+      matchedLayerId,
+      matchedPolygonName,
+      distanceMeters,
+      lat,
+      lng,
+      JSON.stringify(externalRes),
+      plan_interested || null,
+      notes || `Motor Externo | Mancha: ${matchedPolygonName || 'N/A'} | Distância: ${distanceMeters}m`
+    );
+
+    // Dispara alerta se já tiver dados de contato
+    if (phone || email || name) {
+      sendViabilityAlert({
+        name,
+        phone,
+        email,
+        cep: cep || query,
+        street,
+        number,
+        neighborhood,
+        city,
+        state,
+        service_type,
+        has_feasibility: Boolean(hasFeasibility),
+        plan_interested,
+        notes: `Status: ${status} | Distância: ${distanceMeters}m | Mancha: ${matchedPolygonName || 'N/A'}`,
+      }).catch(console.error);
+    }
+
+    res.json({
+      success: true,
+      query_id: info.lastInsertRowid,
+      status,
+      isAvailable: status === 'VIAVEL',
+      service_type,
+      configured_layer: configuredLayer,
+      location: { latitude: lat, longitude: lng },
+      display_name: displayName,
+      matched_polygon: externalRes.matched_polygon || null,
+      all_matched_polygons: externalRes.all_matched_polygons || [],
+      distance_to_nearest_meters: distanceMeters,
+      consulted_layers: externalRes.consulted_layers || [configuredLayer],
+      message: externalRes.message || '',
+    });
+  } catch (err) {
+    console.error('❌ Erro no endpoint /api/viability/check:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Consulta camadas da API externa e configuração local ativa
+app.get('/api/viability/layers', async (req, res) => {
+  try {
+    const resp = await fetch(`${EXTERNAL_VIABILITY_URL}/api/layers`);
+    if (!resp.ok) {
+      throw new Error(`API retornou HTTP ${resp.status}`);
+    }
+    const layers = await resp.json();
+    const configResidencial = getSetting('viability_layer_residencial', 'suzano_poa');
+    const configEmpresarial = getSetting('viability_layer_empresarial', 'ihs___sp');
+
+    res.json({
+      success: true,
+      externalApiUrl: EXTERNAL_VIABILITY_URL,
+      layers,
+      config: {
+        residencial_layer: configResidencial,
+        empresarial_layer: configEmpresarial,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: 'Não foi possível carregar as camadas da API externa.',
+      details: err.message,
+    });
+  }
+});
+
+// Atualiza camadas associadas ao Residencial e Empresarial
+app.post('/api/admin/viability/config', (req, res) => {
+  try {
+    const { residencial_layer, empresarial_layer } = req.body;
+    if (residencial_layer) {
+      setSetting('viability_layer_residencial', residencial_layer);
+    }
+    if (empresarial_layer) {
+      setSetting('viability_layer_empresarial', empresarial_layer);
+    }
+    res.json({
+      success: true,
+      message: 'Configurações de camadas salvas com sucesso.',
+      config: {
+        residencial_layer: getSetting('viability_layer_residencial', 'suzano_poa'),
+        empresarial_layer: getSetting('viability_layer_empresarial', 'ihs___sp'),
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Atualização de lead ou log manual de viabilidade
 app.post('/api/viability/log', async (req, res) => {
   try {
     const {
+      query_id,
       name,
       phone,
       email,
@@ -307,16 +563,57 @@ app.post('/api/viability/log', async (req, res) => {
       state,
       service_type,
       has_feasibility,
+      status,
       plan_interested,
       notes,
     } = req.body;
 
+    if (query_id) {
+      // Atualiza o registro existente com os dados de contato do cliente
+      db.prepare(`
+        UPDATE viability_queries
+        SET name = COALESCE(?, name),
+            phone = COALESCE(?, phone),
+            email = COALESCE(?, email),
+            plan_interested = COALESCE(?, plan_interested),
+            notes = COALESCE(?, notes)
+        WHERE id = ?
+      `).run(
+        name || null,
+        phone || null,
+        email || null,
+        plan_interested || null,
+        notes || null,
+        query_id
+      );
+
+      if (phone || email || name) {
+        sendViabilityAlert({
+          name,
+          phone,
+          email,
+          cep: cep || '',
+          street: street || '',
+          number: number || '',
+          neighborhood: neighborhood || '',
+          city: city || 'Suzano',
+          state: state || 'SP',
+          service_type: service_type || 'residencial',
+          has_feasibility: Boolean(has_feasibility),
+          plan_interested,
+          notes: notes || 'Lead capturado após consulta',
+        }).catch(console.error);
+      }
+
+      return res.json({ success: true, updated: true, id: query_id });
+    }
+
     const info = db.prepare(`
       INSERT INTO viability_queries (
         name, phone, email, cep, street, number, neighborhood, city, state,
-        service_type, has_feasibility, plan_interested, notes
+        service_type, has_feasibility, status, plan_interested, notes
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       name || null,
       phone || null,
@@ -329,6 +626,7 @@ app.post('/api/viability/log', async (req, res) => {
       state || 'SP',
       service_type || 'residencial',
       has_feasibility ? 1 : 0,
+      status || (has_feasibility ? 'VIAVEL' : 'INVIAVEL'),
       plan_interested || null,
       notes || null
     );
@@ -623,9 +921,9 @@ app.get('/api/admin/export/:type', (req, res) => {
 
     if (type === 'viability') {
       const rows = db.prepare('SELECT * FROM viability_queries ORDER BY created_at DESC').all();
-      let csv = 'ID,Data,Nome,Telefone,Email,CEP,Endereco,Numero,Bairro,Cidade,Estado,Servico,Viabilidade,Plano\n';
+      let csv = 'ID,Data,Nome,Telefone,Email,CEP,Endereco,Numero,Bairro,Cidade,Estado,Servico,Status,Viabilidade,Mancha,Poligono,Distancia_Metros,Latitude,Longitude,Plano,Notas\n';
       rows.forEach(r => {
-        csv += `"${r.id}","${r.created_at}","${r.name || ''}","${r.phone || ''}","${r.email || ''}","${r.cep}","${r.street || ''}","${r.number || ''}","${r.neighborhood || ''}","${r.city || ''}","${r.state || ''}","${r.service_type || ''}","${r.has_feasibility ? 'SIM' : 'NAO'}","${r.plan_interested || ''}"\n`;
+        csv += `"${r.id}","${r.created_at}","${r.name || ''}","${r.phone || ''}","${r.email || ''}","${r.cep}","${r.street || ''}","${r.number || ''}","${r.neighborhood || ''}","${r.city || ''}","${r.state || ''}","${r.service_type || ''}","${r.status || (r.has_feasibility ? 'VIAVEL' : 'INVIAVEL')}","${r.has_feasibility ? 'SIM' : 'NAO'}","${r.matched_layer || ''}","${r.matched_polygon || ''}","${r.distance_meters || 0}","${r.latitude || ''}","${r.longitude || ''}","${r.plan_interested || ''}","${(r.notes || '').replace(/"/g, '""')}"\n`;
       });
 
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');

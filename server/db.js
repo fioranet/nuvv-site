@@ -51,6 +51,13 @@ export function initDatabase() {
       state TEXT,
       service_type TEXT DEFAULT 'residencial',
       has_feasibility INTEGER NOT NULL, -- 1 for yes, 0 for no
+      status TEXT DEFAULT 'VIAVEL', -- VIAVEL, INVIAVEL, EM_ANALISE
+      matched_layer TEXT,
+      matched_polygon TEXT,
+      distance_meters REAL DEFAULT 0,
+      latitude REAL,
+      longitude REAL,
+      raw_response TEXT,
       plan_interested TEXT,
       notes TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -133,10 +140,44 @@ export function initDatabase() {
         'admin',
         'ativo'
       );
-      console.log('👤 Default admin portal user seeded: admin@nuvv.com.br / nuvv2026');
     }
   } catch (seedErr) {
     console.warn('⚠️ Could not check/seed portal_users:', seedErr.message);
+  }
+
+  // Migration: Ensure viability_queries has new enriched columns if database already existed
+  try {
+    const existingCols = db.prepare("PRAGMA table_info(viability_queries)").all().map(c => c.name);
+    const columnsToAdd = [
+      { name: 'status', type: "TEXT DEFAULT 'VIAVEL'" },
+      { name: 'matched_layer', type: 'TEXT' },
+      { name: 'matched_polygon', type: 'TEXT' },
+      { name: 'distance_meters', type: 'REAL DEFAULT 0' },
+      { name: 'latitude', type: 'REAL' },
+      { name: 'longitude', type: 'REAL' },
+      { name: 'raw_response', type: 'TEXT' },
+    ];
+
+    for (const col of columnsToAdd) {
+      if (!existingCols.includes(col.name)) {
+        db.prepare(`ALTER TABLE viability_queries ADD COLUMN ${col.name} ${col.type}`).run();
+      }
+    }
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_viability_status ON viability_queries(status)').run();
+  } catch (migErr) {
+    console.warn('⚠️ Could not run viability_queries migration:', migErr.message);
+  }
+
+  // Seed default viability layer settings
+  try {
+    db.prepare(`
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('viability_layer_residencial', 'suzano_poa');
+    `).run();
+    db.prepare(`
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('viability_layer_empresarial', 'ihs___sp');
+    `).run();
+  } catch (settingErr) {
+    console.warn('⚠️ Could not seed viability layer settings:', settingErr.message);
   }
 
   console.log('✅ SQLite Database initialized at:', dbPath);

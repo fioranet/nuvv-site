@@ -1,4 +1,5 @@
 export interface ViabilityPayload {
+  query_id?: number;
   name?: string;
   phone?: string;
   email?: string;
@@ -10,8 +11,74 @@ export interface ViabilityPayload {
   state?: string;
   service_type?: string;
   has_feasibility: boolean;
+  status?: 'VIAVEL' | 'INVIAVEL' | 'EM_ANALISE';
   plan_interested?: string;
   notes?: string;
+}
+
+export interface MatchedPolygonInfo {
+  layer_id: string;
+  layer_name: string;
+  polygon_id?: string;
+  polygon_name?: string;
+  region?: string;
+  pop?: string;
+  technology?: string;
+  properties?: Record<string, any>;
+}
+
+export interface ExternalViabilityCheckRequest {
+  query?: string;
+  number?: string;
+  service_type?: 'residencial' | 'empresarial';
+  latitude?: number;
+  longitude?: number;
+  name?: string;
+  phone?: string;
+  email?: string;
+  notes?: string;
+  plan_interested?: string;
+}
+
+export interface ExternalViabilityCheckResponse {
+  success: boolean;
+  query_id?: number;
+  status: 'VIAVEL' | 'INVIAVEL' | 'EM_ANALISE';
+  isAvailable: boolean;
+  service_type: 'residencial' | 'empresarial';
+  configured_layer: string;
+  location: { latitude: number; longitude: number };
+  display_name: string;
+  matched_polygon?: MatchedPolygonInfo | null;
+  all_matched_polygons?: MatchedPolygonInfo[];
+  distance_to_nearest_meters: number;
+  consulted_layers: string[];
+  message: string;
+  error?: string;
+  details?: string;
+}
+
+export interface ExternalViabilityLayerInfo {
+  id: string;
+  filename: string;
+  name: string;
+  technology: string;
+  color: string;
+  polygon_count: number;
+  enabled: boolean;
+  is_primary: boolean;
+  pop_id?: string;
+  pop_name?: string;
+}
+
+export interface ExternalViabilityLayersResponse {
+  success: boolean;
+  externalApiUrl: string;
+  layers: ExternalViabilityLayerInfo[];
+  config: {
+    residencial_layer: string;
+    empresarial_layer: string;
+  };
 }
 
 export interface CommercialLeadPayload {
@@ -66,7 +133,62 @@ export const apiService = {
     }
   },
 
-  // 2. Viability Logging
+  // 2. External Geospatial Viability Engine
+  checkViability: async (params: ExternalViabilityCheckRequest): Promise<ExternalViabilityCheckResponse> => {
+    try {
+      const res = await fetch('/api/viability/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      });
+      const data = await res.json();
+      return data;
+    } catch (err: any) {
+      console.error('Falha ao conectar com endpoint /api/viability/check:', err);
+      return {
+        success: false,
+        status: 'EM_ANALISE',
+        isAvailable: false,
+        service_type: params.service_type || 'residencial',
+        configured_layer: params.service_type === 'empresarial' ? 'ihs___sp' : 'suzano_poa',
+        location: { latitude: params.latitude || -23.5425, longitude: params.longitude || -46.3108 },
+        display_name: params.query || '',
+        distance_to_nearest_meters: 0,
+        consulted_layers: [],
+        message: 'Falha temporária ao consultar viabilidade. Nossa equipe técnica analisará seu endereço.',
+        error: err.message,
+      };
+    }
+  },
+
+  getExternalViabilityLayers: async (): Promise<ExternalViabilityLayersResponse> => {
+    try {
+      const res = await fetch('/api/viability/layers');
+      return await res.json();
+    } catch (err: any) {
+      console.warn('Could not fetch external viability layers:', err);
+      return {
+        success: false,
+        externalApiUrl: 'https://nuvv-digital-viabilidade.yuajnb.easypanel.host',
+        layers: [],
+        config: {
+          residencial_layer: 'suzano_poa',
+          empresarial_layer: 'ihs___sp',
+        },
+      };
+    }
+  },
+
+  updateViabilityConfig: async (config: { residencial_layer?: string; empresarial_layer?: string }) => {
+    const res = await fetch('/api/admin/viability/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    });
+    return await res.json();
+  },
+
+  // 2.1 Viability Logging & Lead Enrichment
   logViabilityQuery: async (data: ViabilityPayload) => {
     try {
       const res = await fetch('/api/viability/log', {

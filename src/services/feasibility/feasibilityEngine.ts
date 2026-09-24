@@ -1,8 +1,10 @@
-import { Coordinate, isPointInGeoJSON, GeoJSONFeature } from './pointInPolygon';
+import { apiService, MatchedPolygonInfo } from '../apiService';
 import { GeocodingService, AddressData } from './geocodingService';
-import { CoverageConfig, CoverageServiceType } from '../../data/coverage/coverageConfig';
 import { RESIDENTIAL_PLANS } from '../../data/plans';
 import { BUSINESS_PLANS } from '../../data/businessPlans';
+
+export type CoverageServiceType = 'residencial' | 'empresarial';
+export type Coordinate = [number, number]; // [lng, lat]
 
 export interface FeasibilityCheckRequest {
   serviceType: CoverageServiceType;
@@ -13,15 +15,23 @@ export interface FeasibilityCheckRequest {
   city?: string;
   state?: string;
   coordinates?: Coordinate; // [lng, lat]
+  name?: string;
+  phone?: string;
+  email?: string;
+  notes?: string;
+  planInterested?: string;
 }
 
 export interface FeasibilityResult {
+  queryId?: number;
   isAvailable: boolean;
   status: 'covered' | 'expansion' | 'custom_project';
+  rawStatus: 'VIAVEL' | 'INVIAVEL' | 'EM_ANALISE';
   serviceType: CoverageServiceType;
   serviceName: string;
   matchedZone?: string;
-  matchedFeature?: GeoJSONFeature;
+  matchedPolygon?: MatchedPolygonInfo | null;
+  distanceMeters: number;
   address: AddressData;
   coordinates: Coordinate;
   availablePlans: any[];
@@ -31,60 +41,75 @@ export interface FeasibilityResult {
 
 export const FeasibilityEngine = {
   /**
-   * Executes a complete feasibility lookup for a service and address/coordinates
+   * Executa a checagem de viabilidade conectando-se ao motor externo geoespacial (Shapely 2.0)
    */
   async checkFeasibility(request: FeasibilityCheckRequest): Promise<FeasibilityResult> {
-    const serviceLayer = CoverageConfig.getLayer(request.serviceType);
+    const serviceTitle = request.serviceType === 'residencial' ? 'Fibra Residencial' : 'Fibra Empresarial';
 
-    let coords: Coordinate | null = request.coordinates || null;
     let addressData: AddressData = {
       street: request.street || '',
       number: request.number || '',
       neighborhood: request.neighborhood || '',
-      city: request.city || 'Suzano',
+      city: request.city || (request.serviceType === 'empresarial' ? 'São Paulo' : 'Suzano'),
       state: request.state || 'SP',
-      cep: request.cep || '',
+      cep: request.cep ? request.cep.replace(/\D/g, '') : '',
       formattedAddress: '',
     };
 
-    // 1. If CEP was provided, fetch address via ViaCEP if missing details
-    if (request.cep && (!addressData.street || !addressData.city)) {
-      const viaCep = await GeocodingService.fetchAddressByCep(request.cep);
-      if (viaCep) {
-        addressData.street = viaCep.logradouro || addressData.street;
-        addressData.neighborhood = viaCep.bairro || addressData.neighborhood;
-        addressData.city = viaCep.localidade || addressData.city;
-        addressData.state = viaCep.uf || addressData.state;
+    // 1. Se CEP foi fornecido e faltam dados textuais, busca dados no ViaCEP para melhor exibição
+    if (request.cep && (!addressData.street || !addressData.neighborhood)) {
+      try {
+        const viaCep = await GeocodingService.fetchAddressByCep(request.cep);
+        if (viaCep && !viaCep.erro) {
+          addressData.street = viaCep.logradouro || addressData.street;
+          addressData.neighborhood = viaCep.bairro || addressData.neighborhood;
+          addressData.city = viaCep.localidade || addressData.city;
+          addressData.state = viaCep.uf || addressData.state;
+        }
+      } catch {
+        // Fallback silencioso
       }
     }
 
-    // 2. Geocode address to [lng, lat] coordinates if not already provided
-    if (!coords) {
-      coords = await GeocodingService.geocodeAddress(
-        addressData.street,
-        addressData.neighborhood,
-        addressData.city,
-        addressData.state,
-        addressData.number
-      );
+    // 2. Monta query de consulta para o motor geoespacial
+    let searchQuery = '';
+    if (addressData.street) {
+      searchQuery = `${addressData.street}${addressData.number ? `, ${addressData.number}` : ''}, ${addressData.neighborhood ? `${addressData.neighborhood}, ` : ''}${addressData.city} - ${addressData.state}`;
+    } else if (request.cep) {
+      searchQuery = request.cep;
+    } else if (request.coordinates) {
+      searchQuery = `${request.coordinates[1]}, ${request.coordinates[0]}`;
     }
 
-    // Fallback coordinates (Suzano center) if geocoding failed
-    if (!coords) {
-      coords = [-46.3108, -23.5425];
-    }
+    const payloadLat = request.coordinates ? request.coordinates[1] : undefined;
+    const payloadLng = request.coordinates ? request.coordinates[0] : undefined;
+
+    // 3. Consulta a API externa através do backend do site (salva histórico automaticamente)
+    const apiRes = await apiService.checkViability({
+      query: searchQuery || request.cep,
+      number: addressData.number || request.number,
+      service_type: request.serviceType,
+      latitude: payloadLat,
+      longitude: payloadLng,
+      name: request.name,
+      phone: request.phone,
+      email: request.email,
+      notes: request.notes,
+      plan_interested: request.planInterested,
+    });
+
+    const rawStatus = apiRes.status || (apiRes.isAvailable ? 'VIAVEL' : 'INVIAVEL');
+    const coords: Coordinate = [
+      apiRes.location?.longitude || request.coordinates?.[0] || -46.3108,
+      apiRes.location?.latitude || request.coordinates?.[1] || -23.5425,
+    ];
 
     addressData.coordinates = coords;
-    addressData.formattedAddress = `${addressData.street ? addressData.street : 'Endereço informado'}${
+    addressData.formattedAddress = apiRes.display_name || `${addressData.street ? addressData.street : 'Endereço informado'}${
       addressData.number ? `, ${addressData.number}` : ''
-    }${addressData.neighborhood ? ` - ${addressData.neighborhood}` : ''}, ${addressData.city} - ${
-      addressData.state
-    }`;
+    }${addressData.neighborhood ? ` - ${addressData.neighborhood}` : ''}, ${addressData.city} - ${addressData.state}`;
 
-    // 3. Test if point is inside the active service's coverage GeoJSON
-    const { isInside, matchedFeature } = isPointInGeoJSON(coords, serviceLayer.geoJson);
-
-    // 4. Select appropriate plans to recommend based on service type
+    // 4. Seleciona os planos apropriados para o cliente
     let availablePlans: any[] = [];
     if (request.serviceType === 'residencial') {
       availablePlans = RESIDENTIAL_PLANS.slice(0, 3);
@@ -95,49 +120,87 @@ export const FeasibilityEngine = {
       ].slice(0, 3);
     }
 
-    const zoneName = matchedFeature?.properties?.name || (isInside ? `${addressData.city} - Região Atendida` : undefined);
+    const matchedPolygonName = apiRes.matched_polygon?.polygon_name || apiRes.matched_polygon?.polygon_id;
+    const matchedZone = matchedPolygonName
+      ? `${matchedPolygonName}${apiRes.matched_polygon?.pop ? ` (${apiRes.matched_polygon.pop})` : ''}`
+      : (rawStatus === 'VIAVEL' ? `${addressData.city} - Rede Ativa` : undefined);
 
-    if (isInside) {
+    const distanceMeters = apiRes.distance_to_nearest_meters || 0;
+
+    // 5. Mapeia o status do resultado
+    if (rawStatus === 'VIAVEL') {
       return {
+        queryId: apiRes.query_id,
         isAvailable: true,
         status: 'covered',
+        rawStatus: 'VIAVEL',
         serviceType: request.serviceType,
-        serviceName: serviceLayer.title,
-        matchedZone: zoneName,
-        matchedFeature,
+        serviceName: serviceTitle,
+        matchedZone,
+        matchedPolygon: apiRes.matched_polygon,
+        distanceMeters,
         address: addressData,
         coordinates: coords,
         availablePlans,
         headline: 'Viabilidade Técnica Confirmada!',
-        message: `Excelente notícia! Seu endereço está 100% dentro da nossa área de cobertura para ${serviceLayer.title}. Fibra óptica disponível para instalação imediata.`,
+        message: apiRes.message || `Excelente notícia! Seu endereço está 100% dentro da nossa área de cobertura para ${serviceTitle}. Fibra óptica disponível para instalação imediata.`,
       };
     }
 
-    // If outside polygon:
-    if (request.serviceType === 'empresarial') {
+    if (rawStatus === 'EM_ANALISE') {
       return {
+        queryId: apiRes.query_id,
         isAvailable: false,
         status: 'custom_project',
+        rawStatus: 'EM_ANALISE',
         serviceType: request.serviceType,
-        serviceName: serviceLayer.title,
+        serviceName: serviceTitle,
+        matchedZone,
+        matchedPolygon: apiRes.matched_polygon,
+        distanceMeters,
         address: addressData,
         coordinates: coords,
         availablePlans,
-        headline: 'Estudo de Viabilidade Especial para Empresas',
-        message: `Seu endereço está próximo da nossa rede. Para conexões corporativas (Link Dedicado e Semi-Dedicado), nossa engenharia elabora projetos especiais de extensão de fibra e anel óptico dedicado.`,
+        headline: 'Em Análise Técnica / Extensão Próxima',
+        message: apiRes.message || `Seu endereço está a apenas ${distanceMeters}m da nossa rede ativa. Nossa engenharia verificará a viabilidade de atendimento imediato.`,
+      };
+    }
+
+    // Se for INVIAVEL
+    if (request.serviceType === 'empresarial') {
+      return {
+        queryId: apiRes.query_id,
+        isAvailable: false,
+        status: 'custom_project',
+        rawStatus: 'INVIAVEL',
+        serviceType: request.serviceType,
+        serviceName: serviceTitle,
+        matchedZone,
+        matchedPolygon: apiRes.matched_polygon,
+        distanceMeters,
+        address: addressData,
+        coordinates: coords,
+        availablePlans,
+        headline: 'Estudo de Viabilidade Especial Corporativa',
+        message: apiRes.message || `Para conexões corporativas (Link Dedicado e Semi-Dedicado), nossa engenharia elabora projetos especiais de extensão de fibra e anel óptico sob medida.`,
       };
     }
 
     return {
+      queryId: apiRes.query_id,
       isAvailable: false,
       status: 'expansion',
+      rawStatus: 'INVIAVEL',
       serviceType: request.serviceType,
-      serviceName: serviceLayer.title,
+      serviceName: serviceTitle,
+      matchedZone,
+      matchedPolygon: apiRes.matched_polygon,
+      distanceMeters,
       address: addressData,
       coordinates: coords,
       availablePlans: [],
       headline: 'Área em Expansão de Rede',
-      message: `Ainda não temos cabeamento residencial ativo neste ponto exato, mas nossa equipe de expansão está constantemente ativando novas caixas FTTH. Cadastre-se na lista de espera prioritária para ser avisado!`,
+      message: apiRes.message || `Ainda não temos cabeamento residencial ativo neste ponto exato (${distanceMeters > 0 ? `rede mais próxima a ${(distanceMeters / 1000).toFixed(1)} km` : 'fora da mancha atual'}). Cadastre-se na lista de espera prioritária para ser avisado assim que expandirmos!`,
     };
   },
 };

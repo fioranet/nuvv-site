@@ -233,24 +233,31 @@ export const BusinessCoverageModal: React.FC<BusinessCoverageModalProps> = ({
         neighborhood,
         city,
         state,
+        name: name.trim(),
+        phone: phone.trim(),
+        notes: complement ? `Complemento: ${complement}` : undefined,
+        planInterested: 'Fibra Empresarial PJ',
       });
 
       setResult(res);
 
-      apiService.logViabilityQuery({
-        name: name.trim(),
-        phone: phone.trim(),
-        cep: cep.replace(/\D/g, '') || 'S/CEP',
-        street: street || '',
-        number: number || '',
-        neighborhood: neighborhood || '',
-        city: city || 'São Paulo',
-        state: state || 'SP',
-        service_type: 'empresarial',
-        has_feasibility: res.isAvailable,
-        plan_interested: res.availablePlans?.[0]?.name || 'Fibra Empresarial PJ',
-        notes: `Complemento: ${complement || 'N/A'} | Zona: ${res.matchedZone || 'Análise PJ'}`,
-      });
+      if (res.queryId) {
+        apiService.logViabilityQuery({
+          query_id: res.queryId,
+          name: name.trim(),
+          phone: phone.trim(),
+          cep: cep.replace(/\D/g, '') || 'S/CEP',
+          street: street || '',
+          number: number || '',
+          neighborhood: neighborhood || '',
+          city: city || 'São Paulo',
+          state: state || 'SP',
+          service_type: 'empresarial',
+          has_feasibility: res.isAvailable,
+          plan_interested: res.availablePlans?.[0]?.name || 'Fibra Empresarial PJ',
+          notes: `Complemento: ${complement || 'N/A'} | Zona: ${res.matchedZone || 'Análise PJ'} | Distância: ${res.distanceMeters}m`,
+        });
+      }
     } catch {
       // Fallback
     } finally {
@@ -551,24 +558,37 @@ export const BusinessCoverageModal: React.FC<BusinessCoverageModalProps> = ({
                   className={`p-4 rounded-2xl border ${
                     result.isAvailable
                       ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                      : result.rawStatus === 'EM_ANALISE'
+                      ? 'bg-blue-50 border-blue-300 text-blue-950'
                       : 'bg-amber-50 border-amber-300 text-amber-950'
                   }`}
                 >
                   <div className="flex items-center space-x-3">
                     {result.isAvailable ? (
                       <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0" />
+                    ) : result.rawStatus === 'EM_ANALISE' ? (
+                      <Sparkles className="w-6 h-6 text-blue-600 flex-shrink-0" />
                     ) : (
                       <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
                     )}
                     <div>
                       <h5 className="text-sm font-black">
-                        {result.isAvailable
-                          ? 'Excelente notícia! Cobertura Empresarial Disponível'
-                          : 'Endereço em Análise de Engenharia'}
+                        {result.headline}
                       </h5>
                       <p className="text-xs opacity-90 mt-0.5">
-                        {street ? `${street}, ${number} - ${neighborhood}, ${city}` : city}
+                        {street ? `${street}${number ? `, ${number}` : ''} - ${neighborhood}, ${city}` : city}
                       </p>
+                      {result.matchedZone && (
+                        <div className="mt-1.5 inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-md bg-white/70 border border-current text-[10px] font-bold">
+                          <span>Mancha Atendida:</span>
+                          <span className="font-extrabold">{result.matchedZone}</span>
+                        </div>
+                      )}
+                      {!result.isAvailable && result.distanceMeters > 0 && (
+                        <div className="mt-1 text-[11px] text-gray-600 font-semibold">
+                          Distância até a mancha: <strong>{result.distanceMeters > 1000 ? `${(result.distanceMeters / 1000).toFixed(1)} km` : `${result.distanceMeters}m`}</strong>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

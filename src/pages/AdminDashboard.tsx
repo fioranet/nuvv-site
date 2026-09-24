@@ -52,7 +52,7 @@ export const AdminDashboard: React.FC = () => {
   const [healthStatus, setHealthStatus] = useState<any>(null);
 
   // Viability Filters
-  const [viabilityFilter, setViabilityFilter] = useState<'all' | 'yes' | 'no'>('all');
+  const [viabilityFilter, setViabilityFilter] = useState<'all' | 'yes' | 'no' | 'EM_ANALISE'>('all');
   const [viabilitySearch, setViabilitySearch] = useState('');
 
   // Newsletter Broadcast Composer
@@ -479,7 +479,7 @@ export const AdminDashboard: React.FC = () => {
                   }`}
                 >
                   <Layers className="w-4 h-4" />
-                  <span>Gestão de Zonas, KMZ & Velocidades</span>
+                  <span>Configuração de Manchas & API Externa</span>
                 </button>
 
                 <button
@@ -552,7 +552,14 @@ export const AdminDashboard: React.FC = () => {
                           onClick={() => setViabilityFilter('yes')}
                           className={`px-3 py-1.5 rounded-lg text-emerald-400 ${viabilityFilter === 'yes' ? 'bg-emerald-950 border border-emerald-500/30' : ''}`}
                         >
-                          Com Cobertura ({viabilityData?.stats?.withFeasibility || 0})
+                          Viável ({viabilityData?.stats?.withFeasibility || 0})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setViabilityFilter('EM_ANALISE')}
+                          className={`px-3 py-1.5 rounded-lg text-blue-400 ${viabilityFilter === 'EM_ANALISE' ? 'bg-blue-950 border border-blue-500/30' : ''}`}
+                        >
+                          Em Análise ({viabilityData?.stats?.emAnalise || 0})
                         </button>
                         <button
                           type="button"
@@ -601,6 +608,7 @@ export const AdminDashboard: React.FC = () => {
                           <th className="py-3.5 px-4 font-bold">Status</th>
                           <th className="py-3.5 px-4 font-bold">CEP / Endereço</th>
                           <th className="py-3.5 px-4 font-bold">Bairro / Cidade</th>
+                          <th className="py-3.5 px-4 font-bold">Mancha / Distância</th>
                           <th className="py-3.5 px-4 font-bold">Contato</th>
                           <th className="py-3.5 px-4 font-bold">Serviço</th>
                         </tr>
@@ -613,15 +621,20 @@ export const AdminDashboard: React.FC = () => {
                                 {new Date(row.created_at).toLocaleString('pt-BR')}
                               </td>
                               <td className="py-3 px-4">
-                                {row.has_feasibility ? (
+                                {row.status === 'VIAVEL' || row.has_feasibility ? (
                                   <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
                                     <CheckCircle2 className="w-3 h-3" />
-                                    <span>Com Viabilidade</span>
+                                    <span>Viável</span>
+                                  </span>
+                                ) : row.status === 'EM_ANALISE' ? (
+                                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-400 border border-blue-500/30 text-[10px] font-bold">
+                                    <Sparkles className="w-3 h-3" />
+                                    <span>Em Análise</span>
                                   </span>
                                 ) : (
                                   <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-500/30 text-[10px] font-bold">
                                     <XCircle className="w-3 h-3" />
-                                    <span>Sem Cobertura</span>
+                                    <span>Inviável</span>
                                   </span>
                                 )}
                               </td>
@@ -633,6 +646,18 @@ export const AdminDashboard: React.FC = () => {
                               </td>
                               <td className="py-3 px-4 text-gray-300">
                                 <strong>{row.neighborhood || '—'}</strong>, {row.city || 'Suzano'}
+                              </td>
+                              <td className="py-3 px-4">
+                                <span className="font-mono text-indigo-300 font-bold block text-[11px]">
+                                  {row.matched_polygon || row.matched_layer || '—'}
+                                </span>
+                                {row.distance_meters > 0 && (
+                                  <span className="text-gray-400 text-[10px] block">
+                                    {row.distance_meters > 1000
+                                      ? `${(row.distance_meters / 1000).toFixed(1)} km da rede`
+                                      : `${row.distance_meters}m da rede`}
+                                  </span>
+                                )}
                               </td>
                               <td className="py-3 px-4">
                                 {row.name && <span className="font-bold text-white block">{row.name}</span>}
@@ -649,7 +674,7 @@ export const AdminDashboard: React.FC = () => {
                           ))
                         ) : (
                           <tr>
-                            <td colSpan={6} className="text-center py-8 text-gray-500">
+                            <td colSpan={7} className="text-center py-8 text-gray-500">
                               Nenhuma consulta de viabilidade encontrada com os filtros selecionados.
                             </td>
                           </tr>

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { SEO } from '../components/common/SEO';
 import { organizationSchema } from '../data/seoSchemas';
 import { FeasibilityModal } from '../components/viabilidade/FeasibilityModal';
-import { CoverageServiceType } from '../data/coverage/coverageConfig';
 import { CITIES } from '../data/cities';
 import { PartnerCarousel } from '../components/common/PartnerCarousel';
 import { QuickAccessBar } from '../components/common/QuickAccessBar';
