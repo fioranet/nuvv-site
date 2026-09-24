@@ -395,7 +395,7 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
           serviceType: 'Internet Fibra Óptica Residencial e Entretenimento',
           provider: {
             '@type': 'Organization',
-            name: 'Nuvv Telecomunicações',
+            name: 'Nuvv',
             url: 'https://nuvv.com.br/',
           },
           areaServed: {

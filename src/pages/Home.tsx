@@ -60,7 +60,7 @@ export const Home: React.FC<HomePageProps> = ({
   return (
     <div className="space-y-0 animate-fade-in">
       <SEO
-        title={`Nuvv Telecomunicações - Fibra Óptica Residencial & Soluções Corporativas em ${currentCity}`}
+        title={`Nuvv - Fibra Óptica Residencial & Soluções Corporativas em ${currentCity}`}
         description={`Internet 100% fibra óptica de até 1 Giga com Wi-Fi 6 e TV no App Watch em ${currentCity}. Soluções corporativas completas: Link Dedicado, Semi-Dedicado com IP Fixo, PABX em Nuvem, Nuvv Guard e Nuvv Digital.`}
         keywords={[
           `internet fibra ${currentCity}`,

@@ -25,7 +25,7 @@ export const SEO: React.FC<SEOProps> = ({
     'internet rapida',
   ],
   canonicalUrl,
-  ogImage = 'https://nuvv.com.br/images/hero/home_1.png',
+  ogImage = 'https://nuvv.com.br/images/external/favicon.png',
   ogType = 'website',
   schema,
   cityName,
@@ -71,10 +71,10 @@ export const SEO: React.FC<SEOProps> = ({
       : keywords;
     setMeta('keywords', combinedKeywords.join(', '));
     setMeta('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
-    setMeta('author', 'Nuvv Telecomunicações');
-    setMeta('publisher', 'Nuvv Telecomunicações');
+    setMeta('author', 'Nuvv');
+    setMeta('publisher', 'Nuvv');
     setMeta('language', 'Portuguese');
-    setMeta('classification', 'Telecomunicações, Internet Fibra Óptica, TI Corporativa, Segurança e Telefonia');
+    setMeta('classification', 'Internet Fibra Óptica, TI Corporativa, Segurança e Telefonia');
 
     // Geo Meta Tags (Local SEO & GEO)
     const effectiveCity = cityName || 'Suzano';
@@ -85,12 +85,14 @@ export const SEO: React.FC<SEOProps> = ({
     setMeta('og:title', fullTitle, true);
     setMeta('og:description', description, true);
     setMeta('og:image', ogImage, true);
-    setMeta('og:image:width', '1200', true);
-    setMeta('og:image:height', '630', true);
+    setMeta('og:image:secure_url', ogImage, true);
+    setMeta('og:image:type', 'image/png', true);
+    setMeta('og:image:width', '300', true);
+    setMeta('og:image:height', '300', true);
     setMeta('og:image:alt', fullTitle, true);
     setMeta('og:type', ogType, true);
     setMeta('og:locale', 'pt_BR', true);
-    setMeta('og:site_name', 'Nuvv Telecomunicações', true);
+    setMeta('og:site_name', 'Nuvv', true);
 
     const currentUrl = canonicalUrl || window.location.href;
     setMeta('og:url', currentUrl, true);
@@ -170,7 +172,7 @@ export const SEO: React.FC<SEOProps> = ({
         inLanguage: 'pt-BR',
         isPartOf: {
           '@type': 'WebSite',
-          name: 'Nuvv Telecomunicações',
+          name: 'Nuvv',
           url: 'https://nuvv.com.br/',
         },
       },

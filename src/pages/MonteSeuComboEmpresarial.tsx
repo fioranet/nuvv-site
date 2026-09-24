@@ -53,7 +53,7 @@ export const MonteSeuComboEmpresarial: React.FC<MonteSeuComboEmpresarialProps> =
           serviceType: 'Telecomunicações e TI Corporativa',
           provider: {
             '@type': 'Organization',
-            name: 'Nuvv Telecomunicações',
+            name: 'Nuvv',
             url: 'https://nuvv.com.br/',
           },
           areaServed: {
