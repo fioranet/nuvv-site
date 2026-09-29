@@ -165,11 +165,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
                 </Link>
               </li>
               <li>
-                <Link to="/postes" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
-                  Poste Inteligente
-                </Link>
-              </li>
-              <li>
                 <Link to="/social-wifi" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
                   Hotspot Wi-fi Social
                 </Link>

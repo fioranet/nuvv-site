@@ -553,8 +553,8 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
           </div>
 
           {/* Seletor de Abas por Nível de TV & Ofertas (Scroll horizontal no mobile com fácil leitura e toque) */}
-          <div className="space-y-3.5">
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-2 px-1 max-w-full sm:flex-wrap sm:justify-center">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2.5 sm:gap-3.5 overflow-x-auto scrollbar-none pb-2 px-1 max-w-full sm:flex-wrap sm:justify-center">
               {[
                 { id: 'destaques', label: 'Super Ofertas', sublabel: 'Combos Prontos', icon: Sparkles },
                 { id: 'completo', label: 'Completo', sublabel: 'Grade Máxima', icon: Crown },
@@ -572,22 +572,25 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                       setActiveTab(tab.id as ResidentialTabId);
                       setActiveCardCarouselIndex(0);
                     }}
-                    className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer flex-shrink-0 ${isSelected
-                      ? 'bg-nuvv-dark text-white shadow-md ring-2 ring-nuvv-dark scale-102'
-                      : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/90 shadow-2xs hover:scale-101'
-                      }`}
+                    className={`flex items-center space-x-3 sm:space-x-3.5 px-4.5 py-3 sm:px-6 sm:py-3.5 rounded-2xl transition-all cursor-pointer flex-shrink-0 ${
+                      isSelected
+                        ? 'bg-nuvv-dark text-white shadow-lg ring-2 ring-nuvv-dark scale-102'
+                        : 'bg-white hover:bg-slate-50 text-slate-800 border-2 border-slate-200/80 shadow-xs hover:border-slate-300 hover:scale-101'
+                    }`}
                   >
                     <div
-                      className={`w-7 h-7 rounded-xl flex items-center justify-center transition-colors ${isSelected ? 'bg-nuvv-purple text-white' : 'bg-slate-100 text-nuvv-purple'
-                        }`}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${
+                        isSelected ? 'bg-nuvv-purple text-white shadow-xs' : 'bg-slate-100 text-nuvv-purple'
+                      }`}
                     >
-                      <Icon className="w-4 h-4" />
+                      <Icon className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <span className="block leading-tight">{tab.label}</span>
+                      <span className="block text-sm sm:text-base font-black leading-tight tracking-tight">{tab.label}</span>
                       <span
-                        className={`text-[10px] font-medium block ${isSelected ? 'text-slate-300' : 'text-slate-400'
-                          }`}
+                        className={`text-xs sm:text-[13px] font-semibold block mt-0.5 leading-tight ${
+                          isSelected ? 'text-slate-300' : 'text-slate-500'
+                        }`}
                       >
                         {tab.sublabel}
                       </span>
