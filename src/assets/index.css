@@ -81,6 +81,22 @@
   .leaflet-container {
     background-color: #0b1120 !important;
   }
+
+  /* HBO Max animated glowing border */
+  @keyframes hboBorderBlink {
+    0%, 100% {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.8), 0 0 8px rgba(99, 102, 241, 0.5);
+    }
+    50% {
+      border-color: #cbd5e1;
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  .hbo-border-blink {
+    animation: hboBorderBlink 1.8s ease-in-out infinite;
+  }
 }
 
 

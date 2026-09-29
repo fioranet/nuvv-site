@@ -929,18 +929,17 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                                 return (
                                   <div
                                     key={idx}
-                                    className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden shadow-xs hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 ${
-                                      isHboMax ? 'bg-indigo-950/5' : 'bg-slate-900/5'
+                                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 ${
+                                      isHboMax
+                                        ? 'border-2 hbo-border-blink bg-indigo-950/5'
+                                        : 'bg-slate-900/5'
                                     }`}
                                     title={item.name}
                                   >
-                                    {isHboMax && (
-                                      <span className="absolute inset-0 rounded-2xl ring-2 ring-indigo-500 shadow-md shadow-indigo-500/25 animate-pulse pointer-events-none z-20" />
-                                    )}
                                     <img
                                       src={item.logo}
                                       alt={item.name}
-                                      className="w-full h-full object-cover rounded-2xl relative z-10"
+                                      className="w-full h-full object-cover rounded-2xl"
                                       onError={(e) => {
                                         e.currentTarget.style.display = 'none';
                                       }}
