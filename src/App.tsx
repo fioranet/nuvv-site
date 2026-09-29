@@ -15,6 +15,8 @@ import { SocialWifi } from './pages/SocialWifi';
 import { Multiatendimento } from './pages/Multiatendimento';
 import { SegurancaDigital } from './pages/SegurancaDigital';
 import { ComunicacaoInteligente } from './pages/ComunicacaoInteligente';
+import { MensageriaSmsRcs } from './pages/MensageriaSmsRcs';
+import { AgenteIaVoz } from './pages/AgenteIaVoz';
 import { MonteSeuComboEmpresarial } from './pages/MonteSeuComboEmpresarial';
 import { MonteSeuComboResidencial } from './pages/MonteSeuComboResidencial';
 import { Viabilidade } from './pages/Viabilidade';
@@ -341,6 +343,72 @@ export function App() {
             path="/seguranca-digital"
             element={
               <SegurancaDigital
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/mensageria"
+            element={
+              <MensageriaSmsRcs
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/mensageria-sms-rcs"
+            element={
+              <MensageriaSmsRcs
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/sms-rcs"
+            element={
+              <MensageriaSmsRcs
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/agente-ia-voz"
+            element={
+              <AgenteIaVoz
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/agente-de-voz"
+            element={
+              <AgenteIaVoz
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/ia-voz"
+            element={
+              <AgenteIaVoz
+                currentCity={currentCity}
                 onOpenLeadModal={handleOpenLeadModal}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenCitySelector={() => setIsCityModalOpen(true)}

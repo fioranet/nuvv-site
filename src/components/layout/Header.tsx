@@ -81,9 +81,16 @@ export const Header: React.FC<HeaderProps> = ({
       isDirectPage: true,
     },
     {
-      name: 'Comunicação Digital',
-      path: '/comunicacao-inteligente',
-      description: 'Mensageria e Agentes de Voz IA',
+      name: 'Mensageria SMS & RCS',
+      path: '/mensageria',
+      description: 'Notificações com mídia rica e SMS oficial',
+      icon: Send,
+      isDirectPage: true,
+    },
+    {
+      name: 'Agente IA de Voz',
+      path: '/agente-ia-voz',
+      description: 'Atendimento telefônico humanizado 24/7',
       icon: Bot,
       isDirectPage: true,
     },
@@ -106,6 +113,9 @@ export const Header: React.FC<HeaderProps> = ({
     location.pathname.startsWith('/social-wifi') ||
     location.pathname.startsWith('/multiatendimento') ||
     location.pathname.startsWith('/seguranca-digital') ||
+    location.pathname.startsWith('/mensageria') ||
+    location.pathname.startsWith('/agente-ia-voz') ||
+    location.pathname.startsWith('/agente-de-voz') ||
     location.pathname.startsWith('/comunicacao-inteligente');
 
   const isSolutionsActive =
@@ -114,6 +124,9 @@ export const Header: React.FC<HeaderProps> = ({
     location.pathname.startsWith('/social-wifi') ||
     location.pathname.startsWith('/multiatendimento') ||
     location.pathname.startsWith('/seguranca-digital') ||
+    location.pathname.startsWith('/mensageria') ||
+    location.pathname.startsWith('/agente-ia-voz') ||
+    location.pathname.startsWith('/agente-de-voz') ||
     location.pathname.startsWith('/comunicacao-inteligente');
 
   const handleMouseEnterDropdown = () => {
@@ -250,14 +263,14 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setSolutionsDropdownOpen(!solutionsDropdownOpen)}
                 className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all flex items-center space-x-1.5 cursor-pointer ${
                   isSolutionsActive || solutionsDropdownOpen
-                    ? 'text-nuvv-purple font-bold bg-indigo-50/70'
-                    : 'text-gray-600 hover:text-nuvv-purple hover:bg-gray-50'
+                    ? 'text-emerald-700 font-bold bg-emerald-50'
+                    : 'text-gray-600 hover:text-emerald-700 hover:bg-gray-50'
                 }`}
               >
                 <span>Soluções</span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    solutionsDropdownOpen ? 'transform rotate-180 text-nuvv-purple' : 'text-gray-400'
+                    solutionsDropdownOpen ? 'transform rotate-180 text-emerald-700' : 'text-gray-400'
                   }`}
                 />
               </button>
@@ -280,21 +293,21 @@ export const Header: React.FC<HeaderProps> = ({
                         onClick={() => handleSolutionClick(item)}
                         className={`w-full text-left p-2.5 rounded-xl transition-all flex items-start space-x-3 group cursor-pointer ${
                           isCurrent
-                            ? 'bg-nuvv-purple/10 text-nuvv-purple'
+                            ? 'bg-emerald-50 text-emerald-800'
                             : 'hover:bg-slate-50 text-gray-700 hover:text-nuvv-dark'
                         }`}
                       >
                         <div
                           className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                             isCurrent
-                              ? 'bg-nuvv-purple text-white'
-                              : 'bg-indigo-50 text-nuvv-purple group-hover:bg-nuvv-purple group-hover:text-white transition-colors'
+                              ? 'bg-emerald-600 text-white shadow-xs'
+                              : 'bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white transition-colors'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-gray-900 group-hover:text-nuvv-purple transition-colors flex items-center space-x-1">
+                          <div className="text-xs font-bold text-gray-900 group-hover:text-emerald-700 transition-colors flex items-center space-x-1">
                             <span>{item.name}</span>
                           </div>
                           <div className="text-[11px] text-gray-500 line-clamp-1">
@@ -421,12 +434,12 @@ export const Header: React.FC<HeaderProps> = ({
                 className="w-full px-3 py-2.5 flex items-center justify-between text-base font-semibold text-gray-700 hover:bg-gray-50"
               >
                 <div className="flex items-center space-x-2">
-                  <Layers className="w-4 h-4 text-nuvv-purple" />
+                  <Layers className="w-4 h-4 text-emerald-600" />
                   <span>Soluções</span>
                 </div>
                 <ChevronDown
                   className={`w-4 h-4 text-gray-400 transition-transform ${
-                    mobileSolutionsOpen ? 'transform rotate-180 text-nuvv-purple' : ''
+                    mobileSolutionsOpen ? 'transform rotate-180 text-emerald-600' : ''
                   }`}
                 />
               </button>
@@ -440,9 +453,9 @@ export const Header: React.FC<HeaderProps> = ({
                         key={item.name}
                         type="button"
                         onClick={() => handleSolutionClick(item)}
-                        className="w-full text-left p-2.5 rounded-lg bg-white border border-gray-100 hover:border-nuvv-purple/40 flex items-center space-x-3"
+                        className="w-full text-left p-2.5 rounded-lg bg-white border border-gray-100 hover:border-emerald-500/40 flex items-center space-x-3"
                       >
-                        <div className="w-7 h-7 rounded-md bg-indigo-50 text-nuvv-purple flex items-center justify-center flex-shrink-0">
+                        <div className="w-7 h-7 rounded-md bg-emerald-50 text-emerald-700 flex items-center justify-center flex-shrink-0">
                           <Icon className="w-3.5 h-3.5" />
                         </div>
                         <div className="leading-tight">

@@ -100,11 +100,21 @@ export const BusinessLeadModal: React.FC<BusinessLeadModalProps> = ({
     sId.includes('antivirus') ||
     sTitle.includes('segurança') ||
     sTitle.includes('kaspersky');
+  const isMensageria =
+    sId.includes('mensageria') ||
+    sId.includes('sms') ||
+    sId.includes('rcs') ||
+    sTitle.includes('mensageria') ||
+    sTitle.includes('sms') ||
+    sTitle.includes('rcs');
+  const isVoiceAi =
+    sId.includes('voz') ||
+    sId.includes('agente-ia') ||
+    sTitle.includes('voz') ||
+    sTitle.includes('agente ia');
   const isComunicacao =
     sId.includes('comunicacao') ||
-    sId.includes('mensageria') ||
-    sTitle.includes('comunicação') ||
-    sTitle.includes('mensageria');
+    sTitle.includes('comunicação');
   const isMultiatendimento =
     sId.includes('multi') ||
     sId.includes('chatbot') ||
@@ -122,6 +132,8 @@ export const BusinessLeadModal: React.FC<BusinessLeadModalProps> = ({
     isVision ||
     isSocialWifi ||
     isSegurancaDigital ||
+    isMensageria ||
+    isVoiceAi ||
     isComunicacao ||
     isMultiatendimento;
 
@@ -132,7 +144,9 @@ export const BusinessLeadModal: React.FC<BusinessLeadModalProps> = ({
     if (isSocialWifi) return 'Explorar Hotspot Wi-Fi & Planos';
     if (isMultiatendimento) return 'Explorar Multiatendimento & Planos';
     if (isSegurancaDigital) return 'Explorar Segurança Digital & Planos';
-    if (isComunicacao) return 'Explorar Comunicação & Planos';
+    if (isMensageria) return 'Explorar Mensageria SMS & RCS';
+    if (isVoiceAi) return 'Explorar Agente IA de Voz';
+    if (isComunicacao) return 'Explorar Comunicação Digital';
     return 'Explorar Solução & Planos';
   };
 
@@ -156,6 +170,12 @@ export const BusinessLeadModal: React.FC<BusinessLeadModalProps> = ({
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (isSegurancaDigital) {
       navigate('/seguranca-digital');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (isMensageria) {
+      navigate('/mensageria');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (isVoiceAi) {
+      navigate('/agente-ia-voz');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (isComunicacao) {
       navigate('/comunicacao-inteligente');

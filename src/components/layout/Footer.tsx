@@ -20,6 +20,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
     location.pathname.startsWith('/social-wifi') ||
     location.pathname.startsWith('/multiatendimento') ||
     location.pathname.startsWith('/seguranca-digital') ||
+    location.pathname.startsWith('/mensageria') ||
+    location.pathname.startsWith('/agente-ia-voz') ||
+    location.pathname.startsWith('/agente-de-voz') ||
     location.pathname.startsWith('/comunicacao-inteligente');
 
   return (
@@ -169,6 +172,16 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
               <li>
                 <Link to="/social-wifi" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
                   Hotspot Wi-fi Social
+                </Link>
+              </li>
+              <li>
+                <Link to="/mensageria" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
+                  Mensageria SMS & RCS
+                </Link>
+              </li>
+              <li>
+                <Link to="/agente-ia-voz" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
+                  Agente IA de Voz
                 </Link>
               </li>
             </ul>

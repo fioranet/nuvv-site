@@ -917,22 +917,33 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                           {/* Vitrine de Logotipos Oficiais */}
                           <div className="space-y-2">
                             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-h-[44px]">
-                              {visibleApps.map((item, idx) => (
-                                <div
-                                  key={idx}
-                                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden shadow-xs hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 bg-slate-900/5"
-                                  title={item.name}
-                                >
-                                  <img
-                                    src={item.logo}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover rounded-2xl"
-                                    onError={(e) => {
-                                      e.currentTarget.style.display = 'none';
-                                    }}
-                                  />
-                                </div>
-                              ))}
+                              {visibleApps.map((item, idx) => {
+                                const isHboMax =
+                                  item.name.toLowerCase().includes('max') ||
+                                  item.name.toLowerCase().includes('hbo') ||
+                                  item.logo?.toLowerCase().includes('hbomax');
+
+                                return (
+                                  <div
+                                    key={idx}
+                                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden shadow-xs hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 ${
+                                      isHboMax
+                                        ? 'ring-2 ring-indigo-500/80 shadow-md shadow-indigo-500/25 animate-pulse bg-indigo-950/5'
+                                        : 'bg-slate-900/5'
+                                    }`}
+                                    title={item.name}
+                                  >
+                                    <img
+                                      src={item.logo}
+                                      alt={item.name}
+                                      className="w-full h-full object-cover rounded-2xl"
+                                      onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                      }}
+                                    />
+                                  </div>
+                                );
+                              })}
 
                               {/* Badge +N posicionado no FINAL da fileira: abre mini-modal com os ícones que faltam */}
                               {overflowCount > 0 && (

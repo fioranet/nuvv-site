@@ -32,12 +32,16 @@ import { siteConfig } from '../../data/siteConfig';
 
 interface SmartCommunicationSectionProps {
   onOpenLeadModal?: (planOrServiceName?: string) => void;
+  defaultTab?: 'messaging' | 'voice-ai';
+  hideTabs?: boolean;
 }
 
 export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps> = ({
   onOpenLeadModal,
+  defaultTab = 'messaging',
+  hideTabs = false,
 }) => {
-  const [activeTab, setActiveTab] = useState<'messaging' | 'voice-ai'>('messaging');
+  const [activeTab, setActiveTab] = useState<'messaging' | 'voice-ai'>(defaultTab);
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [audioProgress, setAudioProgress] = useState<number>(0);
@@ -141,36 +145,38 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
           </p>
 
           {/* Interactive Mode Tabs */}
-          <div className="inline-flex p-1.5 bg-slate-200/80 backdrop-blur-md rounded-2xl mt-8 border border-slate-300/60 shadow-inner">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab('messaging');
-                setIsPlaying(false);
-              }}
-              className={`flex items-center space-x-2.5 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
-                activeTab === 'messaging'
-                  ? 'bg-white text-nuvv-purple shadow-md shadow-nuvv-purple/10'
-                  : 'text-gray-600 hover:text-nuvv-dark hover:bg-white/50'
-              }`}
-            >
-              <Send className="w-4 h-4" />
-              <span>Mensageria (SMS & RCS)</span>
-            </button>
+          {!hideTabs && (
+            <div className="inline-flex p-1.5 bg-slate-200/80 backdrop-blur-md rounded-2xl mt-8 border border-slate-300/60 shadow-inner">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('messaging');
+                  setIsPlaying(false);
+                }}
+                className={`flex items-center space-x-2.5 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                  activeTab === 'messaging'
+                    ? 'bg-white text-emerald-700 shadow-md shadow-emerald-700/10'
+                    : 'text-gray-600 hover:text-nuvv-dark hover:bg-white/50'
+                }`}
+              >
+                <Send className="w-4 h-4" />
+                <span>Mensageria (SMS & RCS)</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('voice-ai')}
-              className={`flex items-center space-x-2.5 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
-                activeTab === 'voice-ai'
-                  ? 'bg-nuvv-purple text-white shadow-md shadow-nuvv-purple/30'
-                  : 'text-gray-600 hover:text-nuvv-dark hover:bg-white/50'
-              }`}
-            >
-              <Bot className="w-4 h-4 text-emerald-400" />
-              <span>Agente de Voz com IA</span>
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('voice-ai')}
+                className={`flex items-center space-x-2.5 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                  activeTab === 'voice-ai'
+                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                    : 'text-gray-600 hover:text-nuvv-dark hover:bg-white/50'
+                }`}
+              >
+                <Bot className="w-4 h-4 text-emerald-300" />
+                <span>Agente IA de Voz</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* TAB 1: MENSAGERIA (SMS VS RCS SHOWCASE) */}
@@ -419,9 +425,9 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
                 <div>
                   <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-nuvv-purple/30 border border-nuvv-purple/50 text-emerald-400 text-xs font-bold mb-2">
                     <Radio className="w-3.5 h-3.5 animate-pulse" />
-                    <span>DEMONSTRAÇÃO DE VOZ E TELEFONIA IA</span>
+                    <span>DEMONSTRAÇÃO DE AGENTE IA DE VOZ</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-black">Ouça nosso Agente IA em Ação</h3>
+                  <h3 className="text-2xl sm:text-3xl font-black">Ouça nosso Agente IA de Voz em Ação</h3>
                   <p className="text-xs sm:text-sm text-gray-400 mt-1">
                     Selecione um cenário de negócio e acompanhe a conversa natural entre o cliente e nosso agente virtual.
                   </p>
@@ -559,7 +565,7 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
                 </p>
                 <button
                   type="button"
-                  onClick={() => handleConsultantClick('Agente de Voz IA')}
+                  onClick={() => handleConsultantClick('Agente IA de Voz')}
                   className="px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs sm:text-sm whitespace-nowrap shadow-lg shadow-emerald-500/20 transition-all active:scale-98 flex items-center space-x-2"
                 >
                   <span>Agendar Demonstração ao Vivo</span>
