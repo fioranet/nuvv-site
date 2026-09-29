@@ -428,22 +428,22 @@ export const PlanCard: React.FC<PlanCardProps> = ({
               return (
                 <div
                   key={item.id}
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-xs hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 ${
-                    item.highlightClass ||
-                    (isHboMax
-                      ? 'ring-2 ring-indigo-500/80 shadow-md shadow-indigo-500/25 animate-pulse bg-indigo-950/5'
-                      : 'bg-slate-50 border border-slate-200/80')
+                  className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-xs hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 ${
+                    item.highlightClass || (isHboMax ? 'bg-indigo-950/5' : 'bg-slate-50 border border-slate-200/80')
                   }`}
                   title={item.name}
                 >
+                  {isHboMax && (
+                    <span className="absolute inset-0 rounded-xl ring-2 ring-indigo-500 shadow-md shadow-indigo-500/25 animate-pulse pointer-events-none z-20" />
+                  )}
                   {item.logo ? (
                     <img
                       src={item.logo}
                       alt={item.name}
-                      className="w-full h-full object-contain rounded-xl"
+                      className="w-full h-full object-contain rounded-xl relative z-10"
                     />
                   ) : (
-                    item.icon
+                    <span className="relative z-10">{item.icon}</span>
                   )}
                 </div>
               );
