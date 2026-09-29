@@ -295,6 +295,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
     // 1. Apps from base tier
     tierPricing.includedApps.forEach((app) => {
       const lowerName = app.name.toLowerCase();
+      if (lowerName.includes('awdio')) return;
       const desc =
         appDescriptions[lowerName] ||
         (lowerName.includes('globo') ? 'Todos os Canais Abertos e Fechados.' : 'Filmes, séries e conteúdos sob demanda.');
@@ -536,7 +537,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
         {/* Glow de fundo sutil */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-64 bg-radial from-nuvv-purple/5 to-transparent pointer-events-none blur-2xl" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10 relative">
+        <div className="max-w-7xl xl:max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10 relative">
           {/* Cabeçalho da Vitrine de Planos */}
           <div className="max-w-5xl mx-auto text-center space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-nuvv-purple/10 border border-nuvv-purple/20 text-nuvv-purple text-xs font-black tracking-wider uppercase shadow-2xs">
@@ -624,7 +625,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                 ? 'max-w-md mx-auto'
                 : activeOffers.length === 2
                   ? 'flex md:grid md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto overflow-x-auto md:overflow-visible snap-x snap-mandatory pt-2 pb-6 px-4 md:px-0 scrollbar-none items-stretch'
-                  : 'flex md:grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto overflow-x-auto md:overflow-visible snap-x snap-mandatory pt-2 pb-6 px-4 md:px-0 scrollbar-none items-stretch';
+                  : 'flex md:grid md:grid-cols-3 gap-6 lg:gap-6 xl:gap-8 max-w-7xl xl:max-w-[1360px] mx-auto overflow-x-auto md:overflow-visible snap-x snap-mandatory pt-2 pb-6 px-4 md:px-0 scrollbar-none items-stretch';
 
             return (
               <div className="space-y-4">
@@ -838,12 +839,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                     // 1. Watch sempre presente
                     allAppsList.push({ name: 'Watch', logo: '/images/external/watch-.png' });
 
-                    // 2. Awdio sempre logo após a Watch (exceto cortesia)
-                    if (!isCortesia) {
-                      allAppsList.push({ name: 'Awdio', logo: '/images/external/awdio.png' });
-                    }
-
-                    // 3. Sony One e Universal+ nos planos acima da cortesia (com exceções de regra)
+                    // 2. Sony One e Universal+ nos planos acima da cortesia (com exceções de regra)
                     if (isAboveCortesia && !isMaisEsportes) {
                       allAppsList.push({ name: 'Sony One', logo: '/images/external/sony_one.png' });
                     }
@@ -851,14 +847,15 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                       allAppsList.push({ name: 'Universal+', logo: '/images/external/universal_plus.png' });
                     }
 
-                    // 4. Demais apps do pacote (Premiere, Combate, Telecine, HBO Max, etc.)
+                    // 3. Demais apps do pacote (Premiere, Combate, Telecine, HBO Max, etc.) - sem Awdio nos cards
                     pkg.heroLogos
                       .filter(
                         (item) =>
                           item.name.toLowerCase() !== 'watch' &&
                           !item.name.toLowerCase().includes('globo') &&
                           !item.name.toLowerCase().includes('sony') &&
-                          !item.name.toLowerCase().includes('universal')
+                          !item.name.toLowerCase().includes('universal') &&
+                          !item.name.toLowerCase().includes('awdio')
                       )
                       .forEach((item) => allAppsList.push(item));
 
@@ -866,10 +863,10 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                     allAppsList.sort((a, b) => getBrandRank(a.name) - getBrandRank(b.name));
 
                     // Limite adaptativo de slots visíveis:
-                    // Em abas com até 2 cards (ex: Completo), os cards são mais largos e comportam 8 slots sem quebra.
-                    // Em abas com 3 cards (ex: Destaques), o limite é 6 slots.
+                    // Em abas com até 2 cards (ex: Completo), os cards comportam 8 slots sem quebra.
+                    // Em abas com 3 cards (ex: Destaques), o card alargado comporta 7 slots confortavelmente.
                     const isWideCardLayout = activeOffers.length <= 2;
-                    const maxVisibleSlots = isWideCardLayout ? 8 : 6;
+                    const maxVisibleSlots = isWideCardLayout ? 8 : 7;
                     let visibleApps = allAppsList;
                     let hiddenApps: { name: string; logo: string }[] = [];
                     let overflowCount = 0;
@@ -919,11 +916,11 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
 
                           {/* Vitrine de Logotipos Oficiais */}
                           <div className="space-y-2">
-                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-h-[48px]">
+                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-h-[44px]">
                               {visibleApps.map((item, idx) => (
                                 <div
                                   key={idx}
-                                  className="w-11 h-11 rounded-2xl overflow-hidden shadow-xs hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 bg-slate-900/5"
+                                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden shadow-xs hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 bg-slate-900/5"
                                   title={item.name}
                                 >
                                   <img

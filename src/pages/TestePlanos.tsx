@@ -1787,7 +1787,7 @@ export const TestePlanos: React.FC<TestePlanosProps> = ({
                 ? 'max-w-md mx-auto'
                 : activeOffers.length === 2
                 ? 'grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto items-stretch'
-                : 'grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-stretch';
+                : 'grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-6 xl:gap-8 max-w-7xl xl:max-w-[1360px] mx-auto items-stretch';
 
             return (
               <div className={gridLayoutClass}>
@@ -1987,10 +1987,6 @@ export const TestePlanos: React.FC<TestePlanosProps> = ({
               // 1. Watch sempre presente
               allAppsList.push({ name: 'Watch', logo: '/images/external/watch-.png' });
 
-              // 2. Awdio sempre logo após a Watch (exceto cortesia)
-              if (!isCortesia) {
-                allAppsList.push({ name: 'Awdio', logo: '/images/external/awdio.png' });
-              }
 
               // 3. Sony One e Universal+ nos planos acima da cortesia
               if (isAboveCortesia) {
@@ -2005,7 +2001,7 @@ export const TestePlanos: React.FC<TestePlanosProps> = ({
                     item.name.toLowerCase() !== 'watch' &&
                     !item.name.toLowerCase().includes('globo') &&
                     !item.name.toLowerCase().includes('sony') &&
-                    !item.name.toLowerCase().includes('universal')
+                    !item.name.toLowerCase().includes('universal') && !item.name.toLowerCase().includes('awdio')
                 )
                 .forEach((item) => allAppsList.push(item));
 
@@ -2016,7 +2012,7 @@ export const TestePlanos: React.FC<TestePlanosProps> = ({
               // Em abas com 2 cards (como 'completo'), os cards são mais largos e comportam 8 slots perfeitamente sem quebra.
               // Em abas com 3 cards (como 'destaques'), o limite é 6 slots.
               const isWideCardLayout = activeOffers.length <= 2;
-              const maxVisibleSlots = isWideCardLayout ? 8 : 6;
+              const maxVisibleSlots = isWideCardLayout ? 8 : 7;
               let visibleApps = allAppsList;
               let hiddenApps: { name: string; logo: string }[] = [];
               let overflowCount = 0;

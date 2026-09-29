@@ -275,7 +275,11 @@ export const PlanSelector: React.FC<PlanSelectorProps> = ({
                       return 99;
                     };
                     const sortedApps = [...config.includedApps]
-                      .filter((app) => !app.name.toLowerCase().includes('globo'))
+                      .filter(
+                        (app) =>
+                          !app.name.toLowerCase().includes('globo') &&
+                          !app.name.toLowerCase().includes('awdio')
+                      )
                       .sort((a, b) => getBrandRank(a.name) - getBrandRank(b.name));
 
                     return (

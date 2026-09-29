@@ -557,7 +557,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 9,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Sony One', logo: '/images/external/sony_one.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
     ],
@@ -577,7 +576,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 19,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Sony One', logo: '/images/external/sony_one.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
       { name: 'Telecine', logo: '/images/external/telecine.png' },
@@ -598,7 +596,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 29,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Sony One', logo: '/images/external/sony_one.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
     ],
@@ -618,7 +615,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 39,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Sony One', logo: '/images/external/sony_one.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
       { name: 'Telecine', logo: '/images/external/telecine.png' },
@@ -639,7 +635,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 49,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Sony One', logo: '/images/external/sony_one.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
       { name: 'HBO Max', logo: '/images/external/hbomax.png' },
@@ -660,7 +655,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 59,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Sony One', logo: '/images/external/sony_one.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
       { name: 'Premiere', logo: '/images/external/premiere.png' },
@@ -682,7 +676,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 69,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Sony One', logo: '/images/external/sony_one.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
       { name: 'Premiere', logo: '/images/external/premiere.png' },
@@ -705,7 +698,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 89,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Sony One', logo: '/images/external/sony_one.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
       { name: 'Premiere', logo: '/images/external/premiere.png' },
@@ -729,7 +721,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 29,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Sony One', logo: '/images/external/sony_one.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
       { name: 'Telecine', logo: '/images/external/telecine.png' },
@@ -751,7 +742,6 @@ export const TIER_CONFIG: Record<EntertainmentTier, TierConfigItem> = {
     extraPriceLabel: '+ R$ 39,90/mês',
     includedApps: [
       { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Awdio', logo: '/images/external/awdio.png' },
       { name: 'Universal+', logo: '/images/external/universal_plus.png' },
       { name: 'Premiere', logo: '/images/external/premiere.png' },
       { name: 'Combate', logo: '/images/external/combate.png' },

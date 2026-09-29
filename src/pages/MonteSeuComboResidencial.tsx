@@ -173,7 +173,7 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
 
     baseApps.forEach((app) => {
       const lowerName = app.name.toLowerCase();
-      if (lowerName.includes('globo')) return;
+      if (lowerName.includes('globo') || lowerName.includes('awdio')) return;
       if (seenNames.has(lowerName)) return;
       seenNames.add(lowerName);
 
@@ -197,7 +197,7 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
         const addon = PLAN_ADDONS[key];
         if (!addon) return;
         const lowerName = addon.name.toLowerCase();
-        if (lowerName.includes('globo')) return;
+        if (lowerName.includes('globo') || lowerName.includes('awdio')) return;
         if (seenNames.has(lowerName) || seenNames.has(addon.id.toLowerCase())) return;
         seenNames.add(lowerName);
 
@@ -251,8 +251,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
     if (activeAddons.combate) {
       hls.push('Combate incluso com o melhor das artes marciais e lutas ao vivo');
     }
-
-    hls.push('App Awdio com audiobooks e podcasts no NuvvPlay (Watch)');
 
     return hls;
   }, [detailModalPlan, effectiveTvConfig, activeAddons]);
@@ -414,7 +412,11 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
           {/* Plan Cards: 2-Column Grid on Tablet/Desktop for 400 Mega and 800 Mega */}
           <div className="relative mt-8">
             <div
-              className="flex md:grid md:grid-cols-2 gap-6 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-6 pt-2 px-2 md:px-0 max-w-4xl mx-auto items-stretch scrollbar-none"
+              className={`flex md:grid ${
+                RESIDENTIAL_PLANS.length >= 3
+                  ? 'md:grid-cols-3 max-w-7xl xl:max-w-[1360px]'
+                  : 'md:grid-cols-2 max-w-4xl'
+              } gap-6 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-6 pt-2 px-2 md:px-0 mx-auto items-stretch scrollbar-none`}
               onScroll={(e) => {
                 const scrollLeft = (e.target as HTMLElement).scrollLeft;
                 const width = (e.target as HTMLElement).clientWidth;

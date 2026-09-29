@@ -57,12 +57,14 @@ export const PlanCard: React.FC<PlanCardProps> = ({
     return 99;
   };
 
-  // Base tier apps ordenados pela hierarquia de marcas
+  // Base tier apps ordenados pela hierarquia de marcas (Awdio ocultado dos cards)
   const sortedTierApps = [...currentPricing.includedApps]
     .filter(
       (app) =>
         !app.name.toLowerCase().includes('globo') &&
-        !app.logo.toLowerCase().includes('canais_globo')
+        !app.logo.toLowerCase().includes('canais_globo') &&
+        !app.name.toLowerCase().includes('awdio') &&
+        !app.logo.toLowerCase().includes('awdio')
     )
     .sort((a, b) => getBrandRank(a.name) - getBrandRank(b.name));
 
@@ -119,6 +121,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
     selectedAddonList
       .filter(
         (addon) =>
+          !addon.name.toLowerCase().includes('awdio') &&
           !currentPricing.includedApps.some(
             (app) => app.name.toLowerCase() === addon.name.toLowerCase()
           )
@@ -191,8 +194,8 @@ export const PlanCard: React.FC<PlanCardProps> = ({
   // Em cards largos (como 2 cards na tela), containerWidth ~370-420px comporta 8 a 9 slots confortavelmente.
   const slotWidth = 46; // 38px ícone + 8px gap
   const maxVisibleSlots = containerWidth > 0
-    ? Math.max(5, Math.floor((containerWidth + 8) / slotWidth))
-    : 8; // fallback padrão otimista para cards médios/largos
+    ? Math.max(7, Math.floor((containerWidth + 8) / slotWidth))
+    : 8; // fallback padrão para cards médios/largos
 
   let visibleApps = allCardApps;
   let hiddenApps: typeof allCardApps = [];
