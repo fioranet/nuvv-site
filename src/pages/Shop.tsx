@@ -71,12 +71,11 @@ export const Shop: React.FC<ShopPageProps> = ({
   return (
     <div className="space-y-0 animate-fade-in">
       <SEO
-        title="Nuvv Shop - Dispositivos Fire TV, Echo Alexa, Câmeras Wi-Fi e Roteadores Amazon"
-        description="Compre os melhores dispositivos homologados para a sua fibra Nuvv via Amazon Brasil. Fire TV Stick, Echo Alexa, Câmeras Intelbras e Roteadores Wi-Fi 6 com entrega Prime."
+        title="Nuvv Shop - Dispositivos Fire TV, Echo Alexa e Roteadores Amazon"
+        description="Compre os melhores dispositivos homologados para a sua fibra Nuvv via Amazon Brasil. Fire TV Stick, Echo Alexa e Roteadores Wi-Fi 6 com entrega Prime."
         keywords={[
           'fire tv stick nuvvplay',
           'echo dot alexa nuvv',
-          'camera intelbras wifi amazon',
           'roteador wifi 6 tplink amazon',
           'loja oficial nuvv amazon',
         ]}

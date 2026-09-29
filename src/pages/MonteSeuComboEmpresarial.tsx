@@ -33,7 +33,7 @@ export const MonteSeuComboEmpresarial: React.FC<MonteSeuComboEmpresarialProps> =
     <div className="space-y-0 animate-fade-in">
       <SEO
         title={`Monte seu Combo Empresarial Sob Medida em ${currentCity} | Nuvv Empresas`}
-        description={`Personalize a conectividade e soluções da sua empresa em ${currentCity}. Combine Banda Larga ou Semi-Dedicado (IP Fixo IPv4 e SLA 12h) com PABX em Nuvem, Telefonia IP, Nuvv Digital CRM, Câmeras Nuvv Guard e TV Corporativa Esporte e Notícia.`}
+        description={`Personalize a conectividade e soluções da sua empresa em ${currentCity}. Combine Banda Larga ou Semi-Dedicado (IP Fixo IPv4 e SLA 12h) com PABX em Nuvem, Telefonia IP, Nuvv Digital CRM e TV Corporativa Esporte e Notícia.`}
         cityName={currentCity}
         keywords={[
           'combo empresarial',
@@ -42,7 +42,6 @@ export const MonteSeuComboEmpresarial: React.FC<MonteSeuComboEmpresarialProps> =
           'pabx em nuvem empresas',
           'telefonia ip empresas',
           'nuvv digital multiatendimento',
-          'câmeras nuvv guard corporativo',
           'tv corporativa esporte e noticia',
           'internet empresarial fibra',
         ]}

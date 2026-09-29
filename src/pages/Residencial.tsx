@@ -8,9 +8,6 @@ import {
   RESIDENTIAL_PLANS,
   TIER_CONFIG,
   PLAN_ADDONS,
-  VisionAddonConfig,
-  calculateVisionAddonPrice,
-  getGuardSetupDetails,
   resolveTierAndAddons,
 } from '../data/plans';
 import {
@@ -21,7 +18,6 @@ import {
 import { PlanSelector } from '../components/residencial/PlanSelector';
 import { PlanCard } from '../components/residencial/PlanCard';
 import { TelemedicinaSection } from '../components/residencial/TelemedicinaSection';
-import { GuardFamilySection } from '../components/residencial/GuardFamilySection';
 import { StreamingDevices } from '../components/residencial/StreamingDevices';
 import { ValueAddedModals } from '../components/residencial/ValueAddedModals';
 import { SuperAppSection } from '../components/common/SuperAppSection';
@@ -164,11 +160,6 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
     telecine: true,
     hboMax: true,
   });
-  const [visionConfig, setVisionConfig] = useState<VisionAddonConfig>({
-    planId: null,
-    cameraCount: 1,
-    withComodato: false,
-  });
   const [detailModalPlan, setDetailModalPlan] = useState<ResidentialPlan | null>(null);
   const [channelsModalTier, setChannelsModalTier] = useState<EntertainmentTier | null>(null);
   const [channelsModalProfile, setChannelsModalProfile] = useState<ResidentialProfileId | null>(null);
@@ -263,7 +254,6 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
       plan,
       effectiveTier,
       activeAddons,
-      visionConfig,
       totalPrice,
       cityName: currentCity,
     });
@@ -336,58 +326,11 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
         });
       });
 
-    // 3. Vision Addons if configured
-    if (
-      visionConfig.planId ||
-      visionConfig.cameraPlanId ||
-      visionConfig.intercomPlanId ||
-      visionConfig.tagPlanId ||
-      visionConfig.withComodato
-    ) {
-      if (
-        visionConfig.cameraPlanId ||
-        (visionConfig.planId &&
-          (visionConfig.planId.includes('camera') ||
-            visionConfig.planId.includes('byod')))
-      ) {
-        const camCount = Math.max(1, visionConfig.cameraCount || 1);
-        items.push({
-          id: 'vision-camera',
-          name: `Nuvv Guard (${camCount}x Câmera${camCount > 1 ? 's' : ''})`,
-          description: 'Gravação contínua na nuvem e monitoramento ao vivo no App Nuvv Guard.',
-          category: 'vision',
-        });
-      }
-      if (
-        visionConfig.intercomPlanId ||
-        (visionConfig.planId && visionConfig.planId.includes('intercom'))
-      ) {
-        items.push({
-          id: 'vision-intercom',
-          name: 'Interfone Virtual QR Code',
-          description: 'Receba chamadas de vídeo dos visitantes no app Nuvv Guard.',
-          category: 'vision',
-        });
-      }
-      if (
-        visionConfig.tagPlanId ||
-        (visionConfig.planId && visionConfig.planId.includes('tag'))
-      ) {
-        const tCount = Math.max(1, visionConfig.tagCount || 1);
-        items.push({
-          id: 'vision-tag',
-          name: `TAG de Rastreamento (${tCount}x)`,
-          description: 'Localização de objetos, chaves e pets no app Nuvv Guard.',
-          category: 'vision',
-        });
-      }
-    }
-
     return items;
-  }, [detailModalPlan, effectiveTier, activeAddons, visionConfig]);
+  }, [detailModalPlan, effectiveTier, activeAddons]);
 
   const addonTotal = React.useMemo(() => {
-    const regularAddons = Object.entries(activeAddons)
+    return Object.entries(activeAddons)
       .filter(([_, active]) => active)
       .map(([k]) => {
         const isIncluded = TIER_CONFIG[effectiveTier]?.includedAddons?.includes(k);
@@ -395,11 +338,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
         return PLAN_ADDONS[k]?.price || 0;
       })
       .reduce((acc, price) => acc + price, 0);
-    const visionTotal = calculateVisionAddonPrice(visionConfig);
-    return regularAddons + visionTotal;
-  }, [activeAddons, visionConfig, effectiveTier]);
-
-  const guardSetup = React.useMemo(() => getGuardSetupDetails(visionConfig), [visionConfig]);
+  }, [activeAddons, effectiveTier]);
 
   const modalPromoPrice = detailModalPlan
     ? Number((detailModalPlan.tierPricing[effectiveTier].promoPrice + addonTotal).toFixed(2))
@@ -419,7 +358,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
     <div className="space-y-0 animate-fade-in">
       <SEO
         title={`Planos de Internet Fibra Residencial de até 1 Giga em ${currentCity} | Nuvv Fibra`}
-        description={`Conheça os planos 100% fibra óptica da Nuvv em ${currentCity}. Ultravelocidade de até 1 Giga com Wi-Fi 6, TV ao vivo e streaming no App Watch, Telemedicina 24h, Max, Telecine e câmeras Nuvv Guard.`}
+        description={`Conheça os planos 100% fibra óptica da Nuvv em ${currentCity}. Ultravelocidade de até 1 Giga com Wi-Fi 6, TV ao vivo e streaming no App Watch, Telemedicina 24h, Max e Telecine.`}
         keywords={[
           `planos de internet ${currentCity}`,
           `fibra residencial ${currentCity}`,
@@ -429,7 +368,6 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
           'app watch tv fibra',
           'plano 800 mega fibra',
           'telemedicina 24h internet',
-          'nuvv guard residencial',
         ]}
         canonicalUrl="https://nuvv.com.br/residencial"
         schema={residentialPlansSchema}
@@ -1202,7 +1140,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                   Quer montar um combo 100% sob medida com todos os produtos?
                 </h4>
                 <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
-                  Personalize velocidade, canais de TV, Telemedicina 24h, câmeras na nuvem e interfone inteligente diretamente no nosso simulador completo.
+                  Personalize velocidade, canais de TV, Telemedicina 24h e segurança digital diretamente no nosso simulador completo.
                 </p>
 
                 {/* Badges dos Serviços Extras em Pílulas Interativas */}
@@ -1216,40 +1154,22 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                     <span>Telemedicina 24h <span className="text-slate-400 font-medium">(+R$ 9,90)</span></span>
                   </span>
 
-                  {/* 2. Câmeras Nuvem */}
-                  <span
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-2xs cursor-default"
-                    title="Monitoramento em tempo real com gravação segura na nuvem"
-                  >
-                    <Video className="w-3.5 h-3.5 text-cyan-600" />
-                    <span>Câmeras Nuvem <span className="text-slate-400 font-medium">(a partir de R$ 19,90)</span></span>
-                  </span>
-
-                  {/* 3. Tag de Rastreamento */}
-                  <span
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-2xs cursor-default"
-                    title="Localização precisa de filhos, pets e pertences sem mensalidade para cliente Nuvv"
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Tag Rastreamento <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] font-black">R$ 79,90 Única</span></span>
-                  </span>
-
-                  {/* 4. Interfone QR */}
-                  <span
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-2xs cursor-default"
-                    title="Atenda entregas e visitantes no celular por chamada de vídeo sem mensalidade para cliente Nuvv"
-                  >
-                    <Phone className="w-3.5 h-3.5 text-nuvv-purple" />
-                    <span>Interfone QR <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] font-black">R$ 79,90 Única</span></span>
-                  </span>
-
-                  {/* 5. Segurança Digital */}
+                  {/* 2. Segurança Digital */}
                   <span
                     className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-2xs cursor-default"
                     title="Proteção contra vírus e navegação segura para toda a família"
                   >
                     <Zap className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Segurança Digital <span className="text-slate-400 font-medium">(+R$ 9,90)</span></span>
+                  </span>
+
+                  {/* 3. Telefonia Fixa */}
+                  <span
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-2xs cursor-default"
+                    title="Ligações ilimitadas para fixos de todo o Brasil e celulares locais"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-nuvv-purple" />
+                    <span>Telefonia Fixa Ilimitada <span className="text-slate-400 font-medium">(+R$ 19,90)</span></span>
                   </span>
                 </div>
               </div>
@@ -1281,8 +1201,6 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
         onOpenLeadModal={onOpenLeadModal}
       />
 
-      {/* Nuvv Guard • Proteção e Segurança Familiar (Câmeras, Tags e Interfone Virtual) */}
-      <GuardFamilySection onOpenLeadModal={onOpenLeadModal} />
 
       {/* Value Added Services Row & Modals (Telefonia Fixa, NuvvPlay, Proteção Kaspersky) */}
       <ValueAddedModals
@@ -1491,32 +1409,6 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                   </div>
                 </div>
 
-                {/* SERVIÇOS NUVV GUARD (TAXAS DE HABILITAÇÃO / ANTECIPADA) */}
-                {guardSetup.items.length > 0 && (
-                  <div className="p-4 rounded-2xl bg-cyan-50/70 border border-cyan-100 shadow-2xs space-y-2">
-                    <div className="flex items-center space-x-2 text-[11px] font-black text-cyan-900 uppercase tracking-wider">
-                      <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" />
-                      <span>Serviços Nuvv Guard (Ativação e Envio)</span>
-                    </div>
-                    <div className="space-y-2 text-xs">
-                      {guardSetup.items.map((item, idx) => (
-                        <div key={idx} className="p-2.5 rounded-xl bg-white border border-cyan-200/80 space-y-1">
-                          <div className="flex items-center justify-between font-bold text-cyan-950">
-                            <span>{item.name}</span>
-                            {item.setupFee > 0 ? (
-                              <span className="text-cyan-700 font-extrabold">R$ {item.setupFee.toFixed(2).replace('.', ',')}</span>
-                            ) : (
-                              <span className="text-emerald-600 font-extrabold">Isento</span>
-                            )}
-                          </div>
-                          <p className="text-[11px] text-cyan-800 leading-snug">
-                            {item.notice}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* TAXA DE HABILITAÇÃO */}
                 <div className="p-4 rounded-2xl bg-white border border-gray-200/80 shadow-2xs space-y-1.5">

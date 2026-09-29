@@ -162,11 +162,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
                 </Link>
               </li>
               <li>
-                <Link to="/guard" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
-                  Nuvv Guard (Segurança)
-                </Link>
-              </li>
-              <li>
                 <Link to="/postes" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
                   Poste Inteligente
                 </Link>

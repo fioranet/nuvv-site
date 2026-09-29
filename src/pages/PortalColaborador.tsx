@@ -455,8 +455,8 @@ export const PortalColaborador: React.FC = () => {
                     </h3>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Fibra 100% Simétrica, Wi-Fi 6, Combos com Universal+, Sony One, Max, Telecine, TurboMed, Kaspersky
-                    Família, Nuvv Guard Residencial e Nuvv Tag (Rastreador).
+                    Fibra 100% Simétrica, Wi-Fi 6, Combos com Universal+, Sony One, Max, Telecine, TurboMed e Kaspersky
+                    Família.
                   </p>
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     <span className="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300">Tabelas de Preços</span>

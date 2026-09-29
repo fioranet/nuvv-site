@@ -276,29 +276,6 @@ export const telephonyServiceSchema = {
   areaServed: organizationSchema.areaServed,
 };
 
-export const guardServiceSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Service',
-  '@id': `${BASE_URL}/guard#service`,
-  serviceType: 'Segurança Inteligente, CFTV em Nuvem, Interfone Virtual e Rastreamento',
-  provider: {
-    '@id': `${BASE_URL}/#organization`,
-  },
-  name: 'Nuvv Guard - Segurança Inteligente: Câmeras, Interfone Virtual e Tags',
-  description:
-    'Plataforma completa de segurança inteligente da Nuvv: Câmeras com gravação em nuvem contínua sem risco de furto do DVR, Interfone Virtual por QR Code sem custos de fiação com atendimento em vídeo no celular, e Tags de rastreamento para crianças, pets e veículos.',
-  offers: {
-    '@type': 'AggregateOffer',
-    priceCurrency: 'BRL',
-    lowPrice: '9.90',
-    highPrice: '74.90',
-    offerCount: '6',
-    url: `${BASE_URL}/guard`,
-  },
-  areaServed: organizationSchema.areaServed,
-};
-
-export const visionServiceSchema = guardServiceSchema;
 
 export const socialWifiServiceSchema = {
   '@context': 'https://schema.org',
@@ -354,7 +331,7 @@ export const businessComboServiceSchema = {
   },
   name: 'Planômetro Corporativo Nuvv - Monte o Combo da sua Empresa',
   description:
-    'Simulador e contratador sob medida de conectividade empresarial (Banda Larga ou Semi-Dedicado com IP Fixo e SLA 12h) combinado com PABX em Nuvem, Telefonia IP, Nuvv Digital CRM, Câmeras Nuvv Guard, TV Corporativa e Segurança Digital Endpoint.',
+    'Simulador e contratador sob medida de conectividade empresarial (Banda Larga ou Semi-Dedicado com IP Fixo e SLA 12h) combinado com PABX em Nuvem, Telefonia IP, Nuvv Digital CRM, TV Corporativa e Segurança Digital Endpoint.',
   offers: {
     '@type': 'AggregateOffer',
     priceCurrency: 'BRL',
@@ -372,7 +349,7 @@ export const createCitySchema = (cityName: string, state: string = 'SP') => ({
   url: `${BASE_URL}/cidade/${cityName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-')}`,
   image: `${BASE_URL}/images/external/favicon.png`,
   telephone: '+55-11-4745-9000',
-  description: `Operadora de Telecomunicações em ${cityName} - ${state}. Planos Residenciais de até 1 Giga com Wi-Fi 6 e TV no App Watch, e Soluções Corporativas completas: Link Dedicado 100% simétrico com SLA de 4h, Banda Larga Semi-Dedicada com IP Fixo, PABX em Nuvem, Nuvv Digital e Nuvv Guard para empresas de todos os portes.`,
+  description: `Operadora de Telecomunicações em ${cityName} - ${state}. Planos Residenciais de até 1 Giga com Wi-Fi 6 e TV no App Watch, e Soluções Corporativas completas: Link Dedicado 100% simétrico com SLA de 4h, Banda Larga Semi-Dedicada com IP Fixo, PABX em Nuvem e Nuvv Digital para empresas de todos os portes.`,
   areaServed: {
     '@type': 'City',
     name: `${cityName}, ${state}`,

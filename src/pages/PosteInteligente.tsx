@@ -77,7 +77,7 @@ export const PosteInteligente: React.FC<PosteInteligentePageProps> = ({
     },
     {
       q: 'Como funciona para condomínios residenciais e vilas?',
-      a: 'O condomínio contrata o poste para reforçar a vigilância nas áreas internas ou na rua em frente (portaria, calçadas e acessos de pedestres e veículos). As imagens ao vivo e as gravações em nuvem são disponibilizadas diretamente aos condôminos pelo App Nuvv Guard, conforme o regulamento do condomínio, com custo facilmente absorvido na taxa condominial.',
+      a: 'O condomínio contrata o poste para reforçar a vigilância nas áreas internas ou na rua em frente (portaria, calçadas e acessos de pedestres e veículos). As imagens ao vivo e as gravações em nuvem são disponibilizadas diretamente aos condôminos pelo aplicativo no celular, conforme o regulamento do condomínio, com custo facilmente absorvido na taxa condominial.',
     },
     {
       q: 'Como os moradores de uma rua podem se organizar para implantar o poste?',
@@ -106,7 +106,6 @@ export const PosteInteligente: React.FC<PosteInteligentePageProps> = ({
           'monitoramento de ruas e bairros',
           'cameras 360 na rua',
           'poste com wifi e camera',
-          'nuvv guard postes',
         ]}
         canonicalUrl="https://nuvv.com.br/postes"
         schema={[organizationSchema]}
@@ -126,8 +125,6 @@ export const PosteInteligente: React.FC<PosteInteligentePageProps> = ({
           {/* Breadcrumb */}
           <div className="flex items-center space-x-2 text-xs font-semibold text-gray-400 mb-6">
             <Link to="/" className="hover:text-white transition-colors">Início</Link>
-            <span>/</span>
-            <Link to="/guard" className="hover:text-white transition-colors">Nuvv Guard</Link>
             <span>/</span>
             <span className="text-nuvv-green font-bold">Poste de Monitoramento Inteligente</span>
           </div>
@@ -230,7 +227,7 @@ export const PosteInteligente: React.FC<PosteInteligentePageProps> = ({
                         <span>Rua do Condomínio Monitorada</span>
                       </div>
                       <div className="text-[10px] text-gray-300">
-                        Imagens liberadas para todos os condôminos no App Nuvv Guard
+                        Imagens liberadas para todos os condôminos no smartphone
                       </div>
                     </div>
                     <span className="text-[10px] font-black bg-emerald-600 text-white px-2.5 py-1 rounded-lg">
@@ -249,14 +246,14 @@ export const PosteInteligente: React.FC<PosteInteligentePageProps> = ({
                 >
                   <img
                     src="/images/services/poste_nuvv_mapa_app.jpg"
-                    alt="Mapa de Postes e Câmeras Nuvv Guard no Celular"
+                    alt="Mapa de Postes e Câmeras no Celular"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent pointer-events-none" />
 
                   <div className="absolute top-4 left-4 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-nuvv-purple/40 flex items-center space-x-2 z-20">
                     <Smartphone className="w-3.5 h-3.5 text-nuvv-purple" />
-                    <span className="text-[11px] font-black text-white">App Nuvv Guard • Mapa Ativo</span>
+                    <span className="text-[11px] font-black text-white">Plataforma Nuvv • Mapa Ativo</span>
                   </div>
 
                   <div className="absolute bottom-4 left-4 right-4 bg-slate-950/90 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 flex items-center justify-between text-xs z-20">
@@ -387,7 +384,7 @@ export const PosteInteligente: React.FC<PosteInteligentePageProps> = ({
               <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
                 <Smartphone className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-nuvv-dark">Acesso Coletivo no App Nuvv Guard</h3>
+              <h3 className="text-lg font-bold text-nuvv-dark">Acesso Coletivo no Smartphone</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
                 Moradores ou comerciantes têm acesso direto às imagens no smartphone com permissões gerenciadas e mapa interativo.
               </p>
@@ -445,7 +442,7 @@ export const PosteInteligente: React.FC<PosteInteligentePageProps> = ({
                 </div>
 
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Para condomínios residenciais, comerciais, vilas e conjuntos habitacionais. O condomínio contrata um ou mais postes para monitorar acessos, calçadas, portarias, estacionamentos e pontos estratégicos, disponibilizando as imagens para todos os condôminos no App Nuvv Guard.
+                  Para condomínios residenciais, comerciais, vilas e conjuntos habitacionais. O condomínio contrata um ou mais postes para monitorar acessos, calçadas, portarias, estacionamentos e pontos estratégicos, disponibilizando as imagens para todos os condôminos direto no aplicativo pelo smartphone.
                 </p>
 
                 <div className="space-y-2 pt-2 text-xs text-gray-700">

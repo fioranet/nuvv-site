@@ -10,10 +10,7 @@ import { Residencial } from './pages/Residencial';
 import { Empresarial } from './pages/Empresarial';
 import { Pabx } from './pages/Pabx';
 import { Telefonia } from './pages/Telefonia';
-import { Vision } from './pages/Vision';
-import { Guard } from './pages/Guard';
 import { PosteInteligente } from './pages/PosteInteligente';
-import { VisionOriginal } from './pages/VisionOriginal';
 import { SocialWifi } from './pages/SocialWifi';
 import { Multiatendimento } from './pages/Multiatendimento';
 import { SegurancaDigital } from './pages/SegurancaDigital';
@@ -300,16 +297,6 @@ export function App() {
             }
           />
           <Route
-            path="/guard"
-            element={
-              <Guard
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
-          <Route
             path="/postes"
             element={
               <PosteInteligente
@@ -323,36 +310,6 @@ export function App() {
             path="/poste-inteligente"
             element={
               <PosteInteligente
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
-          <Route
-            path="/guard/postes"
-            element={
-              <PosteInteligente
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
-          <Route
-            path="/vision"
-            element={
-              <Guard
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
-          <Route
-            path="/vision-original"
-            element={
-              <VisionOriginal
                 onOpenLeadModal={handleOpenLeadModal}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenCitySelector={() => setIsCityModalOpen(true)}

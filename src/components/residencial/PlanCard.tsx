@@ -4,8 +4,6 @@ import {
   PLAN_ADDONS,
   ResidentialPlan,
   TIER_CONFIG,
-  VisionAddonConfig,
-  calculateVisionAddonPrice,
   resolveTierAndAddons,
 } from '../../data/plans';
 import { ResidentialProfileId } from './QuickProfileSelector';
@@ -16,7 +14,6 @@ interface PlanCardProps {
   plan: ResidentialPlan;
   selectedTier: EntertainmentTier | null;
   activeAddons: Record<string, boolean>;
-  visionConfig?: VisionAddonConfig;
   activeProfile?: ResidentialProfileId;
   hideCanaisGlobo?: boolean;
   onSelectPlan: (plan: ResidentialPlan, totalPrice: number) => void;
@@ -28,7 +25,6 @@ export const PlanCard: React.FC<PlanCardProps> = ({
   plan,
   selectedTier,
   activeAddons,
-  visionConfig,
   activeProfile,
   hideCanaisGlobo = true,
   onSelectPlan,
@@ -42,11 +38,8 @@ export const PlanCard: React.FC<PlanCardProps> = ({
   // Calculate sum of active regular addons via resolution (accounting for promo discounts and bundle inclusions)
   const addonTotal = resolution.totalAddonPrice;
 
-  // Calculate dynamic vision addon total
-  const visionTotal = calculateVisionAddonPrice(visionConfig);
-
-  const finalPromoPrice = currentPricing.promoPrice + addonTotal + visionTotal;
-  const finalOriginalPrice = currentPricing.originalPrice + addonTotal + visionTotal;
+  const finalPromoPrice = currentPricing.promoPrice + addonTotal;
+  const finalOriginalPrice = currentPricing.originalPrice + addonTotal;
 
   // Active addon objects
   const selectedAddonList = Object.entries(activeAddons)
@@ -164,22 +157,9 @@ export const PlanCard: React.FC<PlanCardProps> = ({
         }
       });
 
-    // 3. Nuvv Guard Addon Item
-    if (visionConfig?.planId) {
-      list.push({
-        id: 'nuvv-guard',
-        name: `Nuvv Guard (${visionConfig.cameraCount}x)`,
-        icon: (
-          <div className="flex items-center space-x-1">
-            <Video className="w-4 h-4 text-emerald-600" />
-            <span className="text-[10px] font-black text-emerald-800">{visionConfig.cameraCount}x</span>
-          </div>
-        ),
-      });
-    }
 
     return list;
-  }, [sortedTierApps, selectedAddonList, currentPricing, activeProfile, visionConfig]);
+  }, [sortedTierApps, selectedAddonList, currentPricing, activeProfile]);
 
   const appsContainerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
@@ -288,20 +268,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
                 : TIER_CONFIG[effectiveTier].label}
             </span>
 
-            {/* Nuvv Guard Badges */}
-            {visionConfig?.planId && (
-              <span className="text-[10px] font-bold text-white bg-emerald-600 px-2 py-0.5 rounded-md shadow-2xs">
-                {visionConfig.planId.includes('3d')
-                  ? `+ GUARD 3D (${visionConfig.cameraCount}x)`
-                  : visionConfig.planId.includes('7d')
-                  ? `+ GUARD 7D (${visionConfig.cameraCount}x)`
-                  : visionConfig.planId.includes('intercom')
-                  ? '+ INTERFONE QR'
-                  : `+ NUVV GUARD (${visionConfig.cameraCount}x)`}
-              </span>
-            )}
-
-            {/* Other Addon Badges */}
+{/* Other Addon Badges */}
             {selectedAddonList.map((addon) => {
               const isIncluded = !!TIER_CONFIG[effectiveTier]?.includedAddons?.includes(addon.id);
               const isCinemaHighlight =

@@ -171,69 +171,6 @@ export function calculateBusinessCombo(selection: BusinessComboSelection): Busin
     }
   }
 
-  // 5. Nuvv Guard (Câmeras, Interfone e Tags - Sincronizado com Residencial)
-  const effectiveCameraPlanId = selection.guardCameraPlanId || selection.visionPlanId || null;
-  const effectiveCameraCount = Math.max(1, selection.guardCameraCount || selection.visionCamerasCount || 1);
-
-  if (effectiveCameraPlanId) {
-    const addon = PLAN_ADDONS[effectiveCameraPlanId];
-    if (addon) {
-      const cameraTotal = addon.price * effectiveCameraCount;
-      items.push({
-        id: addon.id,
-        category: 'vision',
-        title: `Nuvv Guard: ${addon.name}`,
-        subtitle:
-          effectiveCameraCount > 1
-            ? `${effectiveCameraCount}x Câmeras • ${addon.description}`
-            : addon.description,
-        unitPrice: addon.price,
-        quantity: effectiveCameraCount,
-        totalPrice: cameraTotal,
-      });
-
-      totalMonthly += cameraTotal;
-      totalOriginal += cameraTotal;
-    }
-  }
-
-  // Interfone Virtual QR Code
-  if (selection.guardIntercomPlanId) {
-    const intercom = PLAN_ADDONS[selection.guardIntercomPlanId];
-    if (intercom) {
-      items.push({
-        id: intercom.id,
-        category: 'vision',
-        title: `Nuvv Guard: ${intercom.name}`,
-        subtitle: intercom.price === 0 ? 'Sem mensalidade (Taxa única R$ 79,90)' : intercom.description,
-        unitPrice: intercom.price,
-        quantity: 1,
-        totalPrice: intercom.price,
-      });
-      totalMonthly += intercom.price;
-      totalOriginal += intercom.price;
-    }
-  }
-
-  // Tags de Rastreamento
-  if (selection.guardTagPlanId) {
-    const tag = PLAN_ADDONS[selection.guardTagPlanId];
-    if (tag) {
-      const tagCount = Math.max(1, selection.guardTagCount || 1);
-      const tagTotal = tag.price * tagCount;
-      items.push({
-        id: tag.id,
-        category: 'vision',
-        title: `Nuvv Guard: ${tag.name}`,
-        subtitle: tag.price === 0 ? `${tagCount}x Tag(s) sem mensalidade (Taxa única)` : tag.description,
-        unitPrice: tag.price,
-        quantity: tagCount,
-        totalPrice: tagTotal,
-      });
-      totalMonthly += tagTotal;
-      totalOriginal += tagTotal;
-    }
-  }
 
   // 6. TV Corporativa (Esporte e Notícia)
   if (selection.tvPlanId) {

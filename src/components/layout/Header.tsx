@@ -46,13 +46,6 @@ export const Header: React.FC<HeaderProps> = ({
     leadModalName?: string;
   }> = [
     {
-      name: 'Nuvv Guard',
-      path: '/guard',
-      description: 'Câmeras, interfone virtual e Rastreamento',
-      icon: ShieldCheck,
-      isDirectPage: true,
-    },
-    {
       name: 'PABX Virtual',
       path: '/pabx',
       description: 'Telefonia corporativa em nuvem e ramais',
@@ -116,7 +109,6 @@ export const Header: React.FC<HeaderProps> = ({
     location.pathname.startsWith('/comunicacao-inteligente');
 
   const isSolutionsActive =
-    location.pathname.startsWith('/vision') ||
     location.pathname.startsWith('/pabx') ||
     location.pathname.startsWith('/telefonia') ||
     location.pathname.startsWith('/social-wifi') ||

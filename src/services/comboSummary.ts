@@ -1,11 +1,9 @@
 import {
   EntertainmentTier,
   ResidentialPlan,
-  VisionAddonConfig,
   PLAN_ADDONS,
   TIER_CONFIG,
   resolveTierAndAddons,
-  getGuardSetupDetails,
 } from '../data/plans';
 import {
   BUSINESS_PLANS,
@@ -63,7 +61,6 @@ export interface BuildComboSummaryParams {
   plan: ResidentialPlan;
   effectiveTier: EntertainmentTier;
   activeAddons: Record<string, boolean>;
-  visionConfig: VisionAddonConfig;
   totalPrice: number;
   cityName: string;
 }
@@ -87,7 +84,6 @@ export function buildComboSummary({
   plan,
   effectiveTier,
   activeAddons,
-  visionConfig,
   totalPrice,
   cityName,
 }: BuildComboSummaryParams): ComboLeadSummary {
@@ -143,44 +139,6 @@ export function buildComboSummary({
         });
       }
     });
-
-  // 3. Nuvv Guard - Câmeras Mensais (Nuvem / Comodato)
-  const camId =
-    visionConfig.cameraPlanId ||
-    (visionConfig.planId &&
-    (visionConfig.planId.includes('camera') ||
-      visionConfig.planId.includes('byod') ||
-      visionConfig.planId.includes('vision'))
-      ? (visionConfig.planId as any)
-      : null);
-
-  if (camId && PLAN_ADDONS[camId]) {
-    const camCount = Math.max(1, visionConfig.cameraCount || 1);
-    const addon = PLAN_ADDONS[camId];
-    const totalCamMonthly = addon.price * camCount;
-    monthlyItems.push({
-      id: addon.id,
-      name: `Câmera Nuvv Guard (${camCount}x)`,
-      price: totalCamMonthly,
-      category: 'guard',
-      notice: `Gravação em nuvem para ${camCount} câmera${camCount > 1 ? 's' : ''}`,
-    });
-    extraAddons.push(`Câmeras Nuvv Guard (${camCount}x) - R$ ${totalCamMonthly.toFixed(2).replace('.', ',')}/mês`);
-  }
-
-  // 4. Nuvv Guard - TAXAS ÚNICAS ("Vendas" de Hardware, Placas e Adesões sem mensalidade)
-  const guardSetup = getGuardSetupDetails(visionConfig);
-  guardSetup.items.forEach((item, idx) => {
-    if (item.setupFee > 0) {
-      oneTimeItems.push({
-        id: `guard-setup-${idx}`,
-        name: item.name,
-        setupFee: item.setupFee,
-        notice: item.notice,
-        category: 'guard',
-      });
-    }
-  });
 
   const oneTimeTotal = Number(
     oneTimeItems.reduce((acc, curr) => acc + curr.setupFee, 0).toFixed(2)
@@ -308,91 +266,6 @@ export function buildBusinessComboSummary({
     }
   }
 
-  // 5. Nuvv Guard Câmeras (incremento no preço) e Instalação BYOD (se houver)
-  const camId = selection.guardCameraPlanId || selection.visionPlanId || null;
-  const camCount = Math.max(1, selection.guardCameraCount || selection.visionCamerasCount || 1);
-  if (camId && PLAN_ADDONS[camId]) {
-    const addon = PLAN_ADDONS[camId];
-    const totalCam = addon.price * camCount;
-    monthlyItems.push({
-      id: addon.id,
-      name: `Câmeras Nuvv Guard (${addon.name})${camCount > 1 ? ` (${camCount}x)` : ''}`,
-      price: totalCam,
-      category: 'guard',
-      notice: `Gravação em nuvem para ${camCount} câmera${camCount > 1 ? 's' : ''}`,
-    });
-    extraAddons.push(`Câmeras Nuvv Guard (${addon.name} ${camCount}x) (+R$ ${totalCam.toFixed(2).replace('.', ',')}/mês)`);
-    internalCodes.push(`guard-cam-${camId}x${camCount}`);
-
-    // Se for BYOD (câmera própria do cliente), taxa única de configuração técnica R$ 15 por câmera
-    if (camId.includes('byod')) {
-      const setupFee = 15 * camCount;
-      oneTimeItems.push({
-        id: 'guard-byod-setup',
-        name: `Ativação Técnica Câmeras Próprias (${camCount}x)`,
-        setupFee,
-        category: 'guard',
-        notice: 'Taxa única de configuração técnica (R$ 15,00 por câmera)',
-      });
-    }
-  }
-
-  // 6. Nuvv Guard Interfone Virtual (Placa QR Code / Mensal)
-  if (selection.guardIntercomPlanId) {
-    const intercom = PLAN_ADDONS[selection.guardIntercomPlanId];
-    if (intercom) {
-      if (intercom.setupFee && intercom.setupFee > 0) {
-        oneTimeItems.push({
-          id: 'guard-intercom-qr',
-          name: intercom.name,
-          setupFee: intercom.setupFee,
-          category: 'hardware',
-          notice: intercom.description,
-        });
-      }
-      if (intercom.price > 0) {
-        monthlyItems.push({
-          id: intercom.id,
-          name: intercom.name,
-          price: intercom.price,
-          category: 'guard',
-          notice: intercom.description,
-        });
-        extraAddons.push(`${intercom.name} (+R$ ${intercom.price.toFixed(2).replace('.', ',')}/mês)`);
-      }
-      internalCodes.push(`guard-intercom-${intercom.id}`);
-    }
-  }
-
-  // 7. Nuvv Guard TAGs de Rastreamento (Venda unitária / Mensal)
-  if (selection.guardTagPlanId) {
-    const tag = PLAN_ADDONS[selection.guardTagPlanId];
-    if (tag) {
-      const tagCount = Math.max(1, selection.guardTagCount || 1);
-      if (tag.setupFee && tag.setupFee > 0) {
-        const totalSetup = tag.setupFee * tagCount;
-        oneTimeItems.push({
-          id: 'guard-tag-item',
-          name: `${tag.name} (${tagCount}x)`,
-          setupFee: totalSetup,
-          category: 'hardware',
-          notice: tag.description,
-        });
-      }
-      if (tag.price > 0) {
-        const totalTagMonthly = tag.price * tagCount;
-        monthlyItems.push({
-          id: tag.id,
-          name: `${tag.name} (${tagCount}x)`,
-          price: totalTagMonthly,
-          category: 'guard',
-          notice: tag.description,
-        });
-        extraAddons.push(`${tag.name} (${tagCount}x) (+R$ ${totalTagMonthly.toFixed(2).replace('.', ',')}/mês)`);
-      }
-      internalCodes.push(`guard-tag-${tag.id}x${tagCount}`);
-    }
-  }
 
   // 8. TV Corporativa (Esporte e Notícia)
   if (selection.tvPlanId) {

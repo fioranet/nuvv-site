@@ -61,7 +61,7 @@ export const Home: React.FC<HomePageProps> = ({
     <div className="space-y-0 animate-fade-in">
       <SEO
         title={`Nuvv - Fibra Óptica Residencial & Soluções Corporativas em ${currentCity}`}
-        description={`Internet 100% fibra óptica de até 1 Giga com Wi-Fi 6 e TV no App Watch em ${currentCity}. Soluções corporativas completas: Link Dedicado, Semi-Dedicado com IP Fixo, PABX em Nuvem, Nuvv Guard e Nuvv Digital.`}
+        description={`Internet 100% fibra óptica de até 1 Giga com Wi-Fi 6 e TV no App Watch em ${currentCity}. Soluções corporativas completas: Link Dedicado, Semi-Dedicado com IP Fixo, PABX em Nuvem e Nuvv Digital.`}
         keywords={[
           `internet fibra ${currentCity}`,
           `provedor de internet ${currentCity}`,
@@ -70,7 +70,6 @@ export const Home: React.FC<HomePageProps> = ({
           'semi dedicado ip fixo',
           'pabx em nuvem',
           'nuvv digital',
-          'nuvv guard',
           'app watch tv',
         ]}
         canonicalUrl="https://nuvv.com.br/"

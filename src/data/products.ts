@@ -2,7 +2,6 @@ export type ProductCategory =
   | 'streaming'
   | 'casa-inteligente'
   | 'conectividade'
-  | 'cameras'
   | 'telefonia'
   | 'access-point';
 
@@ -28,7 +27,6 @@ export const PRODUCT_CATEGORIES: { id: ProductCategory; label: string; icon: str
   { id: 'streaming', label: 'Streaming & TV', icon: 'Tv' },
   { id: 'casa-inteligente', label: 'Casa Inteligente & Alexa', icon: 'Home' },
   { id: 'conectividade', label: 'Conectividade & Wi-Fi', icon: 'Wifi' },
-  { id: 'cameras', label: 'Câmeras de Segurança', icon: 'Video' },
   { id: 'telefonia', label: 'Telefonia & VoIP', icon: 'PhoneCall' },
   { id: 'access-point', label: 'Access Points', icon: 'Radio' },
 ];
@@ -158,101 +156,6 @@ export const PRODUCTS: Product[] = [
     "highlightSpecs": [
       "Abertura por Senha ou Tag RFID",
       "Alarme Sonoro de Violação"
-    ]
-  },
-  {
-    "id": "intelbras-im3c",
-    "name": "Câmera Wi-Fi Full HD iM3 C",
-    "category": "cameras",
-    "brand": "Intelbras",
-    "description": "Monitoramento interno em Full HD 1080p com áudio bidirecional e inteligência artificial para detecção de pessoas.",
-    "priceFormatted": "R$ 161,90",
-    "priceValue": 161.90,
-    "originalPriceFormatted": "R$ 259,00",
-    "installments": "em até 5x de R$ 36,00 sem juros",
-    "shippingInfo": "Frete Grátis Prime",
-    "image": "/images/shop/intelbras-im3c.jpg",
-    "affiliateUrl": "https://www.amazon.com.br/dp/B09Q3JVDYS?tag=nuvv09-20",
-    "badge": "Mais Vendida",
-    "highlightSpecs": [
-      "Full HD 1080p com Visão Noturna",
-      "Áudio Bidirecional (Fale e Ouça)"
-    ]
-  },
-  {
-    "id": "intelbras-im5sc",
-    "name": "Câmera Wi-Fi Full HD iM5 SC",
-    "category": "cameras",
-    "brand": "Intelbras",
-    "description": "Segurança externa com proteção IP67 contra sol e chuva, holofote integrado e visão noturna 100% colorida.",
-    "priceFormatted": "R$ 253,71",
-    "priceValue": 253.71,
-    "originalPriceFormatted": "R$ 389,00",
-    "installments": "em até 6x de R$ 44,98 sem juros",
-    "shippingInfo": "Frete Grátis Prime",
-    "image": "/images/shop/intelbras-im5sc.jpg",
-    "affiliateUrl": "https://www.amazon.com.br/dp/B09SPGZHMP?tag=nuvv09-20",
-    "badge": "Visão Noturna Colorida",
-    "highlightSpecs": [
-      "Visão Noturna Colorida com Holofote",
-      "Proteção IP67 para Uso Externo"
-    ]
-  },
-  {
-    "id": "intelbras-im5-plus",
-    "name": "Câmera iM5 +Color",
-    "category": "cameras",
-    "brand": "Intelbras",
-    "description": "Câmera Wi-Fi externa robusta para fachadas, portões e empresas com alcance infravermelho de 30 metros.",
-    "priceFormatted": "R$ 386,23",
-    "priceValue": 386.23,
-    "originalPriceFormatted": "R$ 399,00",
-    "installments": "em até 7x de R$ 55,21 sem juros",
-    "shippingInfo": "Frete Grátis Prime",
-    "image": "/images/shop/intelbras-im5sc-plus.jpg",
-    "affiliateUrl": "https://www.amazon.com.br/dp/B0B3S5YHDX?tag=nuvv09-20",
-    "badge": "Externa IP67",
-    "highlightSpecs": [
-      "Alcance Noturno de até 30 Metros",
-      "Microfone Integrado & Alerta no App"
-    ]
-  },
-  {
-    "id": "intelbras-im4c",
-    "name": "Câmera Inteligente 360° Intelbras iM4 C Wi-Fi Full HD",
-    "category": "cameras",
-    "brand": "Intelbras",
-    "description": "Cobertura 360° interna com rastreamento inteligente de movimento para você não perder nenhum detalhe.",
-    "priceFormatted": "R$ 369,00",
-    "priceValue": 369,
-    "originalPriceFormatted": "R$ 459,90",
-    "installments": "em até 7x de R$ 52,74 sem juros",
-    "shippingInfo": "Frete Grátis Prime",
-    "image": "/images/shop/intelbras-im4.jpg",
-    "affiliateUrl": "https://www.amazon.com.br/dp/B09Q3K3VR1?tag=nuvv09-20",
-    "badge": "Giro 360° Pan-Tilt",
-    "highlightSpecs": [
-      "Giro 360° com Auto-Tracking",
-      "Detector de Barulhos e Choro de Bebê"
-    ]
-  },
-  {
-    "id": "intelbras-im7",
-    "name": "Câmera 360° Externa iM7 3MP 2K Full Color",
-    "category": "cameras",
-    "brand": "Intelbras",
-    "description": "Câmera externa 360° com resolução 2K 3MP, rastreamento de pessoas e holofotes integrados.",
-    "priceFormatted": "R$ 515,00",
-    "priceValue": 515,
-    "originalPriceFormatted": "R$ 549,00",
-    "installments": "em até 10x de R$ 51,50 sem juros",
-    "shippingInfo": "Frete Grátis Prime",
-    "image": "/images/shop/intelbras-im7.jpg",
-    "affiliateUrl": "https://www.amazon.com.br/dp/B0B9D7LT36?tag=nuvv09-20",
-    "badge": "360° Externa 2K",
-    "highlightSpecs": [
-      "Resolução Ultra 2K (3 Megapixels)",
-      "Giro 360° com Auto-Tracking"
     ]
   },
   {

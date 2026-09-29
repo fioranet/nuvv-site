@@ -5,7 +5,6 @@ import {
   PlanAddon,
   PlanAddonCategory,
   TIER_CONFIG,
-  VisionAddonConfig,
   resolveTierAndAddons,
 } from '../../data/plans';
 import {
@@ -36,8 +35,6 @@ interface PlanSelectorProps {
   onSelectTier: (tier: EntertainmentTier | null) => void;
   activeAddons: Record<string, boolean>;
   onToggleAddon: (addonKey: string) => void;
-  visionConfig?: VisionAddonConfig;
-  onUpdateVisionConfig?: (updater: (prev: VisionAddonConfig) => VisionAddonConfig) => void;
   onOpenChannelsModal?: (tier: EntertainmentTier) => void;
   onOpenProtecaoModal?: () => void;
   onResetSelection?: () => void;
@@ -66,8 +63,6 @@ export const PlanSelector: React.FC<PlanSelectorProps> = ({
   onSelectTier,
   activeAddons,
   onToggleAddon,
-  visionConfig,
-  onUpdateVisionConfig,
   onOpenChannelsModal,
   onOpenProtecaoModal,
   onResetSelection,
@@ -81,12 +76,7 @@ export const PlanSelector: React.FC<PlanSelectorProps> = ({
 
   const hasCustomSelection =
     (selectedTier !== null && selectedTier !== 'cortesia') ||
-    Object.values(activeAddons).some(Boolean) ||
-    !!visionConfig?.planId ||
-    !!visionConfig?.cameraPlanId ||
-    !!visionConfig?.intercomPlanId ||
-    !!visionConfig?.tagPlanId ||
-    !!visionConfig?.withComodato;
+    Object.values(activeAddons).some(Boolean);
 
   // Sync tab with selected tier when selectedTier changes
   useEffect(() => {
@@ -102,7 +92,6 @@ export const PlanSelector: React.FC<PlanSelectorProps> = ({
     { id: 'streaming', label: 'Streamings & TV', icon: Clapperboard },
     { id: 'saude', label: 'Telemedicina & Saúde', icon: HeartPulse },
     { id: 'protecao', label: 'Segurança Digital', icon: ShieldCheck },
-    { id: 'vision', label: 'Nuvv Guard', icon: Video },
     { id: 'telefonia', label: 'Telefonia Fixa', icon: Phone },
   ] as const;
 
@@ -111,13 +100,6 @@ export const PlanSelector: React.FC<PlanSelectorProps> = ({
   );
 
   const renderAddonIcon = (addon: PlanAddon) => {
-    if (addon.category === 'vision') {
-      return (
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-cyan-50 text-cyan-600 border border-cyan-100 flex items-center justify-center flex-shrink-0 shadow-2xs">
-          <Video className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-600" />
-        </div>
-      );
-    }
     if (addon.category === 'protecao') {
       return (
         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center flex-shrink-0 shadow-2xs">
@@ -156,30 +138,6 @@ export const PlanSelector: React.FC<PlanSelectorProps> = ({
       </div>
     );
   };
-
-  const cameraCount = Math.max(1, visionConfig?.cameraCount || 1);
-  const tagCount = Math.max(1, visionConfig?.tagCount || 1);
-
-  const activeCameraId =
-    visionConfig?.cameraPlanId ||
-    (visionConfig?.planId &&
-    (visionConfig.planId.includes('camera') ||
-      visionConfig.planId.includes('byod') ||
-      visionConfig.planId.includes('vision'))
-      ? visionConfig.planId
-      : null);
-
-  const activeIntercomId =
-    visionConfig?.intercomPlanId ||
-    (visionConfig?.planId && visionConfig.planId.includes('intercom')
-      ? visionConfig.planId
-      : null);
-
-  const activeTagId =
-    visionConfig?.tagPlanId ||
-    (visionConfig?.planId && visionConfig.planId.includes('tag')
-      ? visionConfig.planId
-      : null);
 
   return (
     <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-nuvv-card border border-gray-100 max-w-5xl mx-auto mb-8 space-y-6">
@@ -432,417 +390,6 @@ export const PlanSelector: React.FC<PlanSelectorProps> = ({
             );
           })}
         </div>
-
-        {/* Nuvv Guard (Segurança Residencial) */}
-        {activeCategory === 'vision' && (
-          <div className="space-y-4 animate-fade-in">
-            {/* 1. SEÇÃO CÂMERAS DE SEGURANÇA */}
-            <div className="space-y-2.5 bg-cyan-50/40 p-3.5 sm:p-4 rounded-3xl border border-cyan-100/80">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center space-x-2 text-cyan-950">
-                  <div className="w-7 h-7 rounded-xl bg-cyan-600 text-white flex items-center justify-center shadow-2xs">
-                    <Video className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div className="text-xs sm:text-sm font-black leading-tight text-cyan-950">
-                      Câmeras de Segurança (Nuvem)
-                    </div>
-                    <div className="text-[11px] text-cyan-800 font-medium">
-                      Monitoramento em nuvem com inteligência artificial e comodato
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2 self-start sm:self-auto bg-white px-2.5 py-1 rounded-xl border border-cyan-200 shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onUpdateVisionConfig?.((prev) => ({
-                        ...prev,
-                        cameraCount: Math.max(1, (prev?.cameraCount || 1) - 1),
-                      }))
-                    }
-                    disabled={cameraCount <= 1}
-                    className="w-6 h-6 rounded-lg bg-cyan-100 hover:bg-cyan-200 disabled:opacity-30 disabled:hover:bg-cyan-100 text-cyan-900 flex items-center justify-center font-black transition-all active:scale-95 text-xs cursor-pointer"
-                    aria-label="Diminuir câmeras"
-                  >
-                    <Minus className="w-3 h-3" />
-                  </button>
-
-                  <span className="font-extrabold text-cyan-950 text-xs min-w-[65px] text-center">
-                    {cameraCount} {cameraCount === 1 ? 'Câmera' : 'Câmeras'}
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onUpdateVisionConfig?.((prev) => ({
-                        ...prev,
-                        cameraCount: Math.min(10, (prev?.cameraCount || 1) + 1),
-                      }))
-                    }
-                    disabled={cameraCount >= 10}
-                    className="w-6 h-6 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white disabled:opacity-30 flex items-center justify-center font-black transition-all active:scale-95 text-xs cursor-pointer"
-                    aria-label="Aumentar câmeras"
-                  >
-                    <Plus className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-                {/* 1. Câmera Comodato + 3D Nuvem */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    onUpdateVisionConfig?.((prev) => ({
-                      ...prev,
-                      planId: null,
-                      cameraPlanId: activeCameraId === 'guard-camera-3d' ? null : 'guard-camera-3d',
-                    }))
-                  }
-                  className={`p-3 rounded-2xl border text-left transition-all flex items-center justify-between group cursor-pointer ${
-                    activeCameraId === 'guard-camera-3d'
-                      ? 'border-cyan-600 bg-cyan-50/90 shadow-sm ring-2 ring-cyan-600/30'
-                      : 'border-gray-200 hover:border-cyan-300 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3 overflow-hidden min-w-0">
-                    <div className="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 border border-cyan-100 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                      <Video className="w-5 h-5 text-cyan-600" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-bold text-gray-900 group-hover:text-cyan-700 transition-colors truncate">
-                        Câmera + 3D Nuvem
-                      </div>
-                      <div className="text-xs text-cyan-700 font-extrabold">
-                        + R$ {(39.9 * cameraCount).toFixed(2).replace('.', ',')}/mês
-                        {cameraCount > 1 && (
-                          <span className="text-[10px] text-gray-400 font-normal block">
-                            ({cameraCount}x R$ 39,90)
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`w-5 h-5 rounded-lg flex items-center justify-center flex-shrink-0 ml-2 transition-colors ${
-                      activeCameraId === 'guard-camera-3d'
-                        ? 'bg-cyan-600 text-white'
-                        : 'border-2 border-gray-300 bg-white'
-                    }`}
-                  >
-                    {activeCameraId === 'guard-camera-3d' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                  </div>
-                </button>
-
-                {/* 2. Câmera Comodato + 7D Nuvem */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    onUpdateVisionConfig?.((prev) => ({
-                      ...prev,
-                      planId: null,
-                      cameraPlanId: activeCameraId === 'guard-camera-7d' ? null : 'guard-camera-7d',
-                    }))
-                  }
-                  className={`p-3 rounded-2xl border text-left transition-all flex items-center justify-between group cursor-pointer ${
-                    activeCameraId === 'guard-camera-7d'
-                      ? 'border-cyan-600 bg-cyan-50/90 shadow-sm ring-2 ring-cyan-600/30'
-                      : 'border-gray-200 hover:border-cyan-300 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3 overflow-hidden min-w-0">
-                    <div className="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 border border-cyan-100 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                      <Video className="w-5 h-5 text-cyan-600" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-bold text-gray-900 group-hover:text-cyan-700 transition-colors truncate">
-                        Câmera + 7D Nuvem
-                      </div>
-                      <div className="text-xs text-cyan-700 font-extrabold">
-                        + R$ {(44.9 * cameraCount).toFixed(2).replace('.', ',')}/mês
-                        {cameraCount > 1 && (
-                          <span className="text-[10px] text-gray-400 font-normal block">
-                            ({cameraCount}x R$ 44,90)
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`w-5 h-5 rounded-lg flex items-center justify-center flex-shrink-0 ml-2 transition-colors ${
-                      activeCameraId === 'guard-camera-7d'
-                        ? 'bg-cyan-600 text-white'
-                        : 'border-2 border-gray-300 bg-white'
-                    }`}
-                  >
-                    {activeCameraId === 'guard-camera-7d' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                  </div>
-                </button>
-
-                {/* 3. Câmera Comodato + 15D Nuvem */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    onUpdateVisionConfig?.((prev) => ({
-                      ...prev,
-                      planId: null,
-                      cameraPlanId: activeCameraId === 'guard-camera-15d' ? null : 'guard-camera-15d',
-                    }))
-                  }
-                  className={`p-3 rounded-2xl border text-left transition-all flex items-center justify-between group cursor-pointer ${
-                    activeCameraId === 'guard-camera-15d'
-                      ? 'border-cyan-600 bg-cyan-50/90 shadow-sm ring-2 ring-cyan-600/30'
-                      : 'border-gray-200 hover:border-cyan-300 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3 overflow-hidden min-w-0">
-                    <div className="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 border border-cyan-100 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                      <Video className="w-5 h-5 text-cyan-600" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-bold text-gray-900 group-hover:text-cyan-700 transition-colors truncate">
-                        Câmera + 15D Nuvem
-                      </div>
-                      <div className="text-xs text-cyan-700 font-extrabold">
-                        + R$ {(59.9 * cameraCount).toFixed(2).replace('.', ',')}/mês
-                        {cameraCount > 1 && (
-                          <span className="text-[10px] text-gray-400 font-normal block">
-                            ({cameraCount}x R$ 59,90)
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`w-5 h-5 rounded-lg flex items-center justify-center flex-shrink-0 ml-2 transition-colors ${
-                      activeCameraId === 'guard-camera-15d'
-                        ? 'bg-cyan-600 text-white'
-                        : 'border-2 border-gray-300 bg-white'
-                    }`}
-                  >
-                    {activeCameraId === 'guard-camera-15d' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                  </div>
-                </button>
-
-                {/* 4. Câmera Própria 7D Nuvem (BYOD) */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    onUpdateVisionConfig?.((prev) => ({
-                      ...prev,
-                      planId: null,
-                      cameraPlanId: activeCameraId === 'guard-byod-7d' ? null : 'guard-byod-7d',
-                    }))
-                  }
-                  className={`p-3 rounded-2xl border text-left transition-all flex items-center justify-between group cursor-pointer ${
-                    activeCameraId === 'guard-byod-7d'
-                      ? 'border-cyan-600 bg-cyan-50/90 shadow-sm ring-2 ring-cyan-600/30'
-                      : 'border-gray-200 hover:border-cyan-300 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3 overflow-hidden min-w-0">
-                    <div className="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 border border-cyan-100 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                      <Video className="w-5 h-5 text-cyan-600" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-bold text-gray-900 group-hover:text-cyan-700 transition-colors truncate">
-                        Câmera Própria 7D
-                      </div>
-                      <div className="text-xs text-cyan-700 font-extrabold">
-                        + R$ {(19.9 * cameraCount).toFixed(2).replace('.', ',')}/mês
-                        <span className="text-[10px] text-gray-400 font-normal block">
-                          (+ R$ {(15 * cameraCount).toFixed(2).replace('.', ',')} ativação)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`w-5 h-5 rounded-lg flex items-center justify-center flex-shrink-0 ml-2 transition-colors ${
-                      activeCameraId === 'guard-byod-7d'
-                        ? 'bg-cyan-600 text-white'
-                        : 'border-2 border-gray-300 bg-white'
-                    }`}
-                  >
-                    {activeCameraId === 'guard-byod-7d' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {/* 2. SEÇÃO INTERFONE VIRTUAL & 3. SEÇÃO TAGS DE RASTREAMENTO */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-              {/* INTERFONE VIRTUAL */}
-              <div className="space-y-2.5 bg-indigo-50/40 p-3.5 sm:p-4 rounded-3xl border border-indigo-100/80 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center space-x-2 text-indigo-950 mb-2">
-                    <div className="w-7 h-7 rounded-xl bg-nuvv-purple text-white flex items-center justify-center shadow-2xs">
-                      <QrCode className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <div className="text-xs sm:text-sm font-black leading-tight text-indigo-950">
-                        Interfone Virtual (QR Code)
-                      </div>
-                      <div className="text-[11px] text-indigo-700 font-medium">
-                        Atenda visitas por vídeo pelo celular
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Interfone QR Taxa Única */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    onUpdateVisionConfig?.((prev) => ({
-                      ...prev,
-                      planId: null,
-                      intercomPlanId:
-                        activeIntercomId === 'guard-intercom-residencial'
-                          ? null
-                          : 'guard-intercom-residencial',
-                    }))
-                  }
-                  className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between group cursor-pointer ${
-                    activeIntercomId === 'guard-intercom-residencial'
-                      ? 'border-nuvv-purple bg-white shadow-sm ring-2 ring-nuvv-purple/30'
-                      : 'border-gray-200 hover:border-indigo-300 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="min-w-0 pr-2">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-xs font-black text-gray-900 group-hover:text-nuvv-purple transition-colors">
-                        Placa QR Code Exclusiva
-                      </span>
-                      <span className="text-[9.5px] font-black text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full whitespace-nowrap">
-                        Sem mensalidade
-                      </span>
-                    </div>
-                    <div className="text-xs text-nuvv-purple font-extrabold mt-0.5">
-                      R$ 79,90 taxa única • <span className="text-emerald-700 font-bold">R$ 0,00/mês</span>
-                    </div>
-                    <div className="text-[10.5px] text-gray-500 font-medium mt-0.5 leading-snug">
-                      Envio de placa física personalizada. Sem mensalidade enquanto cliente da Nuvv.
-                    </div>
-                  </div>
-                  <div
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ml-2 transition-colors ${
-                      activeIntercomId === 'guard-intercom-residencial'
-                        ? 'bg-nuvv-purple text-white'
-                        : 'border-2 border-gray-300 bg-white'
-                    }`}
-                  >
-                    {activeIntercomId === 'guard-intercom-residencial' && (
-                      <Check className="w-4 h-4 stroke-[3]" />
-                    )}
-                  </div>
-                </button>
-              </div>
-
-              {/* TAGS DE RASTREAMENTO */}
-              <div className="space-y-2.5 bg-emerald-50/40 p-3.5 sm:p-4 rounded-3xl border border-emerald-100/80 flex flex-col justify-between">
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <div className="flex items-center space-x-2 text-emerald-950">
-                    <div className="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-2xs">
-                      <Tag className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <div className="text-xs sm:text-sm font-black leading-tight text-emerald-950">
-                        TAGs de Rastreamento
-                      </div>
-                      <div className="text-[11px] text-emerald-800 font-medium">
-                        Localização de chaves, pets e objetos
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tag Stepper */}
-                  <div className="flex items-center space-x-1.5 bg-white px-2 py-0.5 rounded-xl border border-emerald-200 shadow-2xs">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onUpdateVisionConfig?.((prev) => ({
-                          ...prev,
-                          tagCount: Math.max(1, (prev?.tagCount || 1) - 1),
-                        }))
-                      }
-                      disabled={tagCount <= 1}
-                      className="w-5 h-5 rounded-md bg-emerald-100 hover:bg-emerald-200 disabled:opacity-30 disabled:hover:bg-emerald-100 text-emerald-900 flex items-center justify-center font-black transition-all active:scale-95 text-[10px] cursor-pointer"
-                      aria-label="Diminuir tags"
-                    >
-                      <Minus className="w-2.5 h-2.5" />
-                    </button>
-
-                    <span className="font-extrabold text-emerald-950 text-xs min-w-[50px] text-center">
-                      {tagCount} {tagCount === 1 ? 'TAG' : 'TAGs'}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onUpdateVisionConfig?.((prev) => ({
-                          ...prev,
-                          tagCount: Math.min(10, (prev?.tagCount || 1) + 1),
-                        }))
-                      }
-                      disabled={tagCount >= 10}
-                      className="w-5 h-5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-30 flex items-center justify-center font-black transition-all active:scale-95 text-[10px] cursor-pointer"
-                      aria-label="Aumentar tags"
-                    >
-                      <Plus className="w-2.5 h-2.5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* TAG Taxa Única */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    onUpdateVisionConfig?.((prev) => ({
-                      ...prev,
-                      planId: null,
-                      tagPlanId: activeTagId === 'guard-track-tag' ? null : 'guard-track-tag',
-                    }))
-                  }
-                  className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between group cursor-pointer ${
-                    activeTagId === 'guard-track-tag'
-                      ? 'border-emerald-600 bg-white shadow-sm ring-2 ring-emerald-600/30'
-                      : 'border-gray-200 hover:border-emerald-300 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="min-w-0 pr-2">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-xs font-black text-gray-900 group-hover:text-emerald-800 transition-colors">
-                        {tagCount}x {tagCount === 1 ? 'TAG Física' : 'TAGs Físicas'}
-                      </span>
-                      <span className="text-[9.5px] font-black text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full whitespace-nowrap">
-                        Sem mensalidade
-                      </span>
-                    </div>
-                    <div className="text-xs text-emerald-700 font-extrabold mt-0.5">
-                      R$ {(79.9 * tagCount).toFixed(2).replace('.', ',')} taxa única • <span className="text-emerald-800 font-bold">R$ 0,00/mês</span>
-                    </div>
-                    <div className="text-[10.5px] text-gray-500 font-medium mt-0.5 leading-snug">
-                      {tagCount > 1 ? `${tagCount}x TAGs configuradas` : 'TAG configurada'}. Sem mensalidade enquanto cliente da Nuvv.
-                    </div>
-                  </div>
-                  <div
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ml-2 transition-colors ${
-                      activeTagId === 'guard-track-tag'
-                        ? 'bg-emerald-600 text-white'
-                        : 'border-2 border-gray-300 bg-white'
-                    }`}
-                  >
-                    {activeTagId === 'guard-track-tag' && (
-                      <Check className="w-4 h-4 stroke-[3]" />
-                    )}
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Segurança Digital (Kaspersky) */}
         {activeCategory === 'protecao' && (

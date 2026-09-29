@@ -7,8 +7,6 @@ import {
   RESIDENTIAL_PLANS,
   TIER_CONFIG,
   PLAN_ADDONS,
-  VisionAddonConfig,
-  calculateVisionAddonPrice,
   resolveTierAndAddons,
   TV_PLANS_REFERENCE_TABLE,
   TvPlanReference,
@@ -215,32 +213,7 @@ export const PACKAGE_OFFERS: PackageOffer[] = [
     defaultSpeed: '400',
     detailsSummary: 'Cuidado completo com telemedicina para a família e segurança digital contra ameaças na internet.',
   },
-  {
-    id: 'pacote-casa-segura-guard',
-    category: 'seguranca',
-    badge: 'CÂMERA & MONITORAMENTO',
-    badgeColor: 'blue',
-    title: 'Casa Segura (Nuvv Guard)',
-    tagline: 'Câmera Wi-Fi Full HD inteligente em comodato com gravação contínua na nuvem por 7 dias.',
-    channelsCount: 18,
-    channelsTitle: 'Grade de Canais Cortesia (18 Canais)',
-    channelsImage: '/images/external/tv_cortesia.png',
-    catalogImage: '/images/external/cat_min.png',
-    heroLogos: [
-      { name: 'Watch', logo: '/images/external/watch-.png' },
-      { name: 'Nuvv Guard', logo: '/images/apps/app_nuvv_guard_icon.png' },
-    ],
-    contentHighlights: [
-      'Câmera Wi-Fi Full HD em comodato com visão noturna',
-      'Gravação em nuvem segura por 7 dias (histórico contínuo)',
-      'Alertas inteligentes de movimento humano no smartphone',
-      '18 canais abertos em HD no NuvvPlay (Watch) + Roteador Wi-Fi Plus',
-    ],
-    basePrice400M: 144.80,
-    originalBasePrice: 189.90,
-    defaultSpeed: '400',
-    detailsSummary: 'Monitore sua casa, filhos ou pets 24h por dia direto no app Nuvv Guard com gravação em nuvem.',
-  },
+
   {
     id: 'pacote-essencial-fibra',
     category: 'essencial',
@@ -695,11 +668,7 @@ export const TestePlanos: React.FC<TestePlanosProps> = ({
     telecine: true,
     hboMax: true,
   });
-  const [resVisionConfig, setResVisionConfig] = useState<VisionAddonConfig>({
-    planId: null,
-    cameraCount: 1,
-    withComodato: false,
-  });
+
   const [resDetailModalPlan, setResDetailModalPlan] = useState<ResidentialPlan | null>(null);
   const [resChannelsModalTier, setResChannelsModalTier] = useState<EntertainmentTier | null>(null);
   const [resChannelsModalProfile, setResChannelsModalProfile] = useState<ResidentialProfileId | null>(null);
@@ -741,15 +710,7 @@ export const TestePlanos: React.FC<TestePlanosProps> = ({
         return addon.name;
       });
 
-    if (resVisionConfig.planId || resVisionConfig.withComodato) {
-      if (resVisionConfig.planId) {
-        const p = PLAN_ADDONS[resVisionConfig.planId];
-        activeAddonNames.push(`${p?.name || resVisionConfig.planId} (${resVisionConfig.cameraCount}x)`);
-      }
-      if (resVisionConfig.withComodato) {
-        activeAddonNames.push(`${resVisionConfig.cameraCount}x Câmeras em Comodato`);
-      }
-    }
+
 
     const extrasPayload = resolution.internalCodes.length
       ? ` | Extras: ${resolution.internalCodes.join(', ')}`
@@ -821,17 +782,10 @@ export const TestePlanos: React.FC<TestePlanosProps> = ({
         });
       });
 
-    if (resVisionConfig.planId || resVisionConfig.withComodato) {
-      items.push({
-        id: 'vision-addon',
-        name: `Nuvv Guard (${resVisionConfig.cameraCount}x Câmeras)`,
-        description: 'Gravação contínua na nuvem e monitoramento ao vivo no App Nuvv Guard.',
-        category: 'vision',
-      });
-    }
+
 
     return items;
-  }, [resDetailModalPlan, resEffectiveTier, resActiveAddons, resVisionConfig]);
+  }, [resDetailModalPlan, resEffectiveTier, resActiveAddons]);
 
   const resAddonTotal = useMemo(() => {
     const regularAddons = Object.entries(resActiveAddons)
@@ -842,9 +796,8 @@ export const TestePlanos: React.FC<TestePlanosProps> = ({
         return PLAN_ADDONS[k]?.price || 0;
       })
       .reduce((acc, price) => acc + price, 0);
-    const visionTotal = calculateVisionAddonPrice(resVisionConfig);
-    return regularAddons + visionTotal;
-  }, [resActiveAddons, resVisionConfig, resEffectiveTier]);
+    return regularAddons;
+  }, [resActiveAddons, resEffectiveTier]);
 
   const resModalPromoPrice = resDetailModalPlan
     ? Number((resDetailModalPlan.tierPricing[resEffectiveTier].promoPrice + resAddonTotal).toFixed(2))
@@ -2443,8 +2396,7 @@ export const TestePlanos: React.FC<TestePlanosProps> = ({
                     plan={plan}
                     selectedTier={resSelectedTier}
                     activeAddons={resActiveAddons}
-                    visionConfig={resVisionConfig}
-                    activeProfile={resSelectedProfile}
+                                        activeProfile={resSelectedProfile}
                     onSelectPlan={handleResSelectPlan}
                     onOpenDetails={setResDetailModalPlan}
                     onOpenChannelsModal={(tier) => {

@@ -7,9 +7,6 @@ import {
   RESIDENTIAL_PLANS,
   TIER_CONFIG,
   PLAN_ADDONS,
-  VisionAddonConfig,
-  calculateVisionAddonPrice,
-  getGuardSetupDetails,
   resolveTierAndAddons,
   TV_PLANS_REFERENCE_TABLE,
 } from '../data/plans';
@@ -78,11 +75,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
       }, 150);
     }
   }, [initialAddon]);
-  const [visionConfig, setVisionConfig] = useState<VisionAddonConfig>({
-    planId: null,
-    cameraCount: 1,
-    withComodato: false,
-  });
   const [detailModalPlan, setDetailModalPlan] = useState<ResidentialPlan | null>(null);
   const [channelsModalTier, setChannelsModalTier] = useState<EntertainmentTier | null>(null);
   const [svaModal, setSvaModal] = useState<'telefonia' | 'nuvvplay' | 'protecao' | null>(null);
@@ -100,9 +92,8 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
         return PLAN_ADDONS[k]?.price || 0;
       })
       .reduce((acc, price) => acc + price, 0);
-    const visionTotal = calculateVisionAddonPrice(visionConfig);
-    return regularAddons + visionTotal;
-  }, [activeAddons, visionConfig, effectiveTier]);
+    return regularAddons;
+  }, [activeAddons, effectiveTier]);
 
   const modalPromoPrice = detailModalPlan
     ? Number((detailModalPlan.tierPricing[effectiveTier].promoPrice + addonTotal).toFixed(2))
@@ -223,47 +214,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
         });
       });
 
-    // 3. Vision Addons se houver
-    if (
-      visionConfig.cameraPlanId ||
-      (visionConfig.planId &&
-        (visionConfig.planId.includes('camera') ||
-          visionConfig.planId.includes('byod')))
-    ) {
-      const camCount = Math.max(1, visionConfig.cameraCount || 1);
-      items.push({
-        name: `Nuvv Guard (${camCount}x Câmera${camCount > 1 ? 's' : ''})`,
-        tag: 'Segurança',
-        description: 'Gravação na nuvem e monitoramento ao vivo no App Nuvv Guard.',
-        logo: '/images/external/cat_completo.png',
-      });
-    }
-
-    if (
-      visionConfig.intercomPlanId ||
-      (visionConfig.planId && visionConfig.planId.includes('intercom'))
-    ) {
-      items.push({
-        name: 'Interfone Virtual QR Code',
-        tag: 'Interfonia',
-        description: 'Receba chamadas de vídeo dos visitantes no app Nuvv Guard. Sem mensalidade enquanto cliente Nuvv.',
-        logo: '/images/external/cat_completo.png',
-      });
-    }
-
-    if (
-      visionConfig.tagPlanId ||
-      (visionConfig.planId && visionConfig.planId.includes('tag'))
-    ) {
-      const tCount = Math.max(1, visionConfig.tagCount || 1);
-      items.push({
-        name: `TAG de Rastreamento (${tCount}x)`,
-        tag: 'Rastreamento',
-        description: 'Localização de chaves e objetos no app Nuvv Guard. Sem mensalidade enquanto cliente Nuvv.',
-        logo: '/images/external/cat_completo.png',
-      });
-    }
-
     const BRAND_ORDER = ['watch', 'awdio', 'sony', 'universal', 'premiere', 'combate', 'telecine', 'hbo', 'max'];
     const getBrandRank = (name: string) => {
       const n = name.toLowerCase();
@@ -275,7 +225,7 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
 
     items.sort((a, b) => getBrandRank(a.name) - getBrandRank(b.name));
     return items;
-  }, [detailModalPlan, effectiveTvConfig, effectiveTier, activeAddons, visionConfig]);
+  }, [detailModalPlan, effectiveTvConfig, effectiveTier, activeAddons]);
 
   const modalHighlights = useMemo(() => {
     if (!detailModalPlan) return [];
@@ -306,8 +256,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
 
     return hls;
   }, [detailModalPlan, effectiveTvConfig, activeAddons]);
-
-  const guardSetup = useMemo(() => getGuardSetupDetails(visionConfig), [visionConfig]);
 
   const handleSelectTier = (newTier: EntertainmentTier | null) => {
     const prevTierKey = selectedTier || 'cortesia';
@@ -340,15 +288,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
   const handleResetSelection = () => {
     setSelectedTier(null);
     setActiveAddons({});
-    setVisionConfig({
-      planId: null,
-      cameraCount: 1,
-      withComodato: false,
-      cameraPlanId: null,
-      intercomPlanId: null,
-      tagPlanId: null,
-      tagCount: 1,
-    });
     try {
       localStorage.removeItem('nuvv_current_quote');
     } catch {
@@ -361,7 +300,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
       plan,
       effectiveTier,
       activeAddons,
-      visionConfig,
       totalPrice,
       cityName: currentCity,
     });
@@ -377,7 +315,7 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
     <div className="space-y-0 animate-fade-in">
       <SEO
         title={`Monte seu Combo Residencial Sob Medida em ${currentCity} | Nuvv Fibra`}
-        description={`Monte o combo de internet perfeito para sua casa em ${currentCity}. Fibra óptica até 1 Giga com Wi-Fi 6, canais ao vivo no App Watch, Max, Telecine, Premiere, Telemedicina 24h e câmeras Nuvv Guard.`}
+        description={`Monte o combo de internet perfeito para sua casa em ${currentCity}. Fibra óptica até 1 Giga com Wi-Fi 6, canais ao vivo no App Watch, Max, Telecine, Premiere e Telemedicina 24h.`}
         cityName={currentCity}
         keywords={[
           'monte seu combo residencial',
@@ -385,7 +323,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
           'internet com tv e streaming',
           'app watch tv fibra',
           'telemedicina nuvv',
-          'nuvv guard residencial',
           'internet fibra suzano',
         ]}
         schema={{
@@ -402,7 +339,7 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
             '@type': 'City',
             name: currentCity,
           },
-          description: `Monte seu plano de internet 100% fibra óptica com Wi-Fi 6, canais ao vivo e streamings no App Watch, Telemedicina 24h e segurança Nuvv Guard em ${currentCity}.`,
+          description: `Monte seu plano de internet 100% fibra óptica com Wi-Fi 6, canais ao vivo e streamings no App Watch e Telemedicina 24h em ${currentCity}.`,
         }}
       />
 
@@ -437,7 +374,7 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
             </h1>
 
             <p className="text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
-              Personalize sua velocidade de internet e adicione pacotes de TV ao vivo, streamings de cinema, esportes, telemedicina 24h e câmeras de segurança na nuvem com cálculo automático e transparência total.
+              Personalize sua velocidade de internet e adicione pacotes de TV ao vivo, streamings de cinema, esportes e telemedicina 24h com cálculo automático e transparência total.
             </p>
 
             {/* Quick Pillars */}
@@ -469,8 +406,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
             onSelectTier={handleSelectTier}
             activeAddons={activeAddons}
             onToggleAddon={handleToggleAddon}
-            visionConfig={visionConfig}
-            onUpdateVisionConfig={setVisionConfig}
             onOpenChannelsModal={(tier) => setChannelsModalTier(tier)}
             onOpenProtecaoModal={() => setSvaModal('protecao')}
             onResetSelection={handleResetSelection}
@@ -498,7 +433,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
                     plan={plan}
                     selectedTier={selectedTier}
                     activeAddons={activeAddons}
-                    visionConfig={visionConfig}
                     hideCanaisGlobo={true}
                     onSelectPlan={handleSelectPlan}
                     onOpenDetails={setDetailModalPlan}
@@ -765,34 +699,6 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
                 </div>
               </div>
 
-              {/* SERVIÇOS NUVV GUARD (TAXAS DE HABILITAÇÃO / ANTECIPADA) */}
-              {guardSetup.items.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-cyan-50/70 border border-cyan-100 shadow-2xs space-y-2">
-                  <div className="flex items-center space-x-2 text-[11px] font-black text-cyan-900 uppercase tracking-wider">
-                    <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" />
-                    <span>Serviços Nuvv Guard (Ativação e Envio)</span>
-                  </div>
-                  <div className="space-y-2 text-xs">
-                    {guardSetup.items.map((item, idx) => (
-                      <div key={idx} className="p-2 rounded-xl bg-white border border-cyan-200/80 space-y-1">
-                        <div className="flex items-center justify-between font-bold text-cyan-950">
-                          <span>{item.name}</span>
-                          {item.setupFee > 0 ? (
-                            <span className="text-cyan-700 font-extrabold">
-                              R$ {item.setupFee.toFixed(2).replace('.', ',')}
-                            </span>
-                          ) : (
-                            <span className="text-emerald-600 font-extrabold">Isento</span>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-cyan-800 leading-snug">
-                          {item.notice}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {/* TAXA DE HABILITAÇÃO */}
               <div className="p-3.5 rounded-2xl bg-white border border-gray-200/80 shadow-2xs space-y-1">
