@@ -1660,15 +1660,15 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                             />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-1">
-                              <h5 className="text-xs font-black text-slate-900 truncate">
+                            <div className="flex items-baseline justify-between gap-1.5 flex-wrap">
+                              <h5 className="text-xs font-black text-slate-900 leading-tight">
                                 {app.name}
                               </h5>
-                              <span className="text-[9px] font-bold text-nuvv-purple bg-purple-100/70 px-1.5 py-0.5 rounded flex-shrink-0">
+                              <span className="text-[9px] font-bold text-nuvv-purple bg-purple-100/70 px-1.5 py-0.5 rounded whitespace-nowrap">
                                 {app.tag}
                               </span>
                             </div>
-                            <p className="text-[10.5px] text-slate-500 line-clamp-1 leading-tight mt-0.5">
+                            <p className="text-[10.5px] text-slate-500 leading-tight mt-0.5">
                               {app.description}
                             </p>
                           </div>

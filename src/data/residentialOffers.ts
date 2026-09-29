@@ -99,19 +99,6 @@ export const getPackageDigitalApps = (pkg: PackageOffer): DigitalAppInfo[] => {
     });
   }
 
-  // 2. Awdio
-  const hasAwdio =
-    pkg.heroLogos.some((l) => l.name.toLowerCase().includes('awdio')) ||
-    pkg.contentHighlights.some((h) => h.toLowerCase().includes('awdio'));
-  if (hasAwdio) {
-    apps.push({
-      name: 'Awdio',
-      tag: 'Áudio & Livros',
-      description: 'Audiobooks, podcasts e conteúdos em áudio.',
-      logo: '/images/external/awdio.png',
-    });
-  }
-
   // 3. Sony One (incluso nos planos acima da cortesia, exceto no Mais Esportes)
   const isCortesia = pkg.category === 'essencial' || pkg.channelsCount <= 18;
   const isMaisEsportes =
