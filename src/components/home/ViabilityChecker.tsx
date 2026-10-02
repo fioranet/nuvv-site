@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 
 interface ViabilityCheckerProps {
+  currentCity?: string;
   onOpenLeadModal: (planName?: string) => void;
   onSelectCity?: (cityName: string) => void;
   onOpenFeasibilityModal?: (
@@ -26,6 +27,7 @@ interface ViabilityCheckerProps {
 }
 
 export const ViabilityChecker: React.FC<ViabilityCheckerProps> = ({
+  currentCity,
   onOpenLeadModal,
   onSelectCity,
   onOpenFeasibilityModal,
@@ -60,7 +62,7 @@ export const ViabilityChecker: React.FC<ViabilityCheckerProps> = ({
         setAddressData({
           street: data.logradouro || '',
           neighborhood: data.bairro || '',
-          city: data.localidade || 'Suzano',
+          city: data.localidade || currentCity || 'Sua Cidade',
           state: data.uf || 'SP',
         });
         if (onSelectCity && data.localidade) {
@@ -92,7 +94,7 @@ export const ViabilityChecker: React.FC<ViabilityCheckerProps> = ({
         addressData?.street || '',
         number.trim(),
         addressData?.neighborhood || '',
-        addressData?.city || 'Suzano'
+        addressData?.city || currentCity || ''
       );
     } else {
       const addressInfo = addressData

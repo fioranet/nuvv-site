@@ -1248,6 +1248,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
         isOpen={isFeasibilityModalOpen}
         onClose={() => setIsFeasibilityModalOpen(false)}
         initialService="residencial"
+        initialCity={currentCity}
         onSelectPlanAndHire={(planName, addr) => {
           onOpenLeadModal(`${planName} (Endereço validado: ${addr})`);
         }}

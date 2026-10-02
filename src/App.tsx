@@ -56,12 +56,12 @@ export function App() {
   const [leadModalSummaryData, setLeadModalSummaryData] = useState<ComboLeadSummary | null>(null);
   const [isSpeedTestModalOpen, setIsSpeedTestModalOpen] = useState(false);
 
-  // Tentativa inicial automática de geolocalização se não houver cidade salva
+  // Tentativa inicial automática de geolocalização se não houver cidade salva (via IP silencioso)
   useEffect(() => {
     if (!localStorage.getItem('nuvv_city')) {
       import('./services/geolocation').then(({ GeolocationService }) => {
-        GeolocationService.detectFromBrowser().then((result) => {
-          if (result.isSupported && result.cityName) {
+        GeolocationService.detectUserLocation().then((result) => {
+          if (result.isSupported && result.cityName && result.source !== 'default') {
             setCurrentCity(result.cityName);
             localStorage.setItem('nuvv_city', result.cityName);
           }
@@ -153,6 +153,7 @@ export function App() {
                 onOpenCitySelector={() => setIsCityModalOpen(true)}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenLeadModal={handleOpenLeadModal}
+                onSelectCity={handleSelectCity}
               />
             }
           />
@@ -336,6 +337,7 @@ export function App() {
             path="/pabx"
             element={
               <Pabx
+                currentCity={currentCity}
                 onOpenLeadModal={handleOpenLeadModal}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenCitySelector={() => setIsCityModalOpen(true)}
@@ -346,6 +348,7 @@ export function App() {
             path="/telefonia"
             element={
               <Telefonia
+                currentCity={currentCity}
                 onOpenLeadModal={handleOpenLeadModal}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenCitySelector={() => setIsCityModalOpen(true)}
@@ -358,6 +361,7 @@ export function App() {
             path="/social-wifi"
             element={
               <SocialWifi
+                currentCity={currentCity}
                 onOpenLeadModal={handleOpenLeadModal}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenCitySelector={() => setIsCityModalOpen(true)}
@@ -379,6 +383,7 @@ export function App() {
             path="/seguranca-digital"
             element={
               <SegurancaDigital
+                currentCity={currentCity}
                 onOpenLeadModal={handleOpenLeadModal}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenCitySelector={() => setIsCityModalOpen(true)}
@@ -437,6 +442,7 @@ export function App() {
             path="/viabilidade"
             element={
               <Viabilidade
+                currentCity={currentCity}
                 onOpenLeadModal={handleOpenLeadModal}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenCitySelector={() => setIsCityModalOpen(true)}
@@ -447,6 +453,7 @@ export function App() {
             path="/cobertura"
             element={
               <Viabilidade
+                currentCity={currentCity}
                 onOpenLeadModal={handleOpenLeadModal}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenCitySelector={() => setIsCityModalOpen(true)}
@@ -506,8 +513,8 @@ export function App() {
           <Route path="/segunda-via" element={<SegundaVia />} />
           <Route path="/termos" element={<Termos />} />
           <Route path="/privacidade" element={<Privacidade />} />
-          <Route path="/sobre" element={<Sobre onOpenLeadModal={handleOpenLeadModal} />} />
-          <Route path="/sobre-nos" element={<Sobre onOpenLeadModal={handleOpenLeadModal} />} />
+          <Route path="/sobre" element={<Sobre currentCity={currentCity} onOpenLeadModal={handleOpenLeadModal} />} />
+          <Route path="/sobre-nos" element={<Sobre currentCity={currentCity} onOpenLeadModal={handleOpenLeadModal} />} />
           <Route
             path="*"
             element={
@@ -516,6 +523,7 @@ export function App() {
                 onOpenLeadModal={handleOpenLeadModal}
                 onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
                 onOpenCitySelector={() => setIsCityModalOpen(true)}
+                onSelectCity={handleSelectCity}
               />
             }
           />

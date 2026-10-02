@@ -1530,6 +1530,7 @@ export const Empresarial: React.FC<EmpresarialPageProps> = ({
       <BusinessCoverageModal
         isOpen={isFeasibilityModalOpen}
         onClose={() => setIsFeasibilityModalOpen(false)}
+        currentCity={currentCity}
         onSelectPlanAndHire={(planName, addressSummary) => {
           onOpenLeadModal(`${planName} (Endereço validado: ${addressSummary})`);
         }}

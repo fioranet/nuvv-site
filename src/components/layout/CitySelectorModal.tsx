@@ -35,15 +35,17 @@ export const CitySelectorModal: React.FC<CitySelectorModalProps> = ({
     setDetectionMessage(null);
     try {
       const result = await GeolocationService.detectFromBrowser();
-      if (result.isSupported) {
+      if (result.isSupported && result.source !== 'default') {
         onSelectCity(result.cityName);
         setDetectionMessage(`Localizado em ${result.cityName}!`);
         setTimeout(() => {
           onClose();
           setDetectionMessage(null);
         }, 1000);
+      } else if (result.cityName && result.cityName !== 'Suzano') {
+        setDetectionMessage(`Detectamos ${result.cityName}, mas nossa rede de fibra óptica atende prioritariamente o Alto Tietê e Grande SP.`);
       } else {
-        setDetectionMessage(`Detectamos ${result.cityName}, mas ainda não temos fibra óptica nesta cidade.`);
+        setDetectionMessage('Não foi possível obter sua localização com precisão. Por favor, selecione sua cidade na lista abaixo.');
       }
     } catch {
       setDetectionMessage('Não foi possível obter sua localização. Por favor, selecione na lista abaixo.');

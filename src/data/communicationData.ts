@@ -113,7 +113,7 @@ export const VOICE_AI_SCENARIOS: VoiceScenario[] = [
       {
         speaker: 'client',
         speakerName: 'Mariana (Diretora TI)',
-        text: 'Oi, pode sim! Estamos precisando interligar duas filiais em Suzano.',
+        text: 'Oi, pode sim! Estamos precisando interligar duas filiais da nossa empresa.',
         time: '0:10',
       },
       {

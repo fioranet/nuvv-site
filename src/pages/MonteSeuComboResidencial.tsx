@@ -747,6 +747,7 @@ export const MonteSeuComboResidencial: React.FC<MonteSeuComboResidencialProps> =
         isOpen={isFeasibilityModalOpen}
         onClose={() => setIsFeasibilityModalOpen(false)}
         initialService="residencial"
+        initialCity={currentCity}
         onSelectPlanAndHire={(planName, addr) => {
           onOpenLeadModal(`${planName} (Endereço validado: ${addr})`);
         }}

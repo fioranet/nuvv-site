@@ -4,12 +4,13 @@ import { Check, ArrowRight, Zap, Users, PhoneCall } from 'lucide-react';
 import { siteConfig } from '../../data/siteConfig';
 
 interface SocialWifiPlansProps {
+  currentCity?: string;
   onSelectPlan: (plan: SocialWifiPlan) => void;
 }
 
-export const SocialWifiPlans: React.FC<SocialWifiPlansProps> = ({ onSelectPlan }) => {
+export const SocialWifiPlans: React.FC<SocialWifiPlansProps> = ({ currentCity, onSelectPlan }) => {
   const handleOpenWhatsAppEnterprise = () => {
-    const text = 'Olá! Gostaria de uma cotação para projeto especial de Social Wi-Fi corporativo (acima de 100 acessos simultâneos até 10.000).';
+    const text = `Olá! Gostaria de uma cotação para projeto especial de Social Wi-Fi corporativo (acima de 100 acessos simultâneos até 10.000)${currentCity ? ` em ${currentCity}` : ''}.`;
     window.open(`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(text)}`, '_blank');
   };
 

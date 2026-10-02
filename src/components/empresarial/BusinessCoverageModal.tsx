@@ -50,12 +50,14 @@ interface BusinessCoverageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectPlanAndHire?: (planName: string, addressSummary: string) => void;
+  currentCity?: string;
 }
 
 export const BusinessCoverageModal: React.FC<BusinessCoverageModalProps> = ({
   isOpen,
   onClose,
   onSelectPlanAndHire,
+  currentCity,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -69,7 +71,7 @@ export const BusinessCoverageModal: React.FC<BusinessCoverageModalProps> = ({
   const [number, setNumber] = useState('');
   const [complement, setComplement] = useState('');
   const [neighborhood, setNeighborhood] = useState('');
-  const [city, setCity] = useState('São Paulo');
+  const [city, setCity] = useState(currentCity || 'São Paulo');
   const [state, setState] = useState('SP');
   const [termsAccepted, setTermsAccepted] = useState(true);
   const [contactAuthorized, setContactAuthorized] = useState(true);
@@ -78,6 +80,12 @@ export const BusinessCoverageModal: React.FC<BusinessCoverageModalProps> = ({
   const [cepLoading, setCepLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [result, setResult] = useState<FeasibilityResult | null>(null);
+
+  useEffect(() => {
+    if (currentCity) {
+      setCity(currentCity);
+    }
+  }, [currentCity]);
 
   // Initialize or invalidate Leaflet map when modal opens
   useEffect(() => {

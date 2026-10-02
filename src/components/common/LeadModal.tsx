@@ -33,7 +33,7 @@ export const LeadModal: React.FC<LeadModalProps> = ({
   isOpen,
   onClose,
   planName = 'Plano de Fibra Óptica',
-  cityName = 'Suzano',
+  cityName = '',
   source = 'Site Nuvv',
   summaryData,
 }) => {
@@ -46,13 +46,18 @@ export const LeadModal: React.FC<LeadModalProps> = ({
 
   // Identifica o resumo ativo do pedido (via prop ou recuperado do storage)
   const activeSummary = useMemo(() => {
-    if (summaryData) return summaryData;
-    const stored = getStoredComboSummary();
-    if (stored && planName && (planName.includes(stored.referencePlan) || planName.includes(`${stored.planSpeed} ${stored.planUnit}`))) {
-      return stored;
+    let summary = summaryData;
+    if (!summary) {
+      const stored = getStoredComboSummary();
+      if (stored && planName && (planName.includes(stored.referencePlan) || planName.includes(`${stored.planSpeed} ${stored.planUnit}`))) {
+        summary = stored;
+      }
     }
-    return null;
-  }, [summaryData, planName]);
+    if (summary && cityName && summary.cityName !== cityName) {
+      return { ...summary, cityName };
+    }
+    return summary || null;
+  }, [summaryData, planName, cityName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,7 +104,8 @@ export const LeadModal: React.FC<LeadModalProps> = ({
     if (activeSummary) {
       text = generateWhatsAppComboMessage(activeSummary, { name, phone, cep });
     } else {
-      text = `Olá! Gostaria de contratar o ${planName} para a cidade de ${cityName}. Meu nome é ${name || 'Cliente'}.`;
+      const cityPart = cityName ? ` para a cidade de ${cityName}` : '';
+      text = `Olá! Gostaria de contratar o ${planName}${cityPart}. Meu nome é ${name || 'Cliente'}.`;
     }
 
     // Registra lead de abertura direta de whatsapp
@@ -109,7 +115,7 @@ export const LeadModal: React.FC<LeadModalProps> = ({
         name: name || 'Cliente WhatsApp',
         phone: phone || undefined,
         email: email || undefined,
-        details: `Cidade: ${cityName} | CEP: ${cep || 'Não informado'} | ${
+        details: `Cidade: ${cityName || 'Não especificada'} | CEP: ${cep || 'Não informado'} | ${
           activeSummary
             ? `Mensalidade: R$ ${activeSummary.monthlyTotal.toFixed(2)} | Vendas/Taxas Únicas: R$ ${activeSummary.oneTimeTotal.toFixed(2)} | ${activeSummary.rawSummary}`
             : planName

@@ -66,7 +66,7 @@ interface MultiatendimentoPageProps {
 }
 
 export const Multiatendimento: React.FC<MultiatendimentoPageProps> = ({
-  currentCity = 'Suzano',
+  currentCity = '',
   onOpenSpeedTest,
   onOpenCitySelector,
   onOpenLeadModal,
@@ -101,10 +101,12 @@ export const Multiatendimento: React.FC<MultiatendimentoPageProps> = ({
   }, [isHeroHovered, multiSlides.length]);
 
   const handleOpenLead = (title: string = 'Nuvv Multiatendimento') => {
+    const citySuffix = currentCity ? ` (${currentCity})` : '';
     if (onOpenLeadModal) {
-      onOpenLeadModal(`Nuvv Multiatendimento - ${title}`);
+      onOpenLeadModal(`Nuvv Multiatendimento - ${title}${citySuffix}`);
     } else {
-      const text = `Olá! Gostaria de mais informações sobre o Nuvv Multiatendimento (${title}) para minha empresa em ${currentCity}.`;
+      const cityPart = currentCity ? ` para minha empresa em ${currentCity}` : ' para minha empresa';
+      const text = `Olá! Gostaria de mais informações sobre o Nuvv Multiatendimento (${title})${cityPart}.`;
       window.open(
         `https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(text)}`,
         '_blank'
@@ -115,10 +117,10 @@ export const Multiatendimento: React.FC<MultiatendimentoPageProps> = ({
   return (
     <div className="space-y-0 animate-fade-in">
       <SEO
-        title={`Nuvv Multiatendimento em ${currentCity} | WhatsApp Multi-Atendente & CRM com IA`}
-        description={`Plataforma de Atendimento e CRM Multi-Canal em ${currentCity}: Conecte múltiplos atendentes em 1 único número de WhatsApp, Instagram e Facebook. Construtor de fluxo no-code e Agentes IA de Voz.`}
+        title={`Nuvv Multiatendimento${currentCity ? ` em ${currentCity}` : ''} | WhatsApp Multi-Atendente & CRM com IA`}
+        description={`Plataforma de Atendimento e CRM Multi-Canal${currentCity ? ` em ${currentCity}` : ''}: Conecte múltiplos atendentes em 1 único número de WhatsApp, Instagram e Facebook. Construtor de fluxo no-code e Agentes IA de Voz.`}
         keywords={[
-          `multiatendimento whatsapp ${currentCity}`,
+          `multiatendimento whatsapp ${currentCity || 'brasil'}`,
           'multiplos atendentes whatsapp empresas',
           'crm whatsapp kanban',
           'chatbot no-code automacao whatsapp',

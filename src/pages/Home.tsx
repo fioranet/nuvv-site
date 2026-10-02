@@ -44,7 +44,13 @@ export const Home: React.FC<HomePageProps> = ({
   const [feasibilityStreet, setFeasibilityStreet] = React.useState('');
   const [feasibilityNumber, setFeasibilityNumber] = React.useState('');
   const [feasibilityNeighborhood, setFeasibilityNeighborhood] = React.useState('');
-  const [feasibilityCity, setFeasibilityCity] = React.useState(currentCity || 'Suzano');
+  const [feasibilityCity, setFeasibilityCity] = React.useState(currentCity || '');
+
+  React.useEffect(() => {
+    if (currentCity) {
+      setFeasibilityCity(currentCity);
+    }
+  }, [currentCity]);
 
   const heroSlides = [
     {
@@ -212,6 +218,7 @@ export const Home: React.FC<HomePageProps> = ({
       {/* Prominent High-Converting Viability Checker Section */}
       <section className="px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-10 relative z-20">
         <ViabilityChecker
+          currentCity={currentCity}
           onOpenLeadModal={onOpenLeadModal}
           onSelectCity={onSelectCity}
           onOpenFeasibilityModal={(cep, street, num, neigh, city) => {
@@ -219,7 +226,7 @@ export const Home: React.FC<HomePageProps> = ({
             setFeasibilityStreet(street || '');
             setFeasibilityNumber(num || '');
             setFeasibilityNeighborhood(neigh || '');
-            setFeasibilityCity(city || currentCity || 'Suzano');
+            setFeasibilityCity(city || currentCity || '');
             setIsFeasibilityModalOpen(true);
           }}
         />

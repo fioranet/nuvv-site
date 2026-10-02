@@ -23,12 +23,14 @@ import {
 import { siteConfig } from '../data/siteConfig';
 
 interface ViabilidadePageProps {
+  currentCity?: string;
   onOpenLeadModal: (planName?: string) => void;
   onOpenSpeedTest: () => void;
   onOpenCitySelector: () => void;
 }
 
 export const Viabilidade: React.FC<ViabilidadePageProps> = ({
+  currentCity,
   onOpenLeadModal,
   onOpenSpeedTest,
   onOpenCitySelector,
@@ -46,7 +48,8 @@ export const Viabilidade: React.FC<ViabilidadePageProps> = ({
   };
 
   const handleWhatsAppDemand = (serviceTitle: string) => {
-    const text = `Olá! Gostaria de solicitar um estudo de viabilidade sob demanda para ${serviceTitle}.`;
+    const citySuffix = currentCity ? ` na região de ${currentCity}` : '';
+    const text = `Olá! Gostaria de solicitar um estudo de viabilidade sob demanda para ${serviceTitle}${citySuffix}.`;
     window.open(`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -243,6 +246,7 @@ export const Viabilidade: React.FC<ViabilidadePageProps> = ({
         isOpen={feasibilityModalOpen}
         onClose={() => setFeasibilityModalOpen(false)}
         initialService={selectedService}
+        initialCity={currentCity}
         onSelectPlanAndHire={handleSelectPlanAndHire}
       />
     </div>

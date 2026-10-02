@@ -37,7 +37,7 @@ export const BusinessLeadModal: React.FC<BusinessLeadModalProps> = ({
   isOpen,
   onClose,
   solution,
-  cityName = 'Suzano',
+  cityName = '',
 }) => {
   const navigate = useNavigate();
   const [selectedFlow, setSelectedFlow] = useState<'overview' | 'email' | 'meeting' | 'success'>('overview');
@@ -78,7 +78,8 @@ export const BusinessLeadModal: React.FC<BusinessLeadModalProps> = ({
   };
 
   const handleWhatsAppDirect = (actionText: string = 'Consultoria Corporativa') => {
-    const text = `Olá! Gostaria de falar sobre a solução corporativa *${solution.title}* (${actionText}) para minha empresa em ${cityName}.`;
+    const cityPart = cityName ? ` para minha empresa em ${cityName}` : ' para minha empresa';
+    const text = `Olá! Gostaria de falar sobre a solução corporativa *${solution.title}* (${actionText})${cityPart}.`;
     window.open(`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(text)}`, '_blank');
     handleReset();
   };

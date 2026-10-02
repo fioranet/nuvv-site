@@ -689,7 +689,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
             <a
               href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
-                'Olá! Gostaria de conversar com a equipe da Nuvv sobre soluções empresariais.'
+                `Olá! Gostaria de conversar com a equipe da Nuvv sobre soluções empresariais${currentCity ? ` para minha empresa em ${currentCity}` : ''}.`
               )}`}
               target="_blank"
               rel="noopener noreferrer"

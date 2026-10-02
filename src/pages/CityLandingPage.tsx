@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { cities } from '../data/cities';
 import { SEO } from '../components/common/SEO';
@@ -37,6 +37,13 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({
 
   // Find city in supported list
   const city = cities.find((c) => c.id === citySlug?.toLowerCase());
+
+  // Sincroniza a cidade global do site com a landing page atual
+  useEffect(() => {
+    if (city?.name && onSelectCity) {
+      onSelectCity(city.name);
+    }
+  }, [city?.name, onSelectCity]);
 
   if (!city) {
     return <Navigate to="/" replace />;

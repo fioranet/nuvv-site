@@ -14,11 +14,13 @@ import {
 import { siteConfig } from '../../data/siteConfig';
 
 interface SocialWifiHeroProps {
+  currentCity?: string;
   onScrollToFeatures: () => void;
   onScrollToPlans: () => void;
 }
 
 export const SocialWifiHero: React.FC<SocialWifiHeroProps> = ({
+  currentCity,
   onScrollToFeatures,
   onScrollToPlans,
 }) => {
@@ -34,7 +36,7 @@ export const SocialWifiHero: React.FC<SocialWifiHeroProps> = ({
   }, [isHeroHovered]);
 
   const handleOpenWhatsApp = () => {
-    const text = 'Olá! Gostaria de saber mais sobre o Hotspot Wi-fi Social da Nuvv e solicitar uma demonstração para meu estabelecimento.';
+    const text = `Olá! Gostaria de saber mais sobre o Hotspot Wi-fi Social da Nuvv e solicitar uma demonstração para meu estabelecimento${currentCity ? ` em ${currentCity}` : ''}.`;
     window.open(`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(text)}`, '_blank');
   };
 

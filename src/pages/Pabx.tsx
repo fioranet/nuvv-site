@@ -33,12 +33,14 @@ import { Link } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
 
 interface PabxPageProps {
+  currentCity?: string;
   onOpenLeadModal: (planName?: string) => void;
   onOpenSpeedTest: () => void;
   onOpenCitySelector: () => void;
 }
 
 export const Pabx: React.FC<PabxPageProps> = ({
+  currentCity,
   onOpenLeadModal,
   onOpenSpeedTest,
   onOpenCitySelector,
@@ -202,7 +204,9 @@ export const Pabx: React.FC<PabxPageProps> = ({
                   Ver Planos e Preços
                 </a>
                 <a
-                  href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá! Gostaria de falar com um especialista sobre o PABX Virtual Cloud da Nuvv.')}`}
+                  href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
+                    `Olá! Gostaria de falar com um especialista sobre o PABX Virtual Cloud da Nuvv${currentCity ? ` para minha empresa em ${currentCity}` : ''}.`
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border-2 border-indigo-200 text-slate-800 font-bold text-sm flex items-center justify-center space-x-2 transition-all active:scale-98 cursor-pointer"
@@ -562,7 +566,9 @@ export const Pabx: React.FC<PabxPageProps> = ({
               </div>
 
               <a
-                href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá! Gostaria de consultar um projeto corporativo de PABX Virtual com mais de 100 ramais.')}`}
+                href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
+                  `Olá! Gostaria de consultar um projeto corporativo de PABX Virtual com mais de 100 ramais${currentCity ? ` para minha empresa em ${currentCity}` : ''}.`
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3.5 rounded-2xl font-bold text-xs sm:text-sm bg-nuvv-purple text-white hover:bg-nuvv-purple-hover text-center shadow-md transition-all active:scale-98 flex items-center justify-center space-x-2 cursor-pointer"
@@ -811,7 +817,9 @@ export const Pabx: React.FC<PabxPageProps> = ({
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
             <a
-              href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá! Gostaria de falar com um consultor corporativo sobre a implantação do PABX Cloud na minha empresa.')}`}
+              href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
+                `Olá! Gostaria de falar com um consultor corporativo sobre a implantação do PABX Cloud na minha empresa${currentCity ? ` em ${currentCity}` : ''}.`
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-nuvv-purple hover:bg-nuvv-purple-hover text-white font-black text-sm flex items-center justify-center space-x-2 shadow-lg shadow-nuvv-purple/25 transition-all active:scale-98 cursor-pointer"
@@ -822,7 +830,7 @@ export const Pabx: React.FC<PabxPageProps> = ({
 
             <button
               type="button"
-              onClick={() => onOpenLeadModal('PABX Virtual Cloud - Contato Comercial')}
+              onClick={() => onOpenLeadModal(`PABX Virtual Cloud - Contato Comercial${currentCity ? ` (${currentCity})` : ''}`)}
               className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-white hover:bg-slate-50 border-2 border-indigo-200 text-slate-800 font-bold text-sm flex items-center justify-center space-x-2 shadow-2xs transition-all active:scale-98 cursor-pointer"
             >
               <span>Solicitar Contato Comercial</span>

@@ -24,12 +24,66 @@ export const GeolocationService = {
   },
 
   /**
+   * Tenta detectar a cidade do usuário via endereço IP (silencioso, sem prompt de permissão)
+   */
+  async detectFromIp(): Promise<GeolocationResult> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+      const res = await fetch('https://get.geojs.io/v1/ip/geo.json', {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!res.ok) throw new Error('IP Geolocation request failed');
+      const data = await res.json();
+      const rawCity = data.city || '';
+
+      if (rawCity) {
+        const matched = this.matchSupportedCity(rawCity);
+        if (matched) {
+          return {
+            cityName: matched.name,
+            isSupported: true,
+            state: matched.state,
+            source: 'ip',
+          };
+        }
+        return {
+          cityName: rawCity,
+          isSupported: false,
+          state: data.region || 'SP',
+          source: 'ip',
+        };
+      }
+    } catch {
+      // Falha silenciosa
+    }
+
+    return { cityName: 'Suzano', isSupported: false, source: 'default' };
+  },
+
+  /**
+   * Detecta a localização recomendada para o primeiro carregamento:
+   * Prioriza IP (sem popup invasivo de permissão para o usuário)
+   */
+  async detectUserLocation(): Promise<GeolocationResult> {
+    const ipResult = await this.detectFromIp();
+    if (ipResult.isSupported && ipResult.cityName) {
+      return ipResult;
+    }
+    return ipResult;
+  },
+
+  /**
    * Tenta detectar a cidade do usuário utilizando a API de Geolocalização do Navegador (GPS)
+   * Usado quando o usuário clica expressamente em "Usar minha localização atual (GPS)"
    */
   async detectFromBrowser(): Promise<GeolocationResult> {
     return new Promise((resolve) => {
       if (!navigator.geolocation) {
-        resolve({ cityName: 'Suzano', isSupported: true, source: 'default' });
+        this.detectFromIp().then(resolve);
         return;
       }
 
@@ -72,15 +126,19 @@ export const GeolocationService = {
                 source: 'gps',
               });
             } else {
-              resolve({ cityName: 'Suzano', isSupported: true, source: 'default' });
+              // Tenta IP como fallback do geocoding
+              const ipFallback = await this.detectFromIp();
+              resolve(ipFallback);
             }
           } catch {
-            resolve({ cityName: 'Suzano', isSupported: true, source: 'default' });
+            const ipFallback = await this.detectFromIp();
+            resolve(ipFallback);
           }
         },
-        () => {
-          // Erro ou permissão negada
-          resolve({ cityName: 'Suzano', isSupported: true, source: 'default' });
+        async () => {
+          // Erro ou permissão negada pelo usuário: tenta IP silencioso
+          const ipFallback = await this.detectFromIp();
+          resolve(ipFallback);
         },
         { timeout: 7000, enableHighAccuracy: false }
       );

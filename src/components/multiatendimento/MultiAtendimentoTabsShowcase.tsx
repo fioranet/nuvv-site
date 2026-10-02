@@ -39,10 +39,12 @@ import {
 
 interface MultiAtendimentoTabsShowcaseProps {
   onOpenDemo?: (featureTitle?: string) => void;
+  currentCity?: string;
 }
 
 export const MultiAtendimentoTabsShowcase: React.FC<MultiAtendimentoTabsShowcaseProps> = ({
   onOpenDemo,
+  currentCity,
 }) => {
   const [activeTab, setActiveTab] = useState<'inbox' | 'builder' | 'campaigns' | 'voice-ai'>('inbox');
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -373,7 +375,7 @@ export const MultiAtendimentoTabsShowcase: React.FC<MultiAtendimentoTabsShowcase
                     <div className="flex justify-start">
                       <div className="bg-slate-100 p-3 rounded-2xl rounded-tl-sm max-w-sm text-gray-700 space-y-1">
                         <p className="leading-relaxed">
-                          Olá Rafael! Analisamos a proposta do Nuvv Multiatendimento com os 15 ramais para nossa filial em Suzano.
+                          Olá Rafael! Analisamos a proposta do Nuvv Multiatendimento com os 15 ramais para nossa filial{currentCity ? ` em ${currentCity}` : ''}.
                         </p>
                         <span className="text-[9px] text-gray-400 block text-right">14:18</span>
                       </div>

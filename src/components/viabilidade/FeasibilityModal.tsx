@@ -69,7 +69,7 @@ export const FeasibilityModal: React.FC<FeasibilityModalProps> = ({
   initialStreet = '',
   initialNumber = '',
   initialNeighborhood = '',
-  initialCity = 'Suzano',
+  initialCity = '',
 }) => {
   const [selectedService, setSelectedService] = useState<'residencial' | 'empresarial'>(initialService);
 
@@ -85,7 +85,7 @@ export const FeasibilityModal: React.FC<FeasibilityModalProps> = ({
   const [number, setNumber] = useState(initialNumber);
   const [complement, setComplement] = useState('');
   const [neighborhood, setNeighborhood] = useState(initialNeighborhood);
-  const [city, setCity] = useState(initialCity || 'Suzano');
+  const [city, setCity] = useState(initialCity || '');
   const [state, setState] = useState('SP');
   const [termsAccepted, setTermsAccepted] = useState(true);
   const [contactAuthorized, setContactAuthorized] = useState(true);
@@ -101,6 +101,19 @@ export const FeasibilityModal: React.FC<FeasibilityModalProps> = ({
       setSelectedService(initialService);
     }
   }, [initialService]);
+
+  useEffect(() => {
+    if (initialCity) {
+      setCity(initialCity);
+    }
+  }, [initialCity]);
+
+  useEffect(() => {
+    if (initialCep) setCep(initialCep);
+    if (initialStreet) setStreet(initialStreet);
+    if (initialNumber) setNumber(initialNumber);
+    if (initialNeighborhood) setNeighborhood(initialNeighborhood);
+  }, [initialCep, initialStreet, initialNumber, initialNeighborhood]);
 
   useEffect(() => {
     if (initialCep) setCep(initialCep);
@@ -230,7 +243,7 @@ export const FeasibilityModal: React.FC<FeasibilityModalProps> = ({
       if (data) {
         setStreet(data.logradouro || '');
         setNeighborhood(data.bairro || '');
-        setCity(data.localidade || 'Suzano');
+        setCity(data.localidade || initialCity || '');
         setState(data.uf || 'SP');
       }
       setCepLoading(false);

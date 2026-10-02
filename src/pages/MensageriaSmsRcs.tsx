@@ -38,7 +38,7 @@ interface MensageriaSmsRcsProps {
 }
 
 export const MensageriaSmsRcs: React.FC<MensageriaSmsRcsProps> = ({
-  currentCity = 'Suzano',
+  currentCity = '',
   onOpenSpeedTest,
   onOpenCitySelector,
   onOpenLeadModal,
@@ -46,10 +46,12 @@ export const MensageriaSmsRcs: React.FC<MensageriaSmsRcsProps> = ({
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   const handleOpenConsultant = (serviceName: string) => {
+    const citySuffix = currentCity ? ` (${currentCity})` : '';
     if (onOpenLeadModal) {
-      onOpenLeadModal(`Mensageria SMS & RCS - ${serviceName}`);
+      onOpenLeadModal(`Mensageria SMS & RCS - ${serviceName}${citySuffix}`);
     } else {
-      const text = `Olá! Gostaria de falar com um consultor corporativo sobre Mensageria SMS & RCS (${serviceName}) da Nuvv.`;
+      const cityPart = currentCity ? ` para minha empresa em ${currentCity}` : '';
+      const text = `Olá! Gostaria de falar com um consultor corporativo sobre Mensageria SMS & RCS (${serviceName}) da Nuvv${cityPart}.`;
       window.open(
         `https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(text)}`,
         '_blank'
@@ -617,7 +619,9 @@ export const MensageriaSmsRcs: React.FC<MensageriaSmsRcsProps> = ({
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
             <a
-              href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá! Gostaria de falar com um consultor corporativo sobre a Mensageria SMS & RCS da Nuvv.')}`}
+              href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
+                `Olá! Gostaria de falar com um consultor corporativo sobre a Mensageria SMS & RCS da Nuvv${currentCity ? ` para minha empresa em ${currentCity}` : ''}.`
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/25 transition-all active:scale-98 cursor-pointer"

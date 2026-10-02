@@ -35,17 +35,20 @@ import { siteConfig } from '../data/siteConfig';
 import { PartnerCarousel } from '../components/common/PartnerCarousel';
 
 interface SobreProps {
+  currentCity?: string;
   onOpenLeadModal?: (serviceOrPlan?: string) => void;
 }
 
-export const Sobre: React.FC<SobreProps> = ({ onOpenLeadModal }) => {
+export const Sobre: React.FC<SobreProps> = ({ currentCity, onOpenLeadModal }) => {
   const handleOpenSpecialist = () => {
+    const citySuffix = currentCity ? ` (${currentCity})` : '';
     if (onOpenLeadModal) {
-      onOpenLeadModal('Consultoria Institucional - Sobre a Nuvv');
+      onOpenLeadModal(`Consultoria Institucional - Sobre a Nuvv${citySuffix}`);
     } else {
+      const cityPart = currentCity ? ` para nossa operação em ${currentCity}` : '';
       window.open(
         `https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
-          'Olá! Conheci a Nuvv através da página Sobre e gostaria de falar com um especialista sobre a infraestrutura da minha empresa.'
+          `Olá! Conheci a Nuvv através da página Sobre e gostaria de falar com um especialista sobre a infraestrutura da minha empresa${cityPart}.`
         )}`,
         '_blank'
       );

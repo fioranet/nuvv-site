@@ -13,12 +13,14 @@ import { QuickAccessBar } from '../components/common/QuickAccessBar';
 import { SocialWifiPlan } from '../data/socialWifiData';
 
 interface SocialWifiPageProps {
+  currentCity?: string;
   onOpenLeadModal: (planName?: string) => void;
   onOpenSpeedTest: () => void;
   onOpenCitySelector: () => void;
 }
 
 export const SocialWifi: React.FC<SocialWifiPageProps> = ({
+  currentCity,
   onOpenLeadModal,
   onOpenSpeedTest,
   onOpenCitySelector,
@@ -34,17 +36,18 @@ export const SocialWifi: React.FC<SocialWifiPageProps> = ({
   };
 
   const handleSelectPlan = (plan: SocialWifiPlan) => {
+    const citySuffix = currentCity ? ` (${currentCity})` : '';
     if (plan.priceOnRequest) {
-      onOpenLeadModal(`Projeto Especial Hotspot Wi-fi Social (Até 10.000 Acessos)`);
+      onOpenLeadModal(`Projeto Especial Hotspot Wi-fi Social (Até 10.000 Acessos)${citySuffix}`);
     } else {
-      onOpenLeadModal(`Plano ${plan.name}: ${plan.simultaneousUsers} (R$ ${plan.price.toFixed(2).replace('.', ',')}/mês)`);
+      onOpenLeadModal(`Plano ${plan.name}: ${plan.simultaneousUsers} (R$ ${plan.price.toFixed(2).replace('.', ',')}/mês)${citySuffix}`);
     }
   };
 
   return (
     <div className="space-y-0 animate-fade-in">
       <SEO
-        title="Hotspot Wi-fi Social & Wi-Fi Marketing Inteligente para Negócios | Nuvv"
+        title={`Hotspot Wi-fi Social & Wi-Fi Marketing Inteligente${currentCity ? ` em ${currentCity}` : ''} | Nuvv`}
         description="Transforme o Wi-Fi do seu estabelecimento em um poderoso canal de marketing e vendas. Captive portal personalizado, captação de leads via WhatsApp, remarketing e 100% LGPD."
         keywords={[
           'hotspot wifi social',
@@ -53,16 +56,18 @@ export const SocialWifi: React.FC<SocialWifiPageProps> = ({
           'hotspot para clientes',
           'wifi comercial',
           'captura de leads wifi',
-          'wifi marketing suzano',
+          currentCity ? `wifi marketing ${currentCity.toLowerCase()}` : 'wifi marketing sp',
           'wifi para restaurantes e clinicas',
           'marco civil wifi',
         ]}
         canonicalUrl="https://nuvv.com.br/social-wifi"
         schema={[organizationSchema, socialWifiServiceSchema]}
+        cityName={currentCity}
       />
 
       {/* Hero Section */}
       <SocialWifiHero
+        currentCity={currentCity}
         onScrollToFeatures={handleScrollToFeatures}
         onScrollToPlans={handleScrollToPlans}
       />
@@ -77,7 +82,7 @@ export const SocialWifi: React.FC<SocialWifiPageProps> = ({
       <SocialWifiSegments />
 
       {/* Plan Cards */}
-      <SocialWifiPlans onSelectPlan={handleSelectPlan} />
+      <SocialWifiPlans currentCity={currentCity} onSelectPlan={handleSelectPlan} />
 
       {/* FAQs */}
       <SocialWifiFaq />

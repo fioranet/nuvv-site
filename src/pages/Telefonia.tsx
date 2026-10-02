@@ -32,12 +32,14 @@ import { Link } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
 
 interface TelefoniaPageProps {
+  currentCity?: string;
   onOpenLeadModal: (planName?: string) => void;
   onOpenSpeedTest: () => void;
   onOpenCitySelector: () => void;
 }
 
 export const Telefonia: React.FC<TelefoniaPageProps> = ({
+  currentCity,
   onOpenLeadModal,
   onOpenSpeedTest,
   onOpenCitySelector,
@@ -566,7 +568,9 @@ export const Telefonia: React.FC<TelefoniaPageProps> = ({
 
               <div className="flex flex-col sm:flex-row items-center gap-3.5 pt-4">
                 <a
-                  href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá! Gostaria de uma proposta de Tronco SIP corporativo para conectar ao PABX da minha empresa.')}`}
+                  href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
+                    `Olá! Gostaria de uma proposta de Tronco SIP corporativo para conectar ao PABX da minha empresa${currentCity ? ` em ${currentCity}` : ''}.`
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm flex items-center justify-center space-x-2 shadow-md transition-all active:scale-98 cursor-pointer"
@@ -577,7 +581,7 @@ export const Telefonia: React.FC<TelefoniaPageProps> = ({
 
                 <button
                   type="button"
-                  onClick={() => onOpenLeadModal('SIP Trunk Corporativo - Cotação Técnica')}
+                  onClick={() => onOpenLeadModal(`SIP Trunk Corporativo - Cotação Técnica${currentCity ? ` (${currentCity})` : ''}`)}
                   className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
                 >
                   <span>Solicitar Cotação por E-mail</span>
@@ -858,7 +862,9 @@ export const Telefonia: React.FC<TelefoniaPageProps> = ({
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
             <a
-              href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá! Gostaria de falar com um especialista sobre a Telefonia IP e Tronco SIP da Nuvv.')}`}
+              href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
+                `Olá! Gostaria de falar com um especialista sobre a Telefonia IP e Tronco SIP da Nuvv${currentCity ? ` para minha empresa em ${currentCity}` : ''}.`
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/25 transition-all active:scale-98 cursor-pointer"
@@ -869,7 +875,7 @@ export const Telefonia: React.FC<TelefoniaPageProps> = ({
 
             <button
               type="button"
-              onClick={() => onOpenLeadModal('Telefonia IP Empresarial - Atendimento Especializado')}
+              onClick={() => onOpenLeadModal(`Telefonia IP Empresarial - Atendimento Especializado${currentCity ? ` (${currentCity})` : ''}`)}
               className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-white hover:bg-slate-50 border-2 border-emerald-300 text-slate-800 font-bold text-sm flex items-center justify-center space-x-2 shadow-2xs transition-all active:scale-98 cursor-pointer"
             >
               <span>Solicitar Contato Comercial</span>

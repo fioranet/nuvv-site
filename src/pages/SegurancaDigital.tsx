@@ -28,12 +28,14 @@ import { Link } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
 
 interface SegurancaDigitalPageProps {
+  currentCity?: string;
   onOpenLeadModal: (serviceName?: string) => void;
   onOpenSpeedTest: () => void;
   onOpenCitySelector: () => void;
 }
 
 export const SegurancaDigital: React.FC<SegurancaDigitalPageProps> = ({
+  currentCity,
   onOpenLeadModal,
   onOpenSpeedTest,
   onOpenCitySelector,
@@ -128,7 +130,9 @@ export const SegurancaDigital: React.FC<SegurancaDigitalPageProps> = ({
                   Ver Planos de Segurança
                 </a>
                 <a
-                  href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá! Gostaria de saber mais sobre o Kaspersky Small Office Security para minha empresa.')}`}
+                  href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
+                    `Olá! Gostaria de saber mais sobre o Kaspersky Small Office Security para minha empresa${currentCity ? ` em ${currentCity}` : ''}.`
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border-2 border-emerald-200 text-slate-800 font-bold text-sm flex items-center justify-center space-x-2 transition-all active:scale-98"
@@ -593,7 +597,9 @@ export const SegurancaDigital: React.FC<SegurancaDigitalPageProps> = ({
               </p>
             </div>
             <a
-              href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá! Gostaria de consultar uma proposta de segurança digital para mais de 50 computadores.')}`}
+              href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(
+                `Olá! Gostaria de consultar uma proposta de segurança digital para mais de 50 computadores${currentCity ? ` para minha empresa em ${currentCity}` : ''}.`
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm whitespace-nowrap shadow-md transition-all flex items-center space-x-2 flex-shrink-0"
