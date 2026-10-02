@@ -20,7 +20,7 @@ import { PlanCard } from '../components/residencial/PlanCard';
 import { TelemedicinaSection } from '../components/residencial/TelemedicinaSection';
 import { StreamingDevices } from '../components/residencial/StreamingDevices';
 import { ValueAddedModals } from '../components/residencial/ValueAddedModals';
-import { SuperAppSection } from '../components/common/SuperAppSection';
+import { HomeAppSection } from '../components/home/HomeAppSection';
 import { QuickAccessBar } from '../components/common/QuickAccessBar';
 import { Modal } from '../components/common/Modal';
 import { FeasibilityModal } from '../components/viabilidade/FeasibilityModal';
@@ -1235,7 +1235,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
       <StreamingDevices />
 
       {/* Super App Showcase Section */}
-      <SuperAppSection />
+      <HomeAppSection />
 
       {/* Quick Access Bar */}
       <QuickAccessBar

@@ -3,11 +3,24 @@ import { Link } from 'react-router-dom';
 import { SEO } from '../components/common/SEO';
 import { organizationSchema } from '../data/seoSchemas';
 import { PartnerCarousel } from '../components/common/PartnerCarousel';
-import { SuperAppSection } from '../components/common/SuperAppSection';
+import { HomeAppSection } from '../components/home/HomeAppSection';
 import { QuickAccessBar } from '../components/common/QuickAccessBar';
 import { ViabilityChecker } from '../components/home/ViabilityChecker';
 import { FeasibilityModal } from '../components/viabilidade/FeasibilityModal';
-import { ShieldCheck, Users, Cpu, Home as HomeIcon, Building2, Sparkles, MapPin } from 'lucide-react';
+import {
+  ShieldCheck,
+  Users,
+  Cpu,
+  Home as HomeIcon,
+  Building2,
+  Sparkles,
+  MapPin,
+  Globe,
+  PhoneCall,
+  Layers,
+  ArrowRight,
+  CheckCircle2,
+} from 'lucide-react';
 
 interface HomePageProps {
   currentCity: string;
@@ -60,22 +73,24 @@ export const Home: React.FC<HomePageProps> = ({
   return (
     <div className="space-y-0 animate-fade-in">
       <SEO
-        title={`Nuvv - Telecomunicações Corporativas & Fibra Óptica em ${currentCity}`}
-        description={`Soluções completas de telecomunicações para empresas e conectividade de alta performance em ${currentCity}. Banda Larga com CIR garantido, Telefonia IP, PABX em Nuvem e 100% Fibra com TV e Streaming.`}
+        title={`Nuvv - Tecnologia & Telecomunicações em ${currentCity}`}
+        description={`Tecnologia e telecomunicações que conectam pessoas e impulsionam negócios em ${currentCity}. Conectividade de alta performance, PABX em nuvem, telefonia IP, soluções digitais e 100% fibra com entretenimento.`}
         keywords={[
+          `tecnologia e telecomunicacoes ${currentCity}`,
           `telecomunicacoes empresas ${currentCity}`,
           `banda larga empresarial ${currentCity}`,
           `telefonia ip ${currentCity}`,
           `pabx em nuvem ${currentCity}`,
           `internet fibra ${currentCity}`,
           'fibra optica residencial',
-          'combos tv streaming fibra',
+          'solucoes digitais nuvv',
           'mensageria sms rcs',
         ]}
         canonicalUrl="https://nuvv.com.br/"
         schema={organizationSchema}
         cityName={currentCity}
       />
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 pt-6 pb-12 sm:pt-8 sm:pb-14 border-b border-indigo-100/30">
         {/* Background glow accents */}
@@ -87,16 +102,16 @@ export const Home: React.FC<HomePageProps> = ({
             <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
               <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-100/80 text-nuvv-purple text-xs font-bold shadow-2xs">
                 <Sparkles className="w-3.5 h-3.5 text-nuvv-purple" />
-                <span>Infraestrutura & Conectividade de Alto Desempenho</span>
+                <span>Tecnologia & Telecomunicações</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-nuvv-dark tracking-tight leading-[1.15]">
-                A conectividade que{' '}
-                <span className="text-gradient-hero">impulsiona negócios</span> e conecta você.
+                Tecnologia e telecomunicações que{' '}
+                <span className="text-gradient-hero">conectam pessoas</span> e impulsionam negócios.
               </h1>
 
               <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                Soluções corporativas completas com garantia de banda, telefonia IP e inteligência de voz, além de internet 100% fibra óptica de máxima estabilidade com entretenimento para sua casa em <strong>{currentCity}</strong> e região.
+                Soluções corporativas completas, telefonia IP, inteligência de voz e infraestrutura digital para empresas, além de internet 100% fibra óptica de máxima estabilidade para sua casa em <strong>{currentCity}</strong> e região.
               </p>
 
               {/* Main Dual CTAs - Empresa em Primeiro e em Destaque */}
@@ -210,11 +225,220 @@ export const Home: React.FC<HomePageProps> = ({
         />
       </section>
 
-      {/* Partner Trust Carousel */}
-      <PartnerCarousel />
+      {/* Section: Os Três Pilares da Nuvv */}
+      <section className="py-16 sm:py-20 bg-slate-50/60 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14 space-y-3">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100/80 text-nuvv-purple text-xs font-bold shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-nuvv-purple" />
+              <span>Ecossistema Integrado</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-nuvv-dark tracking-tight">
+              Três pilares para potencializar sua conexão e seu negócio.
+            </h2>
+            <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-medium">
+              A Nuvv integra infraestrutura de telecomunicações, comunicação corporativa e soluções digitais sob gestão direta.
+            </p>
+          </div>
 
-      {/* 3 Core Value Pillars */}
-      <section className="py-20 bg-slate-50/50">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+            {/* Pilar 1: Conectividade */}
+            <div className="bg-white rounded-3xl p-7 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="w-13 h-13 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center transition-transform group-hover:scale-105">
+                  <Globe className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600 block mb-1">
+                    Pilar 01
+                  </span>
+                  <h3 className="text-xl font-black text-nuvv-dark">Conectividade</h3>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
+                  Infraestrutura de fibra óptica de alta performance, links dedicados, banda larga simétrica e ultravelocidade para manter sua empresa e sua casa sempre ativas.
+                </p>
+              </div>
+              <div className="pt-6 mt-6 border-t border-gray-50">
+                <Link
+                  to="/empresarial#conectividade"
+                  className="inline-flex items-center text-xs font-bold text-emerald-700 hover:text-emerald-800 transition-colors group-hover:translate-x-0.5"
+                >
+                  <span>Conhecer Soluções</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Pilar 2: Comunicação */}
+            <div className="bg-white rounded-3xl p-7 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="w-13 h-13 rounded-2xl bg-indigo-50 text-nuvv-purple flex items-center justify-center transition-transform group-hover:scale-105">
+                  <PhoneCall className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-nuvv-purple block mb-1">
+                    Pilar 02
+                  </span>
+                  <h3 className="text-xl font-black text-nuvv-dark">Comunicação</h3>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
+                  Telefonia IP corporativa, PABX em nuvem, mensageria multicanal (SMS e RCS) e inteligência de voz para aproximar e transformar o relacionamento com clientes.
+                </p>
+              </div>
+              <div className="pt-6 mt-6 border-t border-gray-50">
+                <Link
+                  to="/pabx"
+                  className="inline-flex items-center text-xs font-bold text-nuvv-purple hover:text-indigo-700 transition-colors group-hover:translate-x-0.5"
+                >
+                  <span>Explorar Comunicação</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Pilar 3: Soluções Digitais */}
+            <div className="bg-white rounded-3xl p-7 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="w-13 h-13 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-105">
+                  <Layers className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 block mb-1">
+                    Pilar 03
+                  </span>
+                  <h3 className="text-xl font-black text-nuvv-dark">Soluções Digitais</h3>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
+                  Plataformas de atendimento multicanal, segurança digital avançada, Social Wi-Fi e automações tecnológicas sob nossa gestão técnica contínua.
+                </p>
+              </div>
+              <div className="pt-6 mt-6 border-t border-gray-50">
+                <Link
+                  to="/multiatendimento"
+                  className="inline-flex items-center text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors group-hover:translate-x-0.5"
+                >
+                  <span>Ver Soluções Digitais</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section: Jornadas Estratégicas (Empresas x Para Você) */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12 space-y-2.5">
+            <span className="text-xs font-black uppercase tracking-wider text-nuvv-purple">
+              Jornadas Especializadas
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-nuvv-dark tracking-tight">
+              Escolha o caminho ideal para sua necessidade.
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500">
+              Ambientes desenhados especificamente para a realidade do seu negócio ou para a rotina da sua família.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Card Jornada B2B: Para Empresas */}
+            <div className="rounded-3xl p-8 sm:p-9 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 text-white border border-slate-800 shadow-xl flex flex-col justify-between relative overflow-hidden group">
+              <div className="space-y-5">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <Building2 className="w-6 h-6" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-3 py-1 rounded-full">
+                    Hub Corporativo B2B
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black text-white">Nuvv para Empresas</h3>
+                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                    Soluções corporativas com SLA garantido, link dedicado, banda larga simétrica, PABX em nuvem, segurança digital e inteligência de voz.
+                  </p>
+                </div>
+
+                <ul className="space-y-2.5 text-xs text-gray-300 pt-2">
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span>Conexão com garantia de banda e IP Fixo</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span>Atendimento consultivo e suporte técnico prioritário</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span>Gestão centralizada de telefonia e comunicação</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-8">
+                <Link
+                  to="/empresarial"
+                  className="w-full py-3.5 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all shadow-lg shadow-emerald-500/20 active:scale-98"
+                >
+                  <span>Conheça nossas soluções para empresas</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Card Jornada B2C: Para Você & Família */}
+            <div className="rounded-3xl p-8 sm:p-9 bg-slate-50/80 border-2 border-slate-200/80 hover:border-nuvv-purple/40 shadow-sm flex flex-col justify-between transition-all group">
+              <div className="space-y-5">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-50 text-nuvv-purple flex items-center justify-center">
+                    <HomeIcon className="w-6 h-6" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-nuvv-purple bg-purple-50 border border-purple-100 px-3 py-1 rounded-full">
+                    Residencial & Família
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black text-nuvv-dark">Nuvv para Você</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                    Internet 100% fibra óptica de máxima velocidade, Wi-Fi 6 de alta cobertura, TV ao vivo, streamings inclusos e telemedicina para seu lar.
+                  </p>
+                </div>
+
+                <ul className="space-y-2.5 text-xs text-gray-600 pt-2">
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-nuvv-purple flex-shrink-0" />
+                    <span>Download e upload simétricos de alta estabilidade</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-nuvv-purple flex-shrink-0" />
+                    <span>NuvvPlay TV, Max e benefícios digitais inclusos</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-nuvv-purple flex-shrink-0" />
+                    <span>Instalação rápida e suporte humanizado local</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-8">
+                <Link
+                  to="/residencial"
+                  className="w-full py-3.5 px-6 rounded-2xl bg-white hover:bg-purple-50 border-2 border-nuvv-purple text-nuvv-purple font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all shadow-xs active:scale-98"
+                >
+                  <span>Conheça a Nuvv para Você</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Differentials: Tecnologia & Infraestrutura sob Nossa Gestão */}
+      <section className="py-16 sm:py-20 bg-slate-50/50 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Ampla Cobertura */}
@@ -224,7 +448,7 @@ export const Home: React.FC<HomePageProps> = ({
               </div>
               <h3 className="text-lg font-bold text-nuvv-dark">Ampla Cobertura</h3>
               <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
-                Conectividade de alta velocidade onde você mais precisa, com expansão constante de rede 100% fibra.
+                Conectividade de alta velocidade onde você mais precisa, com expansão constante de rede 100% fibra óptica.
               </p>
             </div>
 
@@ -235,26 +459,29 @@ export const Home: React.FC<HomePageProps> = ({
               </div>
               <h3 className="text-lg font-bold text-nuvv-dark">Suporte Humanizado</h3>
               <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
-                Atendimento rápido, eficiente e próximo, com uma equipe local pronta para resolver tudo sem complicação.
+                Atendimento ágil, eficiente e próximo, com equipe própria pronta para resolver qualquer demanda sem burocracia.
               </p>
             </div>
 
-            {/* Tecnologia Própria */}
+            {/* Tecnologia Sob Nossa Gestão */}
             <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all text-center space-y-4">
               <div className="w-14 h-14 rounded-2xl bg-violet-50 text-nuvv-violet flex items-center justify-center mx-auto">
                 <Cpu className="w-7 h-7" />
               </div>
-              <h3 className="text-lg font-bold text-nuvv-dark">Tecnologia Própria</h3>
+              <h3 className="text-lg font-bold text-nuvv-dark">Tecnologia Sob Nossa Gestão</h3>
               <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
-                Infraestrutura de ponta garantindo estabilidade, baixa latência, segurança e ultravelocidade real.
+                Infraestrutura de ponta e soluções sob nosso controle operacional, garantindo estabilidade, baixa latência e segurança.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Super App Showcase Section */}
-      <SuperAppSection />
+      {/* Partner Trust Carousel: Empresas que confiam na Nuvv */}
+      <PartnerCarousel />
+
+      {/* Compact Super App Showcase Section */}
+      <HomeAppSection />
 
       {/* Quick Access Bar */}
       <QuickAccessBar
