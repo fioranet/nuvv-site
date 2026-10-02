@@ -104,7 +104,7 @@ export const Multiatendimento: React.FC<MultiatendimentoPageProps> = ({
     if (onOpenLeadModal) {
       onOpenLeadModal(`Nuvv Multiatendimento - ${title}`);
     } else {
-      const text = `Olá! Gostaria de testar o Nuvv Multiatendimento (${title}) para minha empresa em ${currentCity}.`;
+      const text = `Olá! Gostaria de mais informações sobre o Nuvv Multiatendimento (${title}) para minha empresa em ${currentCity}.`;
       window.open(
         `https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent(text)}`,
         '_blank'
@@ -173,19 +173,19 @@ export const Multiatendimento: React.FC<MultiatendimentoPageProps> = ({
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-0.5">
                 <button
                   type="button"
-                  onClick={() => handleOpenLead('Teste Grátis 7 Dias')}
+                  onClick={() => handleOpenLead('Solicitar Demonstração')}
                   className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-600/25 transition-all active:scale-98 flex items-center justify-center space-x-2 cursor-pointer"
                 >
-                  <span>Começar Teste Grátis de 7 Dias</span>
+                  <span>Solicitar Demonstração</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => handleOpenLead('Agendar Demonstração')}
+                  onClick={() => handleOpenLead('Falar com Consultor')}
                   className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm border-2 border-emerald-200 transition-all text-center active:scale-98 cursor-pointer"
                 >
-                  Agendar Demonstração ao Vivo
+                  Falar com um Consultor
                 </button>
               </div>
 
@@ -464,36 +464,6 @@ export const Multiatendimento: React.FC<MultiatendimentoPageProps> = ({
 
       {/* Pricing Section (3 Tiers) */}
       <MultiAtendimentoPricing onSelectPlan={handleOpenLead} />
-
-      {/* Final Action CTA Banner */}
-      <section className="py-16 bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-gradient-to-r from-nuvv-dark via-slate-900 to-emerald-950 p-8 sm:p-12 text-white shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 border border-emerald-500/20">
-            <div className="space-y-3 text-center md:text-left max-w-xl">
-              <span className="text-xs font-black uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-500/30">
-                Comece em 2 Minutos
-              </span>
-              <h3 className="text-2xl sm:text-4xl font-black tracking-tight">
-                Pronto para expandir seu negócio?
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                Junte-se a milhares de empresas que aumentaram suas vendas e organizaram seu atendimento no WhatsApp com o Nuvv Multiatendimento.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center gap-3 flex-shrink-0 w-full md:w-auto">
-              <button
-                type="button"
-                onClick={() => handleOpenLead('CTA Banner')}
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/30 transition-all active:scale-98 flex items-center justify-center space-x-2"
-              >
-                <span>Testar Grátis Agora</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Technical FAQ Accordion */}
       <section className="py-16 sm:py-20 bg-slate-50/70 border-t border-gray-100">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { CitySelectorModal } from './components/layout/CitySelectorModal';
@@ -10,13 +10,12 @@ import { Residencial } from './pages/Residencial';
 import { Empresarial } from './pages/Empresarial';
 import { Pabx } from './pages/Pabx';
 import { Telefonia } from './pages/Telefonia';
-import { PosteInteligente } from './pages/PosteInteligente';
 import { SocialWifi } from './pages/SocialWifi';
 import { Multiatendimento } from './pages/Multiatendimento';
 import { SegurancaDigital } from './pages/SegurancaDigital';
-import { ComunicacaoInteligente } from './pages/ComunicacaoInteligente';
 import { MensageriaSmsRcs } from './pages/MensageriaSmsRcs';
 import { AgenteIaVoz } from './pages/AgenteIaVoz';
+import { Sobre } from './pages/Sobre';
 import { MonteSeuComboEmpresarial } from './pages/MonteSeuComboEmpresarial';
 import { MonteSeuComboResidencial } from './pages/MonteSeuComboResidencial';
 import { Viabilidade } from './pages/Viabilidade';
@@ -246,6 +245,17 @@ export function App() {
             }
           />
           <Route
+            path="/corporativo"
+            element={
+              <Empresarial
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
             path="/empresas/monte-seu-combo"
             element={
               <MonteSeuComboEmpresarial
@@ -279,6 +289,50 @@ export function App() {
             }
           />
           <Route
+            path="/empresarial/monte-sua-solucao"
+            element={
+              <MonteSeuComboEmpresarial
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/empresarial/monte-seu-plano"
+            element={
+              <MonteSeuComboEmpresarial
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/monte-sua-solucao"
+            element={
+              <MonteSeuComboEmpresarial
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/monte-seu-plano"
+            element={
+              <MonteSeuComboEmpresarial
+                currentCity={currentCity}
+                onOpenLeadModal={handleOpenLeadModal}
+                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
+                onOpenCitySelector={() => setIsCityModalOpen(true)}
+              />
+            }
+          />
+          <Route
             path="/pabx"
             element={
               <Pabx
@@ -298,26 +352,8 @@ export function App() {
               />
             }
           />
-          <Route
-            path="/postes"
-            element={
-              <PosteInteligente
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
-          <Route
-            path="/poste-inteligente"
-            element={
-              <PosteInteligente
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
+          <Route path="/postes" element={<Navigate to="/empresarial" replace />} />
+          <Route path="/poste-inteligente" element={<Navigate to="/empresarial" replace />} />
           <Route
             path="/social-wifi"
             element={
@@ -360,28 +396,8 @@ export function App() {
               />
             }
           />
-          <Route
-            path="/mensageria-sms-rcs"
-            element={
-              <MensageriaSmsRcs
-                currentCity={currentCity}
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
-          <Route
-            path="/sms-rcs"
-            element={
-              <MensageriaSmsRcs
-                currentCity={currentCity}
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
+          <Route path="/mensageria-sms-rcs" element={<Navigate to="/mensageria" replace />} />
+          <Route path="/sms-rcs" element={<Navigate to="/mensageria" replace />} />
           <Route
             path="/agente-ia-voz"
             element={
@@ -415,28 +431,8 @@ export function App() {
               />
             }
           />
-          <Route
-            path="/comunicacao-inteligente"
-            element={
-              <ComunicacaoInteligente
-                currentCity={currentCity}
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
-          <Route
-            path="/nuvv-digital"
-            element={
-              <ComunicacaoInteligente
-                currentCity={currentCity}
-                onOpenLeadModal={handleOpenLeadModal}
-                onOpenSpeedTest={() => setIsSpeedTestModalOpen(true)}
-                onOpenCitySelector={() => setIsCityModalOpen(true)}
-              />
-            }
-          />
+          <Route path="/comunicacao-inteligente" element={<Navigate to="/mensageria" replace />} />
+          <Route path="/nuvv-digital" element={<Navigate to="/mensageria" replace />} />
           <Route
             path="/viabilidade"
             element={
@@ -510,6 +506,8 @@ export function App() {
           <Route path="/segunda-via" element={<SegundaVia />} />
           <Route path="/termos" element={<Termos />} />
           <Route path="/privacidade" element={<Privacidade />} />
+          <Route path="/sobre" element={<Sobre onOpenLeadModal={handleOpenLeadModal} />} />
+          <Route path="/sobre-nos" element={<Sobre onOpenLeadModal={handleOpenLeadModal} />} />
           <Route
             path="*"
             element={

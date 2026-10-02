@@ -149,6 +149,8 @@ export const SEO: React.FC<SEOProps> = ({
           ? 'Segurança Digital'
           : segment === 'social-wifi'
           ? 'Hotspot Social Wi-Fi'
+          : segment === 'sobre' || segment === 'sobre-nos'
+          ? 'Sobre a Nuvv'
           : segment === 'viabilidade'
           ? 'Consulta de Cobertura'
           : segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');

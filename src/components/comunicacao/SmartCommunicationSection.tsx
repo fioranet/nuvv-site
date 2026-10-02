@@ -183,62 +183,91 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
         {activeTab === 'messaging' && (
           <div className="space-y-12 animate-fade-in">
             {/* Visual Comparison: Traditional SMS vs Rich RCS */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
               {/* Left Column: Traditional SMS Mockup */}
               <div className="lg:col-span-5 flex flex-col items-center">
-                <div className="w-full max-w-sm rounded-[32px] bg-slate-900 p-4 shadow-2xl border-4 border-slate-800">
-                  {/* Phone Speaker & Camera Notch */}
-                  <div className="flex justify-center mb-3">
-                    <div className="w-16 h-4 bg-slate-800 rounded-full flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-slate-950" />
+                {/* Smartphone Device Frame - Slim 19.5:9 Real-device aspect ratio */}
+                <div className="w-[285px] sm:w-[305px] rounded-[48px] bg-slate-950 p-3 shadow-2xl border-[6px] border-slate-800 ring-1 ring-white/10 relative transition-transform duration-300 hover:scale-[1.01]">
+                  {/* Speaker & Dynamic Island / Camera Notch */}
+                  <div className="flex justify-between items-center px-3 pt-0.5 pb-1.5 text-[10px] text-gray-400 font-semibold select-none">
+                    <span>14:10</span>
+                    <div className="w-16 h-3.5 bg-slate-900 rounded-full flex items-center justify-center space-x-1 border border-slate-800">
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-950" />
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-[9px] font-mono">4G</span>
+                      <div className="w-2.5 h-1.5 border border-gray-400 rounded-xs" />
                     </div>
                   </div>
 
                   {/* Screen Content */}
-                  <div className="bg-slate-100 rounded-[24px] p-4 min-h-[380px] flex flex-col justify-between border border-gray-200">
-                    <div className="space-y-3">
+                  <div className="bg-slate-100 rounded-[36px] p-3 sm:p-3.5 min-h-[500px] sm:min-h-[520px] flex flex-col justify-between border border-gray-200/90 shadow-inner">
+                    <div className="space-y-2.5">
+                      {/* App Header */}
                       <div className="flex items-center justify-between border-b border-gray-200 pb-2">
                         <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs">
+                          <div className="w-7 h-7 rounded-full bg-gray-300 text-gray-700 flex items-center justify-center font-bold text-[10px]">
                             SMS
                           </div>
                           <div>
-                            <span className="text-xs font-bold text-gray-800 block">28400 (Shortcode)</span>
-                            <span className="text-[10px] text-gray-400">SMS Transacional</span>
+                            <span className="text-xs font-bold text-gray-800 block leading-tight">28400</span>
+                            <span className="text-[9px] text-gray-500 font-medium">SMS Transacional (Shortcode)</span>
                           </div>
                         </div>
-                        <span className="text-[10px] text-gray-400">Hoje 14:10</span>
+                        <span className="text-[9px] text-gray-400">Hoje</span>
                       </div>
 
-                      {/* SMS Text Bubble */}
-                      <div className="bg-white p-3 rounded-2xl rounded-tl-sm border border-gray-200 shadow-xs space-y-1">
-                        <p className="text-xs text-gray-700 leading-relaxed">
-                          Nuvv Telecom: Seu codigo de confirmacao para acesso seguro e <strong>839201</strong>. Valido por 5 minutos. Nao compartilhe este codigo.
+                      {/* SMS Text Bubble 1: 2FA */}
+                      <div className="bg-white p-2.5 rounded-2xl rounded-tl-xs border border-gray-200/90 shadow-2xs space-y-1">
+                        <p className="text-[11px] text-gray-700 leading-relaxed">
+                          Nuvv Telecom: Seu código de confirmação para acesso seguro é <strong className="font-mono text-gray-900 bg-gray-100 px-1 py-0.5 rounded">839201</strong>. Válido por 5 minutos. Não compartilhe.
                         </p>
-                        <span className="text-[9px] text-gray-400 block text-right">14:10</span>
+                        <span className="text-[8px] text-gray-400 block text-right">14:10</span>
                       </div>
 
-                      <div className="bg-white p-3 rounded-2xl rounded-tl-sm border border-gray-200 shadow-xs space-y-1">
-                        <p className="text-xs text-gray-700 leading-relaxed">
-                          Lembrete: Sua fatura de R$ 129,90 vence hoje. Acesse nuvv.link/fatura para obter a 2a via.
+                      {/* SMS Text Bubble 2: Billing Reminder */}
+                      <div className="bg-white p-2.5 rounded-2xl rounded-tl-xs border border-gray-200/90 shadow-2xs space-y-1">
+                        <p className="text-[11px] text-gray-700 leading-relaxed">
+                          Lembrete Nuvv: Sua fatura de R$ 129,90 vence hoje. Acesse nuvv.link/fatura para 2ª via sem juros.
                         </p>
-                        <span className="text-[9px] text-gray-400 block text-right">14:12</span>
+                        <span className="text-[8px] text-gray-400 block text-right">14:12</span>
+                      </div>
+
+                      {/* SMS Text Bubble 3: Appointment Confirmation */}
+                      <div className="bg-white p-2.5 rounded-2xl rounded-tl-xs border border-gray-200/90 shadow-2xs space-y-1">
+                        <p className="text-[11px] text-gray-700 leading-relaxed">
+                          Agendamento confirmado para 03/10 entre 08h e 12h. Responda 1 para confirmar.
+                        </p>
+                        <span className="text-[8px] text-gray-400 block text-right">14:15</span>
                       </div>
                     </div>
 
-                    {/* Bottom Feature Tag */}
-                    <div className="pt-3 border-t border-gray-200">
-                      <div className="text-[11px] font-bold text-gray-500 text-center flex items-center justify-center space-x-1">
+                    {/* Bottom Area: Input Fake + Feature Tag */}
+                    <div className="space-y-2 pt-2 border-t border-gray-200">
+                      {/* Fake SMS Input Field */}
+                      <div className="bg-white rounded-full px-3 py-1.5 border border-gray-300 flex items-center justify-between text-[10px] text-gray-400 shadow-2xs">
+                        <span>Mensagem de texto (SMS)...</span>
+                        <Send className="w-3 h-3 text-gray-400" />
+                      </div>
+
+                      {/* Bottom Feature Tag */}
+                      <div className="text-[10px] font-bold text-gray-500 text-center">
                         <span>SMS Tradicional: Texto puro e 2FA</span>
                       </div>
                     </div>
                   </div>
+
+                  {/* Smartphone Home Indicator Bar */}
+                  <div className="pt-2 pb-0.5 flex justify-center">
+                    <div className="w-24 h-1 bg-slate-500/40 rounded-full" />
+                  </div>
                 </div>
-                <div className="mt-3 text-center">
+
+                <div className="mt-3.5 text-center max-w-[290px]">
                   <span className="text-xs font-extrabold text-gray-400 uppercase tracking-wider">
                     SMS Convencional
                   </span>
-                  <p className="text-xs text-gray-500 mt-0.5">Ideal para alertas urgentes, códigos 2FA e transações críticas.</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Ideal para alertas urgentes, códigos 2FA e transações críticas em qualquer celular.</p>
                 </div>
               </div>
 
@@ -254,92 +283,119 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
 
               {/* Right Column: RCS Rich Media Mockup */}
               <div className="lg:col-span-5 flex flex-col items-center">
-                <div className="w-full max-w-sm rounded-[32px] bg-slate-900 p-4 shadow-2xl border-4 border-nuvv-purple/60 ring-4 ring-nuvv-purple/20">
-                  {/* Phone Speaker & Camera Notch */}
-                  <div className="flex justify-center mb-3">
-                    <div className="w-16 h-4 bg-slate-800 rounded-full flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-slate-950" />
+                {/* Smartphone Device Frame - Slim 19.5:9 Real-device aspect ratio */}
+                <div className="w-[285px] sm:w-[305px] rounded-[48px] bg-slate-950 p-3 shadow-2xl border-[6px] border-slate-800 ring-2 ring-nuvv-purple/40 relative transition-transform duration-300 hover:scale-[1.01]">
+                  {/* Speaker & Dynamic Island / Camera Notch */}
+                  <div className="flex justify-between items-center px-3 pt-0.5 pb-1.5 text-[10px] text-gray-400 font-semibold select-none">
+                    <span>14:10</span>
+                    <div className="w-16 h-3.5 bg-slate-900 rounded-full flex items-center justify-center space-x-1 border border-slate-800">
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-950" />
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-[9px] font-bold text-emerald-400">5G</span>
+                      <div className="w-2.5 h-1.5 border border-emerald-400 rounded-xs bg-emerald-400/40" />
                     </div>
                   </div>
 
                   {/* Screen Content */}
-                  <div className="bg-slate-50 rounded-[24px] p-4 min-h-[380px] flex flex-col justify-between border border-indigo-100">
-                    <div className="space-y-3">
+                  <div className="bg-slate-50 rounded-[36px] p-3 sm:p-3.5 min-h-[500px] sm:min-h-[520px] flex flex-col justify-between border border-indigo-100 shadow-inner">
+                    <div className="space-y-2.5">
                       {/* Verified Brand Header */}
                       <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
                         <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 rounded-full bg-nuvv-purple text-white flex items-center justify-center font-black text-xs shadow-xs">
+                          <div className="w-7 h-7 rounded-full bg-nuvv-purple text-white flex items-center justify-center font-black text-xs shadow-xs">
                             N
                           </div>
                           <div>
                             <div className="flex items-center space-x-1">
-                              <span className="text-xs font-black text-gray-900">Nuvv Telecom</span>
+                              <span className="text-xs font-black text-gray-900 leading-tight">Nuvv Telecom</span>
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
                             </div>
-                            <span className="text-[10px] font-bold text-emerald-600">Remetente Verificado Oficial</span>
+                            <span className="text-[9px] font-bold text-emerald-600 block leading-none">Remetente Verificado Oficial</span>
                           </div>
                         </div>
-                        <span className="text-[10px] text-gray-400">Agora</span>
+                        <span className="text-[9px] text-gray-400">Agora</span>
                       </div>
 
                       {/* RCS Rich Card with Image & Action Chips */}
-                      <div className="bg-white rounded-2xl border border-indigo-100 shadow-sm overflow-hidden space-y-2.5 pb-2">
+                      <div className="bg-white rounded-2xl border border-indigo-100 shadow-xs overflow-hidden space-y-2 pb-2">
                         {/* Visual Banner */}
-                        <div className="h-28 bg-gradient-to-r from-nuvv-dark via-slate-900 to-nuvv-purple p-3 flex flex-col justify-end text-white relative overflow-hidden">
-                          <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500 text-[9px] font-extrabold uppercase">
+                        <div className="h-24 bg-gradient-to-r from-nuvv-dark via-slate-900 to-nuvv-purple p-2.5 flex flex-col justify-end text-white relative overflow-hidden">
+                          <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-emerald-500 text-[8px] font-extrabold uppercase">
                             Wi-Fi 6 Incluso
                           </div>
-                          <span className="text-[10px] text-emerald-300 font-bold uppercase tracking-wider">Fibra 1 Giga Especial</span>
-                          <h4 className="text-sm font-black leading-tight">Ultravelocidade para sua Empresa</h4>
+                          <span className="text-[9px] text-emerald-300 font-bold uppercase tracking-wider">Fibra 1 Giga Especial</span>
+                          <h4 className="text-xs font-black leading-tight">Ultravelocidade para sua Empresa</h4>
                         </div>
 
-                        <div className="px-3 space-y-2">
-                          <p className="text-xs text-gray-600 leading-tight">
-                            Olá Juliana! Sua empresa foi selecionada para upgrade de velocidade com SLA prioritário de 24h.
+                        <div className="px-2.5 space-y-2">
+                          <p className="text-[11px] text-gray-600 leading-tight">
+                            Olá Juliana! Sua empresa foi selecionada para upgrade com SLA prioritário de 24h.
                           </p>
 
                           {/* Action Buttons */}
-                          <div className="space-y-1.5 pt-1">
+                          <div className="space-y-1.5 pt-0.5">
                             <button
                               type="button"
                               onClick={() => handleConsultantClick('RCS Interativo')}
-                              className="w-full py-1.5 px-3 rounded-xl bg-nuvv-purple hover:bg-nuvv-purple-hover text-white text-[11px] font-bold flex items-center justify-center space-x-1 shadow-xs transition-colors"
+                              className="w-full py-1.5 px-2.5 rounded-xl bg-nuvv-purple hover:bg-nuvv-purple-hover text-white text-[10px] font-bold flex items-center justify-center space-x-1 shadow-xs transition-colors cursor-pointer"
                             >
                               <span>🚀 Ativar Upgrade Imediato</span>
                             </button>
-                            <div className="grid grid-cols-2 gap-1.5">
+                            <div className="grid grid-cols-2 gap-1">
                               <button
                                 type="button"
                                 onClick={() => handleConsultantClick('RCS Pix')}
-                                className="py-1.5 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-gray-800 text-[10px] font-bold text-center transition-colors"
+                                className="py-1 px-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-800 text-[9px] font-bold text-center transition-colors cursor-pointer"
                               >
                                 💳 Pagar com Pix
                               </button>
                               <button
                                 type="button"
                                 onClick={() => handleConsultantClick('RCS Atendimento')}
-                                className="py-1.5 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-gray-800 text-[10px] font-bold text-center transition-colors"
+                                className="py-1 px-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-800 text-[9px] font-bold text-center transition-colors cursor-pointer"
                               >
-                                💬 Falar no WhatsApp
+                                💬 WhatsApp
                               </button>
                             </div>
+                          </div>
+
+                          <div className="flex items-center justify-end space-x-1 text-[8px] text-gray-400 pt-0.5">
+                            <span>Lido 14:11</span>
+                            <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" />
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Bottom Tag */}
-                    <div className="pt-2 border-t border-indigo-100 text-center">
-                      <span className="text-[11px] font-black text-nuvv-purple flex items-center justify-center space-x-1">
+                    {/* Bottom Area: Fake RCS Input + Feature Tag */}
+                    <div className="space-y-2 pt-2 border-t border-indigo-100">
+                      {/* Fake RCS Input Field */}
+                      <div className="bg-white rounded-full px-3 py-1.5 border border-indigo-200 flex items-center justify-between text-[10px] text-gray-400 shadow-2xs">
+                        <span className="text-gray-500">Mensagem RCS...</span>
+                        <div className="flex items-center space-x-1.5">
+                          <Sparkles className="w-3 h-3 text-nuvv-purple" />
+                          <Send className="w-3 h-3 text-nuvv-purple" />
+                        </div>
+                      </div>
+
+                      {/* Bottom Tag */}
+                      <div className="text-[10px] font-black text-nuvv-purple text-center flex items-center justify-center space-x-1">
                         <Sparkles className="w-3 h-3 text-emerald-500" />
                         <span>RCS: Mídia rica, botões e alta conversão</span>
-                      </span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Smartphone Home Indicator Bar */}
+                  <div className="pt-2 pb-0.5 flex justify-center">
+                    <div className="w-24 h-1 bg-slate-500/40 rounded-full" />
+                  </div>
                 </div>
-                <div className="mt-3 text-center">
+
+                <div className="mt-3.5 text-center max-w-[290px]">
                   <span className="text-xs font-black text-nuvv-purple uppercase tracking-wider">
-                    RCS Oficial (Rich Communication Services)
+                    RCS Oficial (Rich Communication)
                   </span>
                   <p className="text-xs text-gray-600 mt-0.5">Comunicação interativa com botões, imagens, remetente verificado e métricas completas.</p>
                 </div>
@@ -360,14 +416,16 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
             {/* CTA Box for Messaging */}
             <div className="p-8 rounded-3xl bg-gradient-to-r from-nuvv-dark to-slate-900 text-white max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border border-indigo-500/20">
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">API de Mensageria Corporativa</span>
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">API & Portal Web de Campanhas</span>
                 <h3 className="text-2xl font-black">Pronto para acelerar a comunicação da sua empresa?</h3>
-                <p className="text-xs sm:text-sm text-gray-300">Integração simplificada com CRMs, ERPs e e-commerces com faturamento por volume enviado.</p>
+                <p className="text-xs sm:text-sm text-gray-300">
+                  Integre via API com seus sistemas ou use nosso <strong>Portal Web</strong> para criar campanhas personalizadas, programar agendamentos e acompanhar tudo em tempo real com relatórios completos.
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => handleConsultantClick('Mensageria SMS/RCS')}
-                className="px-8 py-4 rounded-2xl bg-nuvv-purple hover:bg-nuvv-purple-hover text-white font-bold text-sm shadow-lg shadow-nuvv-purple/30 whitespace-nowrap transition-all flex items-center space-x-2 flex-shrink-0"
+                className="px-8 py-4 rounded-2xl bg-nuvv-purple hover:bg-nuvv-purple-hover text-white font-bold text-sm shadow-lg shadow-nuvv-purple/30 whitespace-nowrap transition-all flex items-center space-x-2 flex-shrink-0 cursor-pointer"
               >
                 <span>Falar com um Consultor</span>
                 <ArrowRight className="w-4 h-4" />

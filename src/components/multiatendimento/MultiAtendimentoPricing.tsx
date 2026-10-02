@@ -9,59 +9,25 @@ interface MultiAtendimentoPricingProps {
 export const MultiAtendimentoPricing: React.FC<MultiAtendimentoPricingProps> = ({
   onSelectPlan,
 }) => {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
-
   return (
     <section className="py-16 sm:py-24 bg-white relative overflow-hidden" id="precos">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <span className="text-xs font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3.5 py-1 rounded-full">
-            Investimento Transparente
+            Dimensionamento Sob Medida
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-nuvv-dark mt-3 tracking-tight">
             Planos para equipes de todos os tamanhos.
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500 mt-2">
-            Escale suas vendas e atendimento com planos flexíveis. Sem taxas de instalação ocultas.
+          <p className="text-xs sm:text-sm text-gray-500 mt-2 max-w-2xl mx-auto leading-relaxed">
+            Estamos finalizando a implantação da solução comercial. Fale com nossos especialistas para agendar uma demonstração assistida e consultar as condições personalizadas para sua empresa.
           </p>
-
-          {/* Billing Toggle (Monthly vs Annual with 20% Discount) */}
-          <div className="inline-flex items-center p-1.5 bg-slate-100 rounded-2xl mt-8 border border-gray-200 shadow-inner">
-            <button
-              type="button"
-              onClick={() => setBillingCycle('monthly')}
-              className={`px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all ${
-                billingCycle === 'monthly'
-                  ? 'bg-white text-nuvv-dark shadow-sm'
-                  : 'text-gray-500 hover:text-nuvv-dark'
-              }`}
-            >
-              Mensal
-            </button>
-            <button
-              type="button"
-              onClick={() => setBillingCycle('annual')}
-              className={`px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center space-x-1.5 ${
-                billingCycle === 'annual'
-                  ? 'bg-nuvv-dark text-white shadow-sm'
-                  : 'text-gray-500 hover:text-nuvv-dark'
-              }`}
-            >
-              <span>Anual</span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-[10px] font-black text-white uppercase tracking-wider">
-                Economize 20%
-              </span>
-            </button>
-          </div>
         </div>
 
         {/* 3 Pricing Columns */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
           {MULTIATENDIMENTO_PLANS.map((plan) => {
-            const isAnnual = billingCycle === 'annual';
-            const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
-
             return (
               <div
                 key={plan.id}
@@ -91,35 +57,16 @@ export const MultiAtendimentoPricing: React.FC<MultiAtendimentoPricingProps> = (
                     </p>
                   </div>
 
-                  {/* Price Tag */}
-                  <div className="py-2 border-y border-gray-200/40">
-                    {price !== null ? (
-                      <div>
-                        <div className="flex items-baseline space-x-1">
-                          <span className={`text-xs font-bold ${plan.isPopular ? 'text-emerald-400' : 'text-gray-500'}`}>
-                            R$
-                          </span>
-                          <span className="text-3xl sm:text-4xl font-black tracking-tight">
-                            {price.toFixed(2).replace('.', ',')}
-                          </span>
-                          <span className={`text-xs ${plan.isPopular ? 'text-gray-400' : 'text-gray-500'}`}>
-                            /mês
-                          </span>
-                        </div>
-                        {isAnnual && (
-                          <span className="text-[10px] text-emerald-400 font-bold block mt-0.5">
-                            Faturado anualmente com 20% OFF
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <div>
-                        <span className="text-2xl sm:text-3xl font-black text-emerald-400">
-                          Sob Consulta
-                        </span>
-                        <span className="text-xs text-gray-400 block mt-0.5">Projetos customizados</span>
-                      </div>
-                    )}
+                  {/* Price Tag - Sob Consulta */}
+                  <div className="py-3 border-y border-gray-200/40">
+                    <div className="flex items-baseline space-x-2">
+                      <span className="text-2xl sm:text-3xl font-black text-emerald-500">
+                        Sob Consulta
+                      </span>
+                    </div>
+                    <span className={`text-[11px] block mt-0.5 ${plan.isPopular ? 'text-gray-300' : 'text-gray-500'}`}>
+                      Valores a consultar • Implantação assistida
+                    </span>
                   </div>
 
                   {/* Limits Highlights */}
@@ -154,7 +101,7 @@ export const MultiAtendimentoPricing: React.FC<MultiAtendimentoPricingProps> = (
                 <button
                   type="button"
                   onClick={() => onSelectPlan(`Plano Multiatendimento ${plan.name}`)}
-                  className={`w-full py-4 rounded-2xl font-black text-xs sm:text-sm shadow-md transition-all active:scale-98 mt-8 flex items-center justify-center space-x-2 ${
+                  className={`w-full py-4 rounded-2xl font-black text-xs sm:text-sm shadow-md transition-all active:scale-98 mt-8 flex items-center justify-center space-x-2 cursor-pointer ${
                     plan.isPopular
                       ? 'bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-emerald-500/30'
                       : 'bg-nuvv-dark hover:bg-nuvv-dark/90 text-white shadow-nuvv-dark/20'

@@ -35,16 +35,16 @@ export const Home: React.FC<HomePageProps> = ({
 
   const heroSlides = [
     {
-      src: '/images/hero/home_1.png',
-      alt: 'Conexão Nuvv Fibra Residencial e Corporativa',
-      badge: 'Ultra Conexão 100% Fibra Óptica',
-      tag: 'Wi-Fi 6 de Alta Performance',
+      src: '/images/hero/home_2.png',
+      alt: 'Soluções Corporativas & Telecomunicações Nuvv',
+      badge: 'Soluções Corporativas & Telecom',
+      tag: 'Banda Larga com CIR, Telefonia IP & IA de Voz',
     },
     {
-      src: '/images/hero/home_2.png',
-      alt: 'Soluções Digitais & Conectividade Inteligente Nuvv',
-      badge: 'Soluções Corporativas & Inovação',
-      tag: 'PABX, Multiatendimento & TI',
+      src: '/images/hero/home_1.png',
+      alt: 'Conexão Nuvv Fibra Residencial de Alto Desempenho',
+      badge: 'Conectividade Residencial Premium',
+      tag: '100% Fibra, TV ao Vivo & Streaming Sem Anúncios',
     },
   ];
 
@@ -60,17 +60,17 @@ export const Home: React.FC<HomePageProps> = ({
   return (
     <div className="space-y-0 animate-fade-in">
       <SEO
-        title={`Nuvv - Fibra Óptica Residencial & Soluções Corporativas em ${currentCity}`}
-        description={`Internet 100% fibra óptica de até 1 Giga com Wi-Fi 6 e TV no App Watch em ${currentCity}. Soluções corporativas completas: Link Dedicado, Semi-Dedicado com IP Fixo, PABX em Nuvem e Nuvv Digital.`}
+        title={`Nuvv - Telecomunicações Corporativas & Fibra Óptica em ${currentCity}`}
+        description={`Soluções completas de telecomunicações para empresas e conectividade de alta performance em ${currentCity}. Banda Larga com CIR garantido, Telefonia IP, PABX em Nuvem e 100% Fibra com TV e Streaming.`}
         keywords={[
+          `telecomunicacoes empresas ${currentCity}`,
+          `banda larga empresarial ${currentCity}`,
+          `telefonia ip ${currentCity}`,
+          `pabx em nuvem ${currentCity}`,
           `internet fibra ${currentCity}`,
-          `provedor de internet ${currentCity}`,
           'fibra optica residencial',
-          'link dedicado empresas',
-          'semi dedicado ip fixo',
-          'pabx em nuvem',
-          'nuvv digital',
-          'app watch tv',
+          'combos tv streaming fibra',
+          'mensageria sms rcs',
         ]}
         canonicalUrl="https://nuvv.com.br/"
         schema={organizationSchema}
@@ -87,34 +87,34 @@ export const Home: React.FC<HomePageProps> = ({
             <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
               <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-100/80 text-nuvv-purple text-xs font-bold shadow-2xs">
                 <Sparkles className="w-3.5 h-3.5 text-nuvv-purple" />
-                <span>Bem-vindo ao futuro da conexão</span>
+                <span>Infraestrutura & Conectividade de Alto Desempenho</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-nuvv-dark tracking-tight leading-[1.15]">
-                A internet que{' '}
-                <span className="text-gradient-hero">potencializa</span> seu mundo.
+                A conectividade que{' '}
+                <span className="text-gradient-hero">impulsiona negócios</span> e conecta você.
               </h1>
 
               <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                Navegue com ultravelocidade e estabilidade incomparável. A tecnologia que sua casa precisa e a segurança que sua empresa exige em <strong>{currentCity}</strong> e região.
+                Soluções corporativas completas com garantia de banda, telefonia IP e inteligência de voz, além de internet 100% fibra óptica de máxima estabilidade com entretenimento para sua casa em <strong>{currentCity}</strong> e região.
               </p>
 
-              {/* Main Dual CTAs */}
+              {/* Main Dual CTAs - Empresa em Primeiro e em Destaque */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-1">
                 <Link
-                  to="/residencial"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-nuvv-purple hover:bg-nuvv-purple-hover text-white font-bold text-sm flex items-center justify-center space-x-2 shadow-md shadow-nuvv-purple/25 transition-all active:scale-98"
+                  to="/empresarial"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-nuvv-dark hover:bg-slate-800 text-white font-black text-sm flex items-center justify-center space-x-2 shadow-lg shadow-slate-900/25 transition-all hover:-translate-y-0.5 active:scale-98 group"
                 >
-                  <HomeIcon className="w-4 h-4" />
-                  <span>Sou Residencial</span>
+                  <Building2 className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                  <span>Para sua Empresa</span>
                 </Link>
 
                 <Link
-                  to="/empresarial"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-white border-2 border-emerald-400 text-emerald-700 hover:bg-emerald-50/60 font-bold text-sm flex items-center justify-center space-x-2 shadow-xs transition-all active:scale-98"
+                  to="/residencial"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-white border-2 border-slate-200/90 hover:border-nuvv-purple text-slate-700 hover:text-nuvv-purple hover:bg-purple-50/50 font-bold text-sm flex items-center justify-center space-x-2 shadow-xs transition-all active:scale-98"
                 >
-                  <Building2 className="w-4 h-4" />
-                  <span>Sou Empresa</span>
+                  <HomeIcon className="w-4 h-4 text-nuvv-purple" />
+                  <span>Para Você & Família</span>
                 </Link>
 
                 <button
@@ -165,7 +165,7 @@ export const Home: React.FC<HomePageProps> = ({
                           </div>
                         </div>
                         <span className="text-[10px] font-black text-white bg-nuvv-purple/80 px-2.5 py-1 rounded-full border border-nuvv-purple/40">
-                          Nuvv Fibra
+                          {idx === 0 ? 'Nuvv Empresas' : 'Nuvv Fibra'}
                         </span>
                       </div>
                     </div>

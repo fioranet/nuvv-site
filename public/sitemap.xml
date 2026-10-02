@@ -82,21 +82,9 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://nuvv.com.br/poste-inteligente</loc>
-    <lastmod>2026-09-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nuvv.com.br/nuvv-digital</loc>
-    <lastmod>2026-09-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://nuvv.com.br/comunicacao-inteligente</loc>
-    <lastmod>2026-09-12</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://nuvv.com.br/sobre</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>

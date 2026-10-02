@@ -178,7 +178,7 @@ export const BusinessLeadModal: React.FC<BusinessLeadModalProps> = ({
       navigate('/agente-ia-voz');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (isComunicacao) {
-      navigate('/comunicacao-inteligente');
+      navigate('/mensageria');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       // Scroll to corporate plans section

@@ -14,6 +14,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
   const isEmpresarial =
     location.pathname.startsWith('/empresarial') ||
     location.pathname.startsWith('/empresas') ||
+    location.pathname.startsWith('/corporativo') ||
     location.pathname.startsWith('/monte-seu-combo-empresarial') ||
     location.pathname.startsWith('/pabx') ||
     location.pathname.startsWith('/telefonia') ||
@@ -22,17 +23,16 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
     location.pathname.startsWith('/seguranca-digital') ||
     location.pathname.startsWith('/mensageria') ||
     location.pathname.startsWith('/agente-ia-voz') ||
-    location.pathname.startsWith('/agente-de-voz') ||
-    location.pathname.startsWith('/comunicacao-inteligente');
+    location.pathname.startsWith('/agente-de-voz');
 
   return (
     <footer className="bg-white border-t border-gray-100 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 12-Column Responsive Grid to keep all 5 sections in 1 row on Desktop */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-8 pb-12 border-b border-gray-100 items-start">
+        {/* 5-Column Responsive Grid: exatamente 5 seções lado a lado na mesma linha no Desktop com largura dedicada */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.3fr_0.9fr_1.55fr_0.75fr_1.1fr] gap-6 lg:gap-4 xl:gap-8 pb-12 border-b border-gray-100 items-start">
           
-          {/* Column 1: Brand Info (3 cols) */}
-          <div className="lg:col-span-3 space-y-4">
+          {/* Column 1: Brand Info */}
+          <div className="space-y-4">
             <Link to="/" className="inline-block">
               <img
                 src={isEmpresarial ? "/images/external/Nuvv_verde_black(c).png" : "/images/external/nuvv_logo.png"}
@@ -103,13 +103,18 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
             </div>
           </div>
 
-          {/* Column 2: A Nuvv (2 cols) */}
-          <div className="lg:col-span-2">
-            <h4 className="text-xs font-extrabold text-nuvv-dark uppercase tracking-wider mb-3">A Nuvv</h4>
+          {/* Column 2: A Nuvv */}
+          <div>
+            <h4 className="text-xs font-extrabold text-nuvv-dark uppercase tracking-wider mb-3 whitespace-nowrap">A Nuvv</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/#sobre" className="text-gray-500 hover:text-nuvv-purple transition-colors">
+                <Link to="/sobre" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium whitespace-nowrap block">
                   Sobre Nós
+                </Link>
+              </li>
+              <li>
+                <Link to="/residencial" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium whitespace-nowrap block">
+                  Para Você (Residencial)
                 </Link>
               </li>
               <li>
@@ -117,139 +122,155 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
                   href={`https://wa.me/${siteConfig.whatsappRaw}?text=${encodeURIComponent('Olá! Gostaria de enviar meu currículo para trabalhar na Nuvv.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-nuvv-purple transition-colors"
+                  className="text-gray-500 hover:text-nuvv-purple transition-colors whitespace-nowrap block"
                 >
                   Trabalhe Conosco
                 </a>
               </li>
               <li>
-                <Link to="/blog" className="text-gray-500 hover:text-nuvv-purple transition-colors">
+                <Link to="/blog" className="text-gray-500 hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link to="/viabilidade" className="text-emerald-700 font-bold hover:text-emerald-800 transition-colors">
+                <Link to="/viabilidade" className="text-emerald-700 font-bold hover:text-emerald-800 transition-colors whitespace-nowrap block">
                   Consulta de Viabilidade
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="text-gray-500 hover:text-nuvv-purple transition-colors">
+                <Link to="/shop" className="text-gray-500 hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Nuvv Shop
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Serviços (2 cols) */}
-          <div className="lg:col-span-2">
-            <h4 className="text-xs font-extrabold text-nuvv-dark uppercase tracking-wider mb-3">Serviços</h4>
-            <ul className="space-y-2 text-xs">
+          {/* Column 3: Empresas (Soluções B2B) */}
+          <div>
+            <h4 className="text-xs font-extrabold text-nuvv-dark uppercase tracking-wider mb-3 whitespace-nowrap">Empresas</h4>
+            <ul className="space-y-1.5 text-[11px] leading-tight">
               <li>
-                <Link to="/residencial" className="text-gray-500 hover:text-nuvv-purple transition-colors">
-                  Para sua casa
+                <Link to="/empresarial" className="text-emerald-800 font-bold hover:text-emerald-950 transition-colors block whitespace-nowrap">
+                  Soluções Corporativas (Visão Geral)
                 </Link>
               </li>
               <li>
-                <Link to="/empresarial" className="text-gray-500 hover:text-nuvv-purple transition-colors">
-                  Para sua empresa
+                <Link to="/empresas/monte-seu-combo" className="text-emerald-700 font-semibold hover:text-emerald-900 transition-colors block whitespace-nowrap">
+                  Monte sua Solução (Combo B2B)
+                </Link>
+              </li>
+              <li className="pt-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                Comunicação & Voz
+              </li>
+              <li>
+                <Link to="/pabx" className="text-gray-500 hover:text-emerald-700 transition-colors block whitespace-nowrap">
+                  PABX em Nuvem & Ramais
                 </Link>
               </li>
               <li>
-                <Link to="/pabx" className="text-gray-500 hover:text-nuvv-purple transition-colors">
-                  PABX em Nuvem
+                <Link to="/telefonia" className="text-gray-500 hover:text-emerald-700 transition-colors block whitespace-nowrap">
+                  Telefonia IP & 0800
                 </Link>
               </li>
               <li>
-                <Link to="/telefonia" className="text-gray-500 hover:text-nuvv-purple transition-colors">
-                  Telefonia Fixa
+                <Link to="/mensageria" className="text-gray-500 hover:text-emerald-700 transition-colors block whitespace-nowrap">
+                  Mensageria Oficial SMS & RCS
                 </Link>
               </li>
               <li>
-                <Link to="/social-wifi" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
-                  Hotspot Wi-fi Social
+                <Link to="/agente-ia-voz" className="text-gray-500 hover:text-emerald-700 transition-colors block whitespace-nowrap">
+                  Agente IA de Voz 24/7
+                </Link>
+              </li>
+              <li className="pt-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                Soluções Digitais
+              </li>
+              <li>
+                <Link to="/social-wifi" className="text-gray-500 hover:text-emerald-700 transition-colors block whitespace-nowrap">
+                  Hotspot Social Wi-Fi (LGPD)
                 </Link>
               </li>
               <li>
-                <Link to="/mensageria" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
-                  Mensageria SMS & RCS
+                <Link to="/seguranca-digital" className="text-gray-500 hover:text-emerald-700 transition-colors block whitespace-nowrap">
+                  Segurança Digital Kaspersky
                 </Link>
               </li>
               <li>
-                <Link to="/agente-ia-voz" className="text-gray-500 hover:text-nuvv-purple transition-colors font-medium">
-                  Agente IA de Voz
+                <Link to="/multiatendimento" className="text-gray-500 hover:text-emerald-700 transition-colors block whitespace-nowrap">
+                  Plataforma Multiatendimento
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 4: Cidades Atendidas (2 cols) */}
-          <div className="lg:col-span-2">
-            <h4 className="text-xs font-extrabold text-nuvv-dark uppercase tracking-wider mb-3">Cidades</h4>
+          {/* Column 4: Cidades Atendidas */}
+          <div>
+            <h4 className="text-xs font-extrabold text-nuvv-dark uppercase tracking-wider mb-3 whitespace-nowrap">Cidades</h4>
             <ul className="space-y-1.5 text-[11px] text-gray-500">
               <li>
-                <Link to="/cidade/suzano" className="hover:text-nuvv-purple transition-colors">
+                <Link to="/cidade/suzano" className="hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Suzano
                 </Link>
               </li>
               <li>
-                <Link to="/cidade/mogi-das-cruzes" className="hover:text-nuvv-purple transition-colors">
+                <Link to="/cidade/mogi-das-cruzes" className="hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Mogi das Cruzes
                 </Link>
               </li>
               <li>
-                <Link to="/cidade/poa" className="hover:text-nuvv-purple transition-colors">
+                <Link to="/cidade/poa" className="hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Poá
                 </Link>
               </li>
               <li>
-                <Link to="/cidade/ferraz-de-vasconcelos" className="hover:text-nuvv-purple transition-colors">
+                <Link to="/cidade/ferraz-de-vasconcelos" className="hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Ferraz de Vasc.
                 </Link>
               </li>
               <li>
-                <Link to="/cidade/itaquaquecetuba" className="hover:text-nuvv-purple transition-colors">
+                <Link to="/cidade/itaquaquecetuba" className="hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Itaquaquecetuba
                 </Link>
               </li>
               <li>
-                <Link to="/cidade/sao-paulo" className="hover:text-nuvv-purple transition-colors">
+                <Link to="/cidade/sao-paulo" className="hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   São Paulo
                 </Link>
               </li>
               <li>
-                <Link to="/cidade/guarulhos" className="hover:text-nuvv-purple transition-colors">
+                <Link to="/cidade/guarulhos" className="hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Guarulhos
                 </Link>
               </li>
               <li>
-                <Link to="/cidade/aruja" className="hover:text-nuvv-purple transition-colors">
+                <Link to="/cidade/aruja" className="hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Arujá
                 </Link>
               </li>
               <li>
-                <Link to="/cidade/santa-isabel" className="hover:text-nuvv-purple transition-colors">
+                <Link to="/cidade/santa-isabel" className="hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Santa Isabel
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 5: Fale Conosco & CTAs (3 cols) */}
-          <div className="lg:col-span-3">
-            <h4 className="text-xs font-extrabold text-nuvv-dark uppercase tracking-wider mb-3">Fale Conosco</h4>
+          {/* Column 5: Fale Conosco & CTAs */}
+          <div>
+            <h4 className="text-xs font-extrabold text-nuvv-dark uppercase tracking-wider mb-3 whitespace-nowrap">Fale Conosco</h4>
             <ul className="space-y-2 text-xs mb-4">
               <li>
-                <Link to="/suporte" className="text-gray-500 hover:text-nuvv-purple transition-colors flex items-center space-x-2">
-                  <Gauge className="w-3.5 h-3.5 text-nuvv-purple" />
+                <Link to="/suporte" className="text-gray-500 hover:text-nuvv-purple transition-colors flex items-center space-x-2 whitespace-nowrap">
+                  <Gauge className="w-3.5 h-3.5 text-nuvv-purple flex-shrink-0" />
                   <span>Teste de Velocidade</span>
                 </Link>
               </li>
               <li>
                 <Link
                   to="/2via"
-                  className="text-gray-600 hover:text-nuvv-purple font-bold transition-colors flex items-center space-x-2"
+                  className="text-gray-600 hover:text-nuvv-purple font-bold transition-colors flex items-center space-x-2 whitespace-nowrap"
                 >
-                  <FileText className="w-3.5 h-3.5 text-nuvv-purple" />
+                  <FileText className="w-3.5 h-3.5 text-nuvv-purple flex-shrink-0" />
                   <span>2ª Via Rápida & PIX</span>
                 </Link>
               </li>
@@ -258,9 +279,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
                   href={siteConfig.areaClienteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-nuvv-purple transition-colors flex items-center space-x-2"
+                  className="text-gray-500 hover:text-nuvv-purple transition-colors flex items-center space-x-2 whitespace-nowrap"
                 >
-                  <UserCheck className="w-3.5 h-3.5 text-nuvv-purple" />
+                  <UserCheck className="w-3.5 h-3.5 text-nuvv-purple flex-shrink-0" />
                   <span>Área do Cliente</span>
                 </a>
               </li>

@@ -196,8 +196,8 @@ export const MULTIATENDIMENTO_PLANS: MultiAtendimentoPlan[] = [
     id: 'essencial',
     name: 'Essencial',
     tagline: 'Ideal para profissionais autônomos e pequenos negócios em crescimento.',
-    monthlyPrice: 149.9,
-    annualPrice: 119.9,
+    monthlyPrice: null,
+    annualPrice: null,
     usersLimit: 'Até 3 Usuários/Atendentes',
     connectionsLimit: '1 Conexão WhatsApp Oficial ou QR Code',
     features: [
@@ -211,16 +211,16 @@ export const MULTIATENDIMENTO_PLANS: MultiAtendimentoPlan[] = [
       'Disparos rápidos de mensagens pré-formatadas',
       'Suporte via WhatsApp e Ticket',
     ],
-    ctaText: 'Começar com Essencial',
+    ctaText: 'Consultar Condições',
   },
   {
     id: 'pro',
     name: 'Pro',
     tagline: 'A solução mais recomendada para equipes comerciais e suporte escalável.',
-    monthlyPrice: 299.9,
-    annualPrice: 239.9,
+    monthlyPrice: null,
+    annualPrice: null,
     isPopular: true,
-    badge: 'Mais Escolhido',
+    badge: 'Mais Recomendado',
     usersLimit: 'Até 10 Usuários/Atendentes',
     connectionsLimit: 'Até 3 Conexões (WhatsApp + Instagram + Messenger + Telegram)',
     features: [
@@ -239,7 +239,7 @@ export const MULTIATENDIMENTO_PLANS: MultiAtendimentoPlan[] = [
       'Atribuição automática de conversas (Round-Robin)',
       'Suporte prioritário via WhatsApp',
     ],
-    ctaText: 'Testar Plano Pro Grátis',
+    ctaText: 'Consultar Condições',
   },
   {
     id: 'enterprise',
@@ -291,9 +291,9 @@ export const MULTIATENDIMENTO_FAQS = [
       'Nosso Agente de Voz com IA atende as ligações feitas pelos clientes diretamente no WhatsApp. Ele entende a fala em português do Brasil em menos de 1,2 segundos, conversa de forma humanizada, tira dúvidas e registra tudo no seu CRM.',
   },
   {
-    question: 'Existe fidelidade ou contrato de longo prazo?',
+    question: 'Como funciona a contratação do Nuvv Multiatendimento?',
     answer:
-      'Nos planos mensais, você pode cancelar a qualquer momento sem multas. Para o plano anual, oferecemos até 20% de desconto no pagamento antecipado.',
+      'A solução está em fase de implantação técnica assistida com condições sob consulta. Nossos consultores avaliam o volume de atendentes, canais desejados e necessidades de integração para desenhar a proposta sob medida para sua empresa.',
   },
 ];
 

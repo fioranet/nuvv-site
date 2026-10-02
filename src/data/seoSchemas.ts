@@ -59,7 +59,7 @@ export const organizationSchema = {
             itemOffered: {
               '@type': 'Service',
               name: 'Internet Semi-Dedicada com IP Fixo IPv4',
-              description: 'Conexão corporativa de alta performance com 1 IP Fixo público (/32), garantia de 80% de banda (CIR) e SLA de 12h.',
+              description: 'Conexão corporativa de alta performance com 1 IP Fixo público (/32), garantia de 70% de banda (CIR) e SLA de 12h.',
             },
           },
           {
@@ -151,7 +151,7 @@ export const enterpriseSemiDedicatedSchema = {
   },
   name: 'Internet Semi-Dedicada Nuvv Business',
   description:
-    'Conexão de alta estabilidade para empresas com servidores locais, VPNs, sistemas de PDV/ERP e CFTV. Inclui 1 IP Fixo IPv4 válido (/32), garantia de banda de 80% (CIR), SLA de 12 horas e monitoramento NOC 24/7.',
+    'Conexão de alta estabilidade para empresas com servidores locais, VPNs, sistemas de PDV/ERP e CFTV. Inclui 1 IP Fixo IPv4 válido (/32), garantia de banda de 70% (CIR), SLA de 12 horas e monitoramento NOC 24/7.',
   offers: {
     '@type': 'AggregateOffer',
     priceCurrency: 'BRL',
@@ -302,21 +302,21 @@ export const socialWifiServiceSchema = {
 export const nuvvDigitalServiceSchema = {
   '@context': 'https://schema.org',
   '@type': 'Service',
-  '@id': `${BASE_URL}/nuvv-digital#service`,
-  serviceType: 'Comunicação Digital Corporativa, Multiatendimento WhatsApp Oficial, RCS e Inteligência Artificial',
+  '@id': `${BASE_URL}/mensageria#service`,
+  serviceType: 'Comunicação Digital Corporativa, Mensageria Oficial SMS/RCS, Multiatendimento e IA',
   provider: {
     '@id': `${BASE_URL}/#organization`,
   },
-  name: 'Nuvv Digital - Multiatendimento WhatsApp Oficial, RCS e Agentes de Voz IA',
+  name: 'Nuvv Mensageria & Comunicação Corporativa',
   description:
-    'Plataforma corporativa omnichannel da Nuvv: Atendimento centralizado no WhatsApp Oficial com múltiplos atendentes no mesmo número, Automação de Instagram e Messenger, Mensageria RCS/SMS oficial e Agentes de Voz Inteligentes com IA para telefonia corporativa.',
+    'Soluções de mensageria oficial SMS, RCS com selo verificado, canais de comunicação corporativa e agentes inteligentes de atendimento para empresas.',
   offers: {
     '@type': 'AggregateOffer',
     priceCurrency: 'BRL',
     lowPrice: '149.90',
     highPrice: '299.90',
     offerCount: '3',
-    url: `${BASE_URL}/nuvv-digital`,
+    url: `${BASE_URL}/mensageria`,
   },
   areaServed: organizationSchema.areaServed,
 };

@@ -41,7 +41,7 @@ export const SPEED_OPTIONS: SpeedOption[] = [
     id: '800',
     label: '800 Mega',
     priceOffset: 30.0, // +R$ 30 para o dobro de velocidade (R$ 99,90 -> R$ 129,90)
-    wifiBadge: 'Roteador Wi-Fi de Alta Capacidade',
+    wifiBadge: 'Wi-Fi 6 Incluso',
     recommendedFor: 'Múltiplos aparelhos simultâneos, streaming 4K e games competitivos',
   },
 ];
@@ -144,8 +144,8 @@ export const getPackageDigitalApps = (pkg: PackageOffer): DigitalAppInfo[] => {
   if (hasMax) {
     apps.push({
       name: 'HBO Max',
-      tag: 'Streaming Premium',
-      description: 'Filmes, séries exclusivas HBO e esportes ao vivo.',
+      tag: 'Plano Sem Anúncios',
+      description: 'Filmes, séries exclusivas Warner e esportes ao vivo 100% sem propagandas (reprodução contínua).',
       logo: '/images/external/hbomax.png',
     });
   }
@@ -207,14 +207,14 @@ export const RESIDENTIAL_TAB_OFFERS: Record<ResidentialTabId, PackageOffer[]> = 
       ],
       contentHighlights: [
         'Telecine incluso com 6 canais ao vivo + conteúdo streaming',
-        'HBO Max incluso com filmes, séries Warner e esportes',
+        'HBO Max incluso sem propagandas (filmes, séries e esportes)',
         'App Awdio com audiobooks, podcasts e conteúdos em áudio',
         '26 canais de TV ao vivo no NuvvPlay (Watch)',
       ],
       basePrice400M: 129.80,
       originalBasePrice: 169.90,
       defaultSpeed: '400',
-      detailsSummary: 'Combo de cinema e séries com Telecine e HBO Max para maratonar.',
+      detailsSummary: 'Combo de cinema e séries com Telecine e HBO Max sem propagandas para maratonar.',
     },
     {
       id: 'destaque-familia',
@@ -223,7 +223,7 @@ export const RESIDENTIAL_TAB_OFFERS: Record<ResidentialTabId, PackageOffer[]> = 
       badgeColor: 'purple',
       isPopular: true, // Destaque visual "Mais Escolhido"
       title: 'Completão Família',
-      tagline: 'O combo supremo com 100+ canais ao vivo, Premiere, Combate, HBO Max e Telecine.',
+      tagline: 'O combo supremo com 100+ canais ao vivo, Premiere, Combate, HBO Max sem propagandas e Telecine.',
       channelsCount: 100,
       channelsTitle: 'Grade de Canais Completão (100+ Canais)',
       channelsImage: '/images/external/completo_elite.png',
@@ -237,7 +237,7 @@ export const RESIDENTIAL_TAB_OFFERS: Record<ResidentialTabId, PackageOffer[]> = 
         { name: 'HBO Max', logo: '/images/external/hbomax.png' },
       ],
       contentHighlights: [
-        'HBO Max e Telecine inclusos (séries premiadas e filmes)',
+        'HBO Max incluso sem propagandas e Telecine (filmes e séries premiadas)',
         'Premiere e Combate ao vivo na mesma assinatura',
         '100+ canais de TV ao vivo em Full HD',
         'App Awdio com audiobooks e podcasts no NuvvPlay (Watch)',
@@ -245,7 +245,7 @@ export const RESIDENTIAL_TAB_OFFERS: Record<ResidentialTabId, PackageOffer[]> = 
       basePrice400M: 189.80,
       originalBasePrice: 249.90,
       defaultSpeed: '400',
-      detailsSummary: 'Grade máxima com infantis, variedades, Premiere, Combate, HBO Max e Telecine.',
+      detailsSummary: 'Grade máxima com infantis, variedades, Premiere, Combate, HBO Max sem propagandas e Telecine.',
     },
     {
       id: 'destaque-esportes',
@@ -406,7 +406,7 @@ export const RESIDENTIAL_TAB_OFFERS: Record<ResidentialTabId, PackageOffer[]> = 
       badge: 'ESSENCIAL + HBO MAX',
       badgeColor: 'purple',
       title: 'Essencial + HBO Max',
-      tagline: 'Grade Essencial de 68 canais somada ao streaming HBO Max com filmes, séries e Champions.',
+      tagline: 'Grade Essencial de 68 canais somada ao streaming HBO Max (plano sem anúncios) com filmes, séries e Champions.',
       channelsCount: 68,
       channelsTitle: 'Grade de Canais Essencial + HBO Max (68 Canais)',
       channelsImage: '/images/external/tv_essencial.png',
@@ -417,7 +417,7 @@ export const RESIDENTIAL_TAB_OFFERS: Record<ResidentialTabId, PackageOffer[]> = 
         { name: 'HBO Max', logo: '/images/external/hbomax.png' },
       ],
       contentHighlights: [
-        'HBO Max incluso com séries premiadas e Champions League',
+        'HBO Max incluso sem propagandas (séries premiadas e Champions League)',
         '68 canais de TV ao vivo em Full HD',
         'App Awdio com audiobooks e podcasts',
         'Transmissão simultânea no NuvvPlay (Watch)',
@@ -425,7 +425,7 @@ export const RESIDENTIAL_TAB_OFFERS: Record<ResidentialTabId, PackageOffer[]> = 
       basePrice400M: 149.80,
       originalBasePrice: 199.90,
       defaultSpeed: '400',
-      detailsSummary: 'O melhor das séries e filmes da HBO Max com toda a grade Essencial ao vivo.',
+      detailsSummary: 'O melhor das séries e filmes da HBO Max sem anúncios com toda a grade Essencial ao vivo.',
     },
   ],
 

@@ -49,9 +49,9 @@ export const RCS_VS_SMS_METRICS = [
     description: 'Selo oficial que elimina desconfiança e combate golpes de phishing.',
   },
   {
-    metric: '24/7',
-    label: 'Automação Omnichannel',
-    description: 'Disparos automáticos via API acionados por eventos no seu ERP/CRM.',
+    metric: 'Real-Time',
+    label: 'Portal Web & Relatórios',
+    description: 'Campanhas personalizadas, agendamentos e acompanhamento ao vivo.',
   },
 ];
 

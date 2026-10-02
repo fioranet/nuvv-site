@@ -149,10 +149,10 @@ export const SlaModal: React.FC<SlaModalProps> = ({ isOpen, onClose }) => {
                         className={`inline-block px-2.5 py-1 rounded-lg font-black text-xs ${
                           item.cirValueNumber === 100
                             ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                            : item.cirValueNumber >= 80
+                            : item.cirValueNumber >= 70
                             ? 'bg-indigo-100 text-indigo-900 border border-indigo-200'
-                            : item.cirValueNumber >= 65
-                            ? 'bg-purple-100 text-purple-900 border border-purple-200'
+                            : item.cirValueNumber >= 50
+                            ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >

@@ -156,99 +156,138 @@ export const BusinessPlanSelector: React.FC<BusinessPlanSelectorProps> = ({
         </div>
 
         {/* Connectivity Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {currentConnectivityPlans.map((plan) => {
             const isSelected = combo.planId === plan.id;
             const price = plan.promoPrice ?? plan.originalPrice ?? 0;
             const originalPrice = plan.originalPrice;
+            const isSemiDedicado =
+              combo.connectivityType === 'semi-dedicado' ||
+              plan.id.includes('semi') ||
+              plan.ipType?.toLowerCase().includes('fixo');
 
             return (
               <button
                 key={plan.id}
                 type="button"
                 onClick={() => setCombo((prev) => ({ ...prev, planId: plan.id }))}
-                className={`p-5 rounded-2xl border text-left transition-all relative flex flex-col justify-between group ${
+                className={`p-6 sm:p-7 rounded-3xl border text-left transition-all relative flex flex-col justify-between group cursor-pointer ${
                   isSelected
-                    ? 'border-emerald-500 bg-emerald-50/50 ring-2 ring-emerald-500/30 shadow-md'
+                    ? 'border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/30 shadow-md'
                     : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50/80 shadow-2xs'
                 }`}
               >
                 {plan.badge && (
-                  <div className="absolute -top-3 left-4">
+                  <div className="absolute -top-3.5 left-5">
                     <span
-                      className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full text-white shadow-2xs ${
-                        plan.isPopular ? 'bg-emerald-600' : 'bg-slate-800'
+                      className={`text-[10px] sm:text-xs font-black uppercase px-3 py-1 rounded-full text-white shadow-sm flex items-center space-x-1 ${
+                        plan.isPopular ? 'bg-emerald-600' : 'bg-slate-900'
                       }`}
                     >
-                      {plan.badge}
+                      <Zap className="w-3 h-3 text-nuvv-green fill-nuvv-green" />
+                      <span>{plan.badge}</span>
                     </span>
                   </div>
                 )}
 
                 <div>
                   <div className="flex items-center justify-between mt-1">
-                    <span className="text-xs font-extrabold text-gray-500 uppercase tracking-wider">
+                    <span className="text-xs sm:text-sm font-extrabold text-emerald-800 uppercase tracking-wider bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200/60">
                       {plan.name}
                     </span>
                     <div
-                      className={`w-5 h-5 rounded-full flex items-center justify-center border ${
+                      className={`w-6 h-6 rounded-full flex items-center justify-center border transition-colors ${
                         isSelected
                           ? 'border-emerald-600 bg-emerald-600 text-white'
-                          : 'border-gray-300 bg-white'
+                          : 'border-gray-300 bg-white group-hover:border-gray-400'
                       }`}
                     >
-                      {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                      {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
                     </div>
                   </div>
 
-                  <div className="text-3xl sm:text-4xl font-black text-nuvv-dark mt-2 tracking-tight">
-                    {plan.speed} <span className="text-xl sm:text-2xl font-bold">{plan.unit}</span>
+                  <div className="text-4xl sm:text-5xl font-black text-nuvv-dark mt-3 tracking-tight leading-none">
+                    {plan.speed} <span className="text-2xl sm:text-3xl font-extrabold text-emerald-700">{plan.unit}</span>
                   </div>
 
-                  <div className="mt-2 space-y-1">
-                    <div className="flex items-baseline space-x-1.5">
-                      <span className="text-xs text-gray-500">R$</span>
-                      <span className="text-2xl font-black text-emerald-700">
-                        {price.toFixed(2).replace('.', ',')}
-                      </span>
-                      <span className="text-xs text-gray-500 font-medium">/mês</span>
-                    </div>
+                  <div className="mt-3 space-y-1">
                     {originalPrice && originalPrice > price && (
-                      <span className="text-[11px] text-gray-400 line-through block">
+                      <span className="text-xs text-gray-400 line-through block font-semibold">
                         De R$ {originalPrice.toFixed(2).replace('.', ',')}/mês
                       </span>
                     )}
+                    <div className="flex items-baseline space-x-1.5">
+                      <span className="text-sm font-bold text-gray-500">R$</span>
+                      <span className="text-3xl sm:text-4xl font-black text-emerald-700">
+                        {price.toFixed(2).replace('.', ',')}
+                      </span>
+                      <span className="text-sm text-gray-600 font-semibold">/mês</span>
+                    </div>
                   </div>
 
                   {/* Special 1 Giga Differentiator Highlight */}
                   {plan.slaHours === 24 && (
-                    <div className="mt-2.5 px-2.5 py-1.5 rounded-xl bg-emerald-100/80 border border-emerald-300 text-[11px] font-black text-emerald-950 flex items-center space-x-1.5">
-                      <Zap className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0 fill-emerald-600" />
-                      <span>SLA 24h (Metade do tempo) & CIR {plan.cirGuarantee}</span>
+                    <div className="mt-3.5 px-3 py-2 rounded-2xl bg-emerald-100/90 border border-emerald-300 text-xs font-black text-emerald-950 flex items-center space-x-2">
+                      <Zap className="w-4 h-4 text-emerald-700 flex-shrink-0 fill-emerald-600" />
+                      <span>SLA 24h Prioritário (Metade do tempo) & CIR {plan.cirGuarantee}</span>
                     </div>
                   )}
 
-                  {/* Highlights */}
-                  <ul className="mt-4 pt-3 border-t border-gray-200/80 space-y-1.5 text-xs text-gray-600">
-                    <li className="flex items-center space-x-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                      <span className={plan.slaHours === 24 ? 'font-extrabold text-emerald-950 bg-emerald-100/60 px-1.5 py-0.5 rounded' : ''}>
-                        Atendimento Técnico (SLA): {plan.slaHours}h {plan.slaHours === 24 ? '(Prioritário B2B)' : ''}
-                      </span>
-                    </li>
-                    <li className="flex items-center space-x-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                      <span>{plan.ipType || 'IP Dinâmico'}</span>
-                    </li>
-                    {plan.cirGuarantee && (
-                      <li className="flex items-center space-x-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                        <span className={plan.slaHours === 24 ? 'font-extrabold text-emerald-950 bg-emerald-100/60 px-1.5 py-0.5 rounded' : ''}>
-                          Garantia de Banda (CIR): {plan.cirGuarantee} {plan.slaHours === 24 ? '(Acima do Residencial)' : ''}
+                  {/* Highlights e Diferenciais Técnicos B2B */}
+                  <div className="mt-4 pt-3.5 border-t border-gray-200/80 space-y-2 text-xs sm:text-sm">
+                    {/* IP Fixo Destaque */}
+                    {isSemiDedicado ? (
+                      <div className="flex items-center space-x-2 p-2 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-950 font-bold">
+                        <CheckCircle2 className="w-4 h-4 text-nuvv-purple flex-shrink-0" />
+                        <span className="leading-tight">
+                          1 IP Fixo IPv4 Público (/32) Incluso
                         </span>
-                      </li>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2 text-gray-700 font-medium">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                        <span>{plan.ipType || 'IP Dinâmico Corporativo'}</span>
+                      </div>
                     )}
-                  </ul>
+
+                    {/* SLA Destaque */}
+                    {plan.slaHours && (
+                      <div
+                        className={`flex items-center space-x-2 p-2 rounded-xl border ${
+                          plan.slaHours <= 12
+                            ? 'bg-slate-900 border-slate-800 text-white font-bold'
+                            : plan.slaHours === 24
+                            ? 'bg-emerald-100/80 border-emerald-300 text-emerald-950 font-bold'
+                            : 'bg-gray-50 border-gray-200 text-gray-700 font-medium'
+                        }`}
+                      >
+                        <Clock
+                          className={`w-4 h-4 flex-shrink-0 ${
+                            plan.slaHours <= 24 ? 'text-nuvv-green' : 'text-gray-500'
+                          }`}
+                        />
+                        <span className="leading-tight">
+                          SLA de Atendimento: <strong className={plan.slaHours <= 24 ? 'text-nuvv-green font-black' : ''}>{plan.slaHours}h</strong>{' '}
+                          {plan.slaHours <= 12
+                            ? '(Suporte Ágil B2B)'
+                            : plan.slaHours === 24
+                            ? '(Prioritário B2B)'
+                            : ''}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Garantia de Banda CIR */}
+                    {plan.cirGuarantee && (
+                      <div className="flex items-center space-x-2 text-gray-700 font-medium">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                        <span>
+                          Garantia de Banda (CIR):{' '}
+                          <strong className="text-emerald-800 font-extrabold">{plan.cirGuarantee}</strong>
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </button>
             );
@@ -264,10 +303,10 @@ export const BusinessPlanSelector: React.FC<BusinessPlanSelectorProps> = ({
             <span>Etapa 2: Soluções Corporativas Integradas</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-nuvv-dark">
-            Turbine o Pacote com Soluções de Telefonia, IA, Câmeras e Segurança
+            Turbine o Pacote com Telefonia, PABX, Hotspot Wi-Fi e Multiatendimento
           </h3>
           <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-            Adicione ramais virtuais, linhas fixas, CRM de atendimento, gravação de câmeras ou antivírus corporativo.
+            Adicione ramais virtuais, linhas fixas, CRM de atendimento com IA, Hotspot Wi-Fi ou segurança digital.
           </p>
         </div>
 

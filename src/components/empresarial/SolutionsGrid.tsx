@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Router,
@@ -17,6 +17,7 @@ import {
   Bot,
   Layers,
   ExternalLink,
+  Sparkles,
 } from 'lucide-react';
 import { CorporateSolution, CORPORATE_SOLUTIONS } from '../../data/services';
 
@@ -26,6 +27,7 @@ interface SolutionsGridProps {
 
 export const SolutionsGrid: React.FC<SolutionsGridProps> = ({ onSelectSolution }) => {
   const navigate = useNavigate();
+  const [activePillarTab, setActivePillarTab] = useState<'all' | 'conectividade' | 'comunicacao' | 'solucoes-digitais'>('all');
 
   const iconMap: Record<string, React.ElementType> = {
     Router,
@@ -52,6 +54,43 @@ export const SolutionsGrid: React.FC<SolutionsGridProps> = ({ onSelectSolution }
     }
   };
 
+  // Filtragem coerente por Pilar Estratégico
+  const filteredSolutions = CORPORATE_SOLUTIONS.filter((sol) => {
+    if (activePillarTab === 'all') return true;
+    if (activePillarTab === 'conectividade') {
+      return (
+        sol.categoryPill === 'Conectividade' ||
+        sol.id === 'link-dedicado' ||
+        sol.id === 'lan-to-lan' ||
+        sol.id === 'link-temporario' ||
+        sol.id === 'data-center' ||
+        sol.id === 'projetos-personalizados'
+      );
+    }
+    if (activePillarTab === 'comunicacao') {
+      return (
+        sol.categoryPill === 'Voz & PABX' ||
+        sol.categoryPill === 'Mensageria' ||
+        sol.categoryPill === 'Inteligência Artificial' ||
+        sol.id === 'pabx-nuvem' ||
+        sol.id === 'telefonia-ip' ||
+        sol.id === 'mensageria-sms-rcs' ||
+        sol.id === 'agente-ia-voz'
+      );
+    }
+    if (activePillarTab === 'solucoes-digitais') {
+      return (
+        sol.categoryPill === 'Marketing & Wi-Fi' ||
+        sol.categoryPill === 'Segurança' ||
+        sol.categoryPill === 'Atendimento & CRM' ||
+        sol.id === 'hotspot-wifi-social' ||
+        sol.id === 'seguranca-digital' ||
+        sol.id === 'nuvv-multiatendimento'
+      );
+    }
+    return true;
+  });
+
   return (
     <section className="py-16 sm:py-24 bg-gradient-to-b from-slate-50 via-white to-slate-50/80 relative overflow-hidden" id="solucoes-grid">
       {/* Ambient glow verde corporativo */}
@@ -59,25 +98,76 @@ export const SolutionsGrid: React.FC<SolutionsGridProps> = ({ onSelectSolution }
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Cabeçalho da Sessão no Padrão do Design System */}
-        <div className="max-w-5xl mx-auto text-center space-y-4 mb-12 sm:mb-16">
+        <div className="max-w-5xl mx-auto text-center space-y-4 mb-10 sm:mb-12">
           <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 text-xs font-black tracking-wider uppercase shadow-2xs">
             <Layers className="w-4 h-4 text-emerald-600" />
-            <span>ECOSSISTEMA COMPLETO • TELECOM & TI CORPORATIVA</span>
+            <span>ECOSSISTEMA COMPLETO • OS TRÊS PILARES CORPORATIVOS</span>
           </div>
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-            Nosso Portfólio Completo de{' '}
+            Portfólio de Soluções{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700">
-              Soluções Corporativas
+              Conectividade, Comunicação e TI
             </span>
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-slate-600 leading-relaxed max-w-4xl mx-auto">
-            Infraestrutura de ponta em conectividade dedicada, segurança cibernética, voz em nuvem e inteligência artificial para companhias que não podem parar.
+            Integração completa da sua infraestrutura em um único parceiro de tecnologia e telecomunicações: da fibra óptica dedicada ao PABX em nuvem e inteligência de atendimento.
           </p>
+
+          {/* Abas de Filtro por Pilar */}
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setActivePillarTab('all')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activePillarTab === 'all'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              Todas as Soluções ({CORPORATE_SOLUTIONS.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePillarTab('conectividade')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5 ${
+                activePillarTab === 'conectividade'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-50/60'
+              }`}
+            >
+              <Wifi className="w-3.5 h-3.5" />
+              <span>Conectividade & Redes</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePillarTab('comunicacao')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5 ${
+                activePillarTab === 'comunicacao'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'bg-white text-emerald-800 border border-emerald-200 hover:bg-emerald-50/60'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Comunicação & Voz</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePillarTab('solucoes-digitais')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5 ${
+                activePillarTab === 'solucoes-digitais'
+                  ? 'bg-purple-600 text-white shadow-sm'
+                  : 'bg-white text-purple-700 border border-purple-200 hover:bg-purple-50/60'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Soluções Digitais</span>
+            </button>
+          </div>
         </div>
 
-        {/* Grid de 12 Soluções */}
+        {/* Grid de Soluções Filtradas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {CORPORATE_SOLUTIONS.map((solution) => {
+          {filteredSolutions.map((solution) => {
             const Icon = iconMap[solution.iconName] || Router;
             const hasDedicatedPage = Boolean(solution.route);
 
@@ -93,7 +183,7 @@ export const SolutionsGrid: React.FC<SolutionsGridProps> = ({ onSelectSolution }
                       <Icon className="w-6 h-6" />
                     </div>
 
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50/80 px-2.5 py-1 rounded-md border border-emerald-200/60">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50/90 px-2.5 py-1 rounded-md border border-emerald-200/60">
                       {solution.categoryPill || 'Telecom'}
                     </span>
                   </div>
@@ -108,7 +198,7 @@ export const SolutionsGrid: React.FC<SolutionsGridProps> = ({ onSelectSolution }
 
                   {/* Pricing note if available */}
                   {solution.pricingNote && (
-                    <div className="mb-4 text-[11px] font-bold text-emerald-700 bg-emerald-50/60 px-2.5 py-1 rounded-lg inline-block">
+                    <div className="mb-4 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/70 px-2.5 py-1 rounded-lg inline-block">
                       {solution.pricingNote}
                     </div>
                   )}

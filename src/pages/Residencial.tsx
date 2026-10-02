@@ -130,16 +130,16 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
       src: '/images/hero/res_1.png',
       alt: 'Nuvv Fibra Residencial Família e Streaming',
       badge: 'Fibra Residencial Ultra',
-      tag: 'Jogos, 4K & Conexão Simultânea',
-      pill: 'Wi-Fi 6 Grátis',
+      tag: 'Canais ao Vivo, Filmes & Séries',
+      pill: 'TV & Streaming',
       topBadge: 'Sinal Ativo & Estável',
     },
     {
       src: '/images/hero/res_2.png',
       alt: 'Conexão Gamer & Entretenimento Nuvv',
       badge: 'Velocidade Real & Baixa Latência',
-      tag: 'Streamings, TV ao Vivo & Telemedicina',
-      pill: '100% Fibra',
+      tag: 'Telecine, HBO Max, Premiere & Combate',
+      pill: 'Wi-Fi 6 no 800M',
       topBadge: 'Alta Performance',
     },
   ];
@@ -284,8 +284,8 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
       'canais globo': 'Todos os Canais Abertos e Fechados.',
       globo: 'Todos os Canais Abertos e Fechados.',
       telecine: '+ 6 canais e filmes on-demand.',
-      hbomax: 'Filmes, séries exclusivas e esportes ao vivo.',
-      'hbo max': 'Filmes, séries exclusivas e esportes ao vivo.',
+      hbomax: 'Filmes, séries exclusivas e esportes ao vivo (plano sem anúncios / sem propagandas).',
+      'hbo max': 'Filmes, séries exclusivas e esportes ao vivo (plano sem anúncios / sem propagandas).',
       paramount: 'Filmes e séries de sucesso.',
       'paramount+': 'Filmes e séries de sucesso.',
       premiere: 'Brasileirão A e B ao vivo com o melhor do futebol.',
@@ -358,16 +358,17 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
   return (
     <div className="space-y-0 animate-fade-in">
       <SEO
-        title={`Planos de Internet Fibra Residencial de até 1 Giga em ${currentCity} | Nuvv Fibra`}
-        description={`Conheça os planos 100% fibra óptica da Nuvv em ${currentCity}. Ultravelocidade de até 1 Giga com Wi-Fi 6, TV ao vivo e streaming no App Watch, Telemedicina 24h, Max e Telecine.`}
+        title={`Planos de Internet Fibra com TV e Streaming em ${currentCity} | Nuvv`}
+        description={`Combos de internet 100% fibra óptica com Telecine, HBO Max, Premiere, TV ao vivo no Watch e Telemedicina 24h em ${currentCity}. Escolha entre 400 Mega e 800 Mega com Wi-Fi 6.`}
         keywords={[
           `planos de internet ${currentCity}`,
           `fibra residencial ${currentCity}`,
           `internet banda larga ${currentCity}`,
-          'internet 1 giga fibra',
           'internet com tv e streaming',
           'app watch tv fibra',
+          'plano 400 mega fibra',
           'plano 800 mega fibra',
+          'telecine hbo max internet',
           'telemedicina 24h internet',
         ]}
         canonicalUrl="https://nuvv.com.br/residencial"
@@ -391,22 +392,22 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                   <Zap className="w-3.5 h-3.5 text-nuvv-purple fill-current" />
                   <span>100% FIBRA ÓPTICA EM {currentCity.toUpperCase()}</span>
                 </span>
-                <span className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-emerald-500/40 text-emerald-800 text-xs font-bold shadow-2xs">
-                  <Wifi className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Wi-Fi 6 de Alta Performance</span>
+                <span className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-purple-300 text-nuvv-purple text-xs font-bold shadow-2xs">
+                  <Tv className="w-3.5 h-3.5 text-nuvv-purple" />
+                  <span>Pacotes de TV & Streaming Inclusos</span>
                 </span>
               </div>
 
               {/* Punchy Sales Headline */}
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-nuvv-dark tracking-tight leading-[1.15]">
-                A internet definitiva para a sua casa.{' '}
+                O entretenimento que sua família ama,{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-nuvv-purple via-indigo-600 to-purple-600">
-                  Sem limites.
+                  com fibra de verdade.
                 </span>
               </h1>
 
               <p className="text-sm sm:text-base text-gray-700 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                Ultra conexão de até <strong>800 Mega</strong> com estabilidade de ponta a ponta. Jogos sem lag, múltiplos dispositivos conectados em 4K e telemedicina 24h inclusa para toda a sua família.
+                Combos completos com <strong>Telecine, HBO Max, Premiere, Combate</strong> e até 100+ canais ao vivo no NuvvPlay (Watch), além de telemedicina 24h. Escolha a sua velocidade: <strong>400 Mega</strong> ou <strong>800 Mega com Wi-Fi 6</strong>.
               </p>
 
               {/* Selling Bullets */}
@@ -717,7 +718,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                                   Roteador Comodato
                                 </span>
                                 <span className="text-xs font-black text-slate-900 leading-tight">
-                                  {is800 ? 'Wi-Fi Plus Alta Capacidade' : 'Wi-Fi Incluso'}
+                                  {is800 ? 'Wi-Fi 6 Incluso' : 'Wi-Fi Incluso'}
                                 </span>
                               </div>
                             </div>
@@ -919,7 +920,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
 
                           {/* Vitrine de Logotipos Oficiais */}
                           <div className="space-y-2">
-                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-h-[44px]">
+                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-h-[48px] pb-1">
                               {visibleApps.map((item, idx) => {
                                 const isHboMax =
                                   item.name.toLowerCase().includes('max') ||
@@ -929,21 +930,30 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                                 return (
                                   <div
                                     key={idx}
-                                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 ${
-                                      isHboMax
-                                        ? 'border-2 hbo-border-blink bg-indigo-950/5'
-                                        : 'bg-slate-900/5'
-                                    }`}
-                                    title={item.name}
+                                    className={`relative flex flex-col items-center ${isHboMax ? 'z-10' : ''}`}
                                   >
-                                    <img
-                                      src={item.logo}
-                                      alt={item.name}
-                                      className="w-full h-full object-cover rounded-2xl"
-                                      onError={(e) => {
-                                        e.currentTarget.style.display = 'none';
-                                      }}
-                                    />
+                                    <div
+                                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden hover:scale-105 transition-all flex items-center justify-center flex-shrink-0 ${
+                                        isHboMax
+                                          ? 'border-2 border-indigo-600/90 bg-indigo-950/10 shadow-xs ring-2 ring-indigo-500/20'
+                                          : 'bg-slate-900/5'
+                                      }`}
+                                      title={isHboMax ? 'HBO Max Incluso (Plano Sem Anúncios)' : item.name}
+                                    >
+                                      <img
+                                        src={item.logo}
+                                        alt={item.name}
+                                        className="w-full h-full object-cover rounded-2xl"
+                                        onError={(e) => {
+                                          e.currentTarget.style.display = 'none';
+                                        }}
+                                      />
+                                    </div>
+                                    {isHboMax && (
+                                      <span className="absolute -bottom-1.5 whitespace-nowrap bg-indigo-950 text-indigo-100 font-black text-[7px] px-1 py-0.2 rounded-full uppercase tracking-tight border border-indigo-400/50 shadow-xs">
+                                        Sem anúncios
+                                      </span>
+                                    )}
                                   </div>
                                 );
                               })}
@@ -1006,10 +1016,12 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                               </div>
                             </div>
 
-                            {/* Lado Direito: Wi-Fi incluso e Instalação grátis */}
+                            {/* Lado Direito: Wi-Fi dinâmico e Instalação grátis */}
                             <div className="text-right space-y-0.5">
-                              <span className="inline-flex items-center text-[11px] font-bold text-slate-700 block">
-                                Wi-Fi incluso
+                              <span className={`inline-flex items-center text-[11px] font-bold block ${
+                                activeSpeedId === '800' ? 'text-nuvv-purple font-extrabold' : 'text-slate-700'
+                              }`}>
+                                {activeSpeedId === '800' ? 'Wi-Fi 6 incluso' : 'Wi-Fi incluso'}
                               </span>
                               <span className="inline-flex items-center text-[10px] font-extrabold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md">
                                 Instalação grátis
@@ -1042,8 +1054,7 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                                 ? 'bg-white/25 text-white'
                                 : 'bg-emerald-100 text-emerald-700 animate-pulse'
                                 }`}>
-                                <Sparkles className="w-2.5 h-2.5 inline animate-spin" style={{ animationDuration: '3s' }} />
-                                <span>+R$ 30</span>
+                                <span>+R$ 30 • Wi-Fi 6</span>
                               </span>
                             </button>
                           </div>
@@ -1646,33 +1657,46 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
 
                   {digitalApps.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {digitalApps.map((app) => (
-                        <div
-                          key={app.name}
-                          className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 flex items-center space-x-2.5 hover:border-purple-300/80 transition-all shadow-2xs"
-                        >
-                          <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 p-1 flex items-center justify-center flex-shrink-0">
-                            <img
-                              src={app.logo}
-                              alt={app.name}
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-baseline justify-between gap-1.5 flex-wrap">
-                              <h5 className="text-xs font-black text-slate-900 leading-tight">
-                                {app.name}
-                              </h5>
-                              <span className="text-[9px] font-bold text-nuvv-purple bg-purple-100/70 px-1.5 py-0.5 rounded whitespace-nowrap">
-                                {app.tag}
-                              </span>
+                      {digitalApps.map((app) => {
+                        const isNoAds = app.tag.toLowerCase().includes('sem anúncios') || app.name.toLowerCase().includes('max');
+                        return (
+                          <div
+                            key={app.name}
+                            className={`p-2.5 rounded-xl border flex items-center space-x-2.5 transition-all shadow-2xs ${
+                              isNoAds
+                                ? 'bg-indigo-50/70 border-indigo-300/80 ring-1 ring-indigo-200'
+                                : 'bg-slate-50 border-slate-200/90 hover:border-purple-300/80'
+                            }`}
+                          >
+                            <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 p-1 flex items-center justify-center flex-shrink-0">
+                              <img
+                                src={app.logo}
+                                alt={app.name}
+                                className="w-full h-full object-contain"
+                              />
                             </div>
-                            <p className="text-[10.5px] text-slate-500 leading-tight mt-0.5">
-                              {app.description}
-                            </p>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-baseline justify-between gap-1.5 flex-wrap">
+                                <h5 className="text-xs font-black text-slate-900 leading-tight">
+                                  {app.name}
+                                </h5>
+                                <span
+                                  className={`text-[9px] font-black px-1.5 py-0.5 rounded whitespace-nowrap ${
+                                    isNoAds
+                                      ? 'text-indigo-950 bg-indigo-100 border border-indigo-300'
+                                      : 'text-nuvv-purple bg-purple-100/70'
+                                  }`}
+                                >
+                                  {app.tag}
+                                </span>
+                              </div>
+                              <p className="text-[10.5px] text-slate-500 leading-tight mt-0.5">
+                                {app.description}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
 
