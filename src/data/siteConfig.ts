@@ -40,10 +40,10 @@ export const siteConfig: SiteConfig = {
   appGooglePlayUrl: "https://play.google.com/store/apps/details?id=br.com.nuvv.app",
   appAppleStoreUrl: "https://apps.apple.com/br/app/nuvv-fibra/id123456789",
   social: {
-    instagram: "https://instagram.com/nuvvfibra",
-    facebook: "https://facebook.com/nuvvfibra",
+    instagram: "https://instagram.com/nuvvbr",
+    facebook: "https://facebook.com/nuvvbr",
     linkedin: "https://linkedin.com/company/nuvv",
-    youtube: "https://youtube.com/@nuvvfibra",
-    x: "https://x.com/nuvvfibra",
+    youtube: "https://youtube.com/@nuvvbr",
+    x: "https://x.com/nuvvoficial",
   }
 };

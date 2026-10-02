@@ -34,9 +34,11 @@ export const organizationSchema = {
     name: `${c.name}, ${c.state}`,
   })),
   sameAs: [
-    'https://www.instagram.com/nuvvfibra',
-    'https://www.facebook.com/nuvvfibra',
-    'https://www.linkedin.com/company/nuvv-tecnologia',
+    'https://instagram.com/nuvvbr',
+    'https://facebook.com/nuvvbr',
+    'https://linkedin.com/company/nuvv',
+    'https://youtube.com/@nuvvbr',
+    'https://x.com/nuvvoficial',
   ],
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
