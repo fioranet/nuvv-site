@@ -75,9 +75,12 @@ export const TelephonyDetailSection: React.FC<TelephonyDetailSectionProps> = ({ 
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-base font-bold">{plan.name}</h4>
-                    <div className="flex items-baseline space-x-0.5">
+                    <div className="flex items-baseline space-x-1">
+                      <span className={`text-[11px] font-semibold ${plan.isPopular ? 'text-white/80' : 'text-gray-500'}`}>
+                        a partir
+                      </span>
                       <span className="text-2xl font-black">
-                        R$ {plan.price.toFixed(2).replace('.', ',')}
+                        R$ {plan.price.toFixed(2).replace('.', ',')}*
                       </span>
                       <span className={`text-xs ${plan.isPopular ? 'text-white/80' : 'text-gray-500'}`}>
                         /mês
@@ -110,6 +113,9 @@ export const TelephonyDetailSection: React.FC<TelephonyDetailSectionProps> = ({ 
                   >
                     Contratar Linha
                   </button>
+                  <p className={`text-[10px] text-center mt-2 font-medium ${plan.isPopular ? 'text-white/70' : 'text-gray-500'}`}>
+                    *Combinado com a contratação de um link de internet da Nuvv.
+                  </p>
                 </div>
               ))}
             </div>

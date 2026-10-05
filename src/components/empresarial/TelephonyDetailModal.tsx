@@ -18,7 +18,7 @@ export const TelephonyDetailModal: React.FC<TelephonyDetailModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Telefonia Corporativa & Linha Fixa Digital"
+      title="Telefonia Corporativa & Linha Fixa IP"
       subtitle="Comunicação de voz de alta fidelidade via Troncos SIP e Linhas Virtuais"
       maxWidth="3xl"
     >
@@ -45,9 +45,12 @@ export const TelephonyDetailModal: React.FC<TelephonyDetailModalProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="text-base font-bold">{plan.name}</h4>
-                  <div className="flex items-baseline space-x-0.5">
+                  <div className="flex items-baseline space-x-1">
+                    <span className={`text-[11px] font-semibold ${plan.isPopular ? 'text-white/80' : 'text-gray-500'}`}>
+                      a partir
+                    </span>
                     <span className="text-2xl font-black">
-                      R$ {plan.price.toFixed(2).replace('.', ',')}
+                      R$ {plan.price.toFixed(2).replace('.', ',')}*
                     </span>
                     <span className={`text-xs ${plan.isPopular ? 'text-white/80' : 'text-gray-500'}`}>
                       /mês
@@ -71,20 +74,25 @@ export const TelephonyDetailModal: React.FC<TelephonyDetailModalProps> = ({
                 </ul>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onSelectPlan(`Telefonia Fixa - ${plan.name}`);
-                }}
-                className={`w-full py-2.5 rounded-xl font-bold text-xs transition-all ${
-                  plan.isPopular
-                    ? 'bg-white text-nuvv-purple hover:bg-gray-100 shadow-sm'
-                    : 'bg-nuvv-purple text-white hover:bg-nuvv-purple-hover'
-                }`}
-              >
-                Contratar Linha
-              </button>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onSelectPlan(`Telefonia Fixa - ${plan.name}`);
+                  }}
+                  className={`w-full py-2.5 rounded-xl font-bold text-xs transition-all ${
+                    plan.isPopular
+                      ? 'bg-white text-nuvv-purple hover:bg-gray-100 shadow-sm'
+                      : 'bg-nuvv-purple text-white hover:bg-nuvv-purple-hover'
+                  }`}
+                >
+                  Contratar Linha
+                </button>
+                <p className={`text-[10px] text-center mt-2 font-medium ${plan.isPopular ? 'text-white/70' : 'text-gray-500'}`}>
+                  *Combinado com a contratação de um link de internet da Nuvv.
+                </p>
+              </div>
             </div>
           ))}
         </div>

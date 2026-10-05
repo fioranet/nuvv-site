@@ -414,7 +414,7 @@ export const Telefonia: React.FC<TelefoniaPageProps> = ({
         </div>
       </section>
 
-      {/* 4. PLANOS DE LINHA FIXA DIGITAL IP (Preservados Rigorosamente) */}
+      {/* 4. PLANOS DE LINHA FIXA IP */}
       <section className="py-16 sm:py-24 bg-white border-b border-gray-100" id="planos-telefonia">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
@@ -422,10 +422,10 @@ export const Telefonia: React.FC<TelefoniaPageProps> = ({
               Tabela de Planos de Linha Fixa
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-nuvv-dark mt-3">
-              Planos de Linha Fixa Digital IP
+              Planos de Linha Fixa IP
             </h2>
             <p className="text-xs sm:text-sm text-gray-500 mt-2">
-              Escolha entre o plano receptivo econômico para WhatsApp Business ou a linha ilimitada para falar com todo o Brasil.
+              Escolha entre a linha básica econômica com 50 minutos inclusos ou a linha ilimitada para falar com todo o Brasil.
             </p>
           </div>
 
@@ -452,12 +452,17 @@ export const Telefonia: React.FC<TelefoniaPageProps> = ({
                   <p className="text-xs text-gray-500 mb-4">{plan.subtitle}</p>
 
                   <div className="mb-6 pb-6 border-b border-gray-100">
-                    <span className="text-3xl sm:text-4xl font-black text-nuvv-dark">
-                      R$ {plan.price.toFixed(2).replace('.', ',')}
-                    </span>
-                    <span className="text-xs font-semibold text-gray-500 ml-1">
-                      /mês
-                    </span>
+                    <div className="flex items-baseline flex-wrap gap-x-1.5">
+                      <span className="text-sm font-bold text-gray-500">
+                        a partir
+                      </span>
+                      <span className="text-3xl sm:text-4xl font-black text-nuvv-dark">
+                        R$ {plan.price.toFixed(2).replace('.', ',')}*
+                      </span>
+                      <span className="text-xs font-semibold text-gray-500">
+                        /mês
+                      </span>
+                    </div>
                   </div>
 
                   <ul className="space-y-3.5 mb-8 text-xs sm:text-sm">
@@ -470,19 +475,24 @@ export const Telefonia: React.FC<TelefoniaPageProps> = ({
                   </ul>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    onOpenLeadModal(`Telefonia Fixa IP - ${plan.name} (R$ ${plan.price.toFixed(2).replace('.', ',')}/mês)`)
-                  }
-                  className={`w-full py-4 rounded-2xl font-bold text-sm shadow-md transition-all active:scale-98 cursor-pointer ${
-                    plan.isPopular
-                      ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/30'
-                      : 'bg-nuvv-dark text-white hover:bg-nuvv-dark/90 shadow-nuvv-dark/20'
-                  }`}
-                >
-                  Contratar {plan.name}
-                </button>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onOpenLeadModal(`Telefonia Fixa IP - ${plan.name} (A partir de R$ ${plan.price.toFixed(2).replace('.', ',')}/mês)`)
+                    }
+                    className={`w-full py-4 rounded-2xl font-bold text-sm shadow-md transition-all active:scale-98 cursor-pointer ${
+                      plan.isPopular
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/30'
+                        : 'bg-nuvv-dark text-white hover:bg-nuvv-dark/90 shadow-nuvv-dark/20'
+                    }`}
+                  >
+                    Contratar {plan.name}
+                  </button>
+                  <p className="text-[11px] text-gray-500 text-center mt-3 font-medium">
+                    *Combinado com a contratação de um link de internet da Nuvv.
+                  </p>
+                </div>
               </div>
             ))}
           </div>
