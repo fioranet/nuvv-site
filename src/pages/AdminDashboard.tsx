@@ -45,12 +45,15 @@ export const AdminDashboard: React.FC = () => {
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'analytics' | 'files' | 'contacts' | 'blog' | 'newsletter' | 'leads' | 'portal_users' | 'smtp'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'viability' | 'files' | 'contacts' | 'blog' | 'newsletter' | 'leads' | 'portal_users' | 'smtp'>('analytics');
   const [loading, setLoading] = useState(false);
 
   const [metrics, setMetrics] = useState<AdminMetricsResponse | null>(null);
   const [newsletterData, setNewsletterData] = useState<any>(null);
   const [leadsData, setLeadsData] = useState<any[]>([]);
+  const [viabilityData, setViabilityData] = useState<any>(null);
+  const [viabilityStatusFilter, setViabilityStatusFilter] = useState<string>('all');
+  const [viabilitySearch, setViabilitySearch] = useState<string>('');
   const [healthStatus, setHealthStatus] = useState<any>(null);
 
   // Newsletter Broadcast Composer
@@ -94,18 +97,20 @@ export const AdminDashboard: React.FC = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const [healthRes, metricsRes, newsRes, leadsRes, smtpRes] = await Promise.allSettled([
+      const [healthRes, metricsRes, newsRes, leadsRes, smtpRes, viabilityRes] = await Promise.allSettled([
         apiService.getHealth(),
         apiService.getMetrics(),
         apiService.getNewsletter(),
         apiService.getLeads(),
         apiService.getSmtpConfig(),
+        apiService.getViability(),
       ]);
 
       if (healthRes.status === 'fulfilled') setHealthStatus(healthRes.value);
       if (metricsRes.status === 'fulfilled' && metricsRes.value.success) setMetrics(metricsRes.value.data);
       if (newsRes.status === 'fulfilled' && newsRes.value.success) setNewsletterData(newsRes.value.data);
       if (leadsRes.status === 'fulfilled' && leadsRes.value.success) setLeadsData(leadsRes.value.data);
+      if (viabilityRes.status === 'fulfilled' && viabilityRes.value.success) setViabilityData(viabilityRes.value.data);
       if (smtpRes.status === 'fulfilled' && smtpRes.value.success) {
         setSmtpConfig((prev) => ({ ...prev, ...smtpRes.value.data }));
       }
@@ -281,11 +286,12 @@ export const AdminDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-2 overflow-x-auto py-2 border-t border-slate-800/60 text-xs font-bold custom-scrollbar">
           {[
             { id: 'analytics', label: 'Visão Geral & Analytics', icon: BarChart3 },
+            { id: 'viability', label: '📍 Consultas de Viabilidade', icon: MapPin, badge: metrics?.kpis?.totalViability || viabilityData?.total },
+            { id: 'leads', label: 'Leads Comerciais', icon: Users, badge: metrics?.kpis?.totalLeads },
             { id: 'files', label: '📁 Arquivos & Docs (FTP)', icon: HardDrive },
             { id: 'contacts', label: '📞 Contatos & Ramais', icon: PhoneCall },
             { id: 'blog', label: 'Blog & Artigos', icon: BookOpen },
             { id: 'newsletter', label: 'Nuvv News & Disparador', icon: Mail, badge: metrics?.kpis?.totalSubscribers },
-            { id: 'leads', label: 'Leads Comerciais', icon: Users, badge: metrics?.kpis?.totalLeads },
             { id: 'portal_users', label: '👥 Usuários do Portal', icon: Users },
             { id: 'smtp', label: 'Configurações SMTP', icon: Zap },
           ].map((tab) => {
@@ -456,6 +462,152 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Nova Seção: Origens de Tráfego ("De Onde Vieram?") & Navegadores */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Origens de Tráfego */}
+              <div className="lg:col-span-7 p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <h3 className="text-sm font-black text-white flex items-center space-x-2">
+                    <Globe className="w-4 h-4 text-emerald-400" />
+                    <span>De Onde Vieram? (Origens de Tráfego)</span>
+                  </h3>
+                  <span className="text-[11px] text-gray-400">Referrers & Canais Reais</span>
+                </div>
+
+                <div className="space-y-3">
+                  {metrics?.trafficSources && metrics.trafficSources.length > 0 ? (
+                    metrics.trafficSources.map((src, idx) => {
+                      const maxVal = metrics.trafficSources![0]?.count || 1;
+                      const pct = Math.round((src.count / maxVal) * 100);
+                      return (
+                        <div key={idx} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold text-gray-200">{src.source_name}</span>
+                            <span className="font-mono text-emerald-400 font-bold">{src.count} visitas</span>
+                          </div>
+                          <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="py-6 text-center text-xs text-gray-500">
+                      Nenhuma visita externa registrada ainda.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Navegadores */}
+              <div className="lg:col-span-5 p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <h3 className="text-sm font-black text-white flex items-center space-x-2">
+                    <Monitor className="w-4 h-4 text-cyan-400" />
+                    <span>Navegadores Reais</span>
+                  </h3>
+                  <span className="text-[11px] text-gray-400">Distribuição</span>
+                </div>
+
+                <div className="space-y-2">
+                  {metrics?.browsers && metrics.browsers.length > 0 ? (
+                    metrics.browsers.map((b, idx) => (
+                      <div key={idx} className="flex items-center justify-between text-xs py-1.5 border-b border-slate-800/40 last:border-none">
+                        <span className="text-gray-300 font-medium">{b.name}</span>
+                        <span className="font-bold text-white bg-slate-800 px-2.5 py-0.5 rounded-lg">
+                          {b.count} acessos
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-6 text-center text-xs text-gray-500">
+                      Aguardando primeiros registros de navegador.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Tabela de Últimos Acessos ao Site em Tempo Real */}
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+              <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-black text-white flex items-center space-x-2">
+                    <Clock className="w-4 h-4 text-emerald-400" />
+                    <span>Últimos Acessos ao Site em Tempo Real</span>
+                  </h3>
+                  <span className="text-xs text-gray-400">
+                    Registros 100% reais gravados no SQLite com rota, origem, navegador e cidade
+                  </span>
+                </div>
+                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                  Ao Vivo
+                </span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-950 text-gray-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
+                    <tr>
+                      <th className="py-3 px-4 font-bold">Data/Hora</th>
+                      <th className="py-3 px-4 font-bold">Página Acessada</th>
+                      <th className="py-3 px-4 font-bold">Cidade</th>
+                      <th className="py-3 px-4 font-bold">Dispositivo & SO</th>
+                      <th className="py-3 px-4 font-bold">Navegador</th>
+                      <th className="py-3 px-4 font-bold">Origem (Referrer / Canal)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {metrics?.recentPageviews && metrics.recentPageviews.length > 0 ? (
+                      metrics.recentPageviews.map((pv) => (
+                        <tr key={pv.id} className="hover:bg-slate-850/50">
+                          <td className="py-3 px-4 text-gray-400 font-mono whitespace-nowrap">
+                            {new Date(pv.created_at).toLocaleString('pt-BR')}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="font-mono text-emerald-400 font-bold block truncate max-w-[200px]" title={pv.path}>
+                              {pv.path}
+                            </span>
+                            {pv.title && <span className="text-gray-400 text-[11px] block truncate max-w-[200px]">{pv.title}</span>}
+                          </td>
+                          <td className="py-3 px-4">
+                            {pv.city ? (
+                              <span className="text-white font-medium bg-slate-800/80 px-2 py-0.5 rounded text-[11px]">
+                                {pv.city}
+                              </span>
+                            ) : (
+                              <span className="text-gray-500 text-[11px] italic">Não informada</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 text-gray-300">
+                            <span className="capitalize">{pv.device || 'desktop'}</span>
+                            {pv.os && <span className="text-gray-400 text-[11px] block">{pv.os}</span>}
+                          </td>
+                          <td className="py-3 px-4 text-gray-200">
+                            {pv.browser || 'Chrome/Navegador'}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-gray-300 font-mono text-[11px] truncate max-w-[220px] block" title={pv.referrer || 'Acesso Direto'}>
+                              {pv.referrer ? pv.referrer : 'Acesso Direto'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="text-center py-8 text-gray-500">
+                          Nenhum acesso registrado ainda.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
 
@@ -624,18 +776,291 @@ export const AdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 4: LEADS COMERCIAIS */}
+        {/* TAB 2: CONSULTAS DE VIABILIDADE (DADOS 100% REAIS) */}
+        {activeTab === 'viability' && (
+          <div className="space-y-6 animate-fade-in">
+            {/* KPI Cards de Viabilidade */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
+                  <span>Total de Consultas</span>
+                  <MapPin className="w-4 h-4 text-emerald-400" />
+                </div>
+                <div className="text-3xl font-black text-white">
+                  {viabilityData?.total || metrics?.kpis?.totalViability || 0}
+                </div>
+                <span className="text-[11px] text-gray-400 block">Endereços checados pelos clientes</span>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
+                  <span>Com Viabilidade (Coberto)</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                </div>
+                <div className="text-3xl font-black text-emerald-400">
+                  {viabilityData?.withFeasibility || 0}
+                </div>
+                <span className="text-[11px] text-gray-400 block">Clientes aptos para instalação imediata</span>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
+                  <span>Em Análise Técnica</span>
+                  <Clock className="w-4 h-4 text-amber-400" />
+                </div>
+                <div className="text-3xl font-black text-amber-400">
+                  {viabilityData?.emAnalise || 0}
+                </div>
+                <span className="text-[11px] text-gray-400 block">Aguardando validação de rota/POP</span>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
+                  <span>Sem Cobertura (Demanda)</span>
+                  <XCircle className="w-4 h-4 text-rose-400" />
+                </div>
+                <div className="text-3xl font-black text-rose-400">
+                  {viabilityData?.withoutFeasibility || 0}
+                </div>
+                <span className="text-[11px] text-gray-400 block">Oportunidade para expansão de rede</span>
+              </div>
+            </div>
+
+            {/* Demanda Reprimida por Bairro (se houver) */}
+            {viabilityData?.unmetNeighborhoods && viabilityData.unmetNeighborhoods.length > 0 && (
+              <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                  <h3 className="text-xs font-black text-white flex items-center space-x-2">
+                    <TrendingUp className="w-4 h-4 text-amber-400" />
+                    <span>Demanda Reprimida por Bairro (Clientes que procuraram sem cobertura)</span>
+                  </h3>
+                  <span className="text-[11px] text-gray-400">Top regiões para expansão</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {viabilityData.unmetNeighborhoods.map((unm: any, i: number) => (
+                    <div key={i} className="p-3 bg-slate-950 rounded-2xl border border-slate-800/80">
+                      <span className="text-xs font-bold text-white block truncate">{unm.neighborhood}</span>
+                      <span className="text-[11px] text-gray-400 block truncate">{unm.city || 'Região'}</span>
+                      <span className="text-emerald-400 font-mono font-bold text-xs mt-1 block">
+                        {unm.demand_count} pedidos
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Tabela de Consultas de Viabilidade com Filtros */}
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+              <div className="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-sm font-black text-white flex items-center space-x-2">
+                    <MapPin className="w-4 h-4 text-emerald-400" />
+                    <span>Consultas de Viabilidade Realizadas</span>
+                  </h3>
+                  <span className="text-xs text-gray-400">
+                    Histórico de endereços, contatos e status de cobertura gravados no SQLite
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <a
+                    href="/api/admin/export/viability"
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-xs font-bold flex items-center space-x-1.5 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Exportar CSV</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Filtro por Status e Busca */}
+              <div className="p-4 bg-slate-950/60 border-b border-slate-800 flex flex-wrap items-center gap-3">
+                <div className="flex items-center space-x-1.5 text-xs font-bold">
+                  <span className="text-gray-400 text-[11px]">Filtrar:</span>
+                  {(['all', 'VIAVEL', 'EM_ANALISE', 'INVIAVEL'] as const).map((st) => (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => setViabilityStatusFilter(st)}
+                      className={`px-3 py-1 rounded-lg text-xs transition-colors ${
+                        viabilityStatusFilter === st
+                          ? 'bg-emerald-500 text-slate-950 font-black'
+                          : 'bg-slate-800 text-gray-300 hover:bg-slate-700'
+                      }`}
+                    >
+                      {st === 'all'
+                        ? 'Todos'
+                        : st === 'VIAVEL'
+                        ? 'Viáveis'
+                        : st === 'EM_ANALISE'
+                        ? 'Em Análise'
+                        : 'Inviáveis'}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex-1 min-w-[200px]">
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
+                    <input
+                      type="text"
+                      placeholder="Buscar por nome, telefone, rua, bairro ou CEP..."
+                      value={viabilitySearch}
+                      onChange={(e) => setViabilitySearch(e.target.value)}
+                      className="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-gray-500 outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-950 text-gray-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
+                    <tr>
+                      <th className="py-3 px-4 font-bold">Data/Hora</th>
+                      <th className="py-3 px-4 font-bold">Cliente / Contato</th>
+                      <th className="py-3 px-4 font-bold">Endereço Consultado</th>
+                      <th className="py-3 px-4 font-bold">Tipo</th>
+                      <th className="py-3 px-4 font-bold">Status Viabilidade</th>
+                      <th className="py-3 px-4 font-bold">Plano / Observações</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {(() => {
+                      const list = (viabilityData?.queries || []).filter((q: any) => {
+                        if (viabilityStatusFilter === 'VIAVEL') {
+                          if (q.status !== 'VIAVEL' && q.has_feasibility !== 1) return false;
+                        } else if (viabilityStatusFilter === 'EM_ANALISE') {
+                          if (q.status !== 'EM_ANALISE') return false;
+                        } else if (viabilityStatusFilter === 'INVIAVEL') {
+                          if (q.status === 'VIAVEL' || q.status === 'EM_ANALISE' || q.has_feasibility === 1) return false;
+                        }
+                        if (viabilitySearch.trim()) {
+                          const term = viabilitySearch.toLowerCase();
+                          const matches =
+                            (q.name || '').toLowerCase().includes(term) ||
+                            (q.phone || '').toLowerCase().includes(term) ||
+                            (q.street || '').toLowerCase().includes(term) ||
+                            (q.neighborhood || '').toLowerCase().includes(term) ||
+                            (q.city || '').toLowerCase().includes(term) ||
+                            (q.cep || '').toLowerCase().includes(term);
+                          if (!matches) return false;
+                        }
+                        return true;
+                      });
+
+                      if (list.length === 0) {
+                        return (
+                          <tr>
+                            <td colSpan={6} className="text-center py-8 text-gray-500">
+                              Nenhuma consulta encontrada para os filtros selecionados.
+                            </td>
+                          </tr>
+                        );
+                      }
+
+                      return list.map((q: any) => {
+                        const isViable = q.status === 'VIAVEL' || q.has_feasibility === 1;
+                        const isAnalise = q.status === 'EM_ANALISE';
+                        return (
+                          <tr key={q.id} className="hover:bg-slate-850/50">
+                            <td className="py-3 px-4 text-gray-400 font-mono whitespace-nowrap">
+                              {new Date(q.created_at).toLocaleString('pt-BR')}
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="font-bold text-white block">{q.name || 'Anônimo'}</span>
+                              {q.phone ? (
+                                <a
+                                  href={`https://wa.me/55${q.phone.replace(/\D/g, '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 font-mono text-[11px]"
+                                  title="Iniciar conversa no WhatsApp"
+                                >
+                                  <span>{q.phone}</span>
+                                  <PhoneCall className="w-3 h-3 text-emerald-500" />
+                                </a>
+                              ) : (
+                                <span className="text-gray-500 text-[11px]">—</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="text-gray-200 font-medium block">
+                                {[q.street, q.number].filter(Boolean).join(', ') || 'Rua não informada'}
+                              </span>
+                              <span className="text-gray-400 text-[11px] block">
+                                {[q.neighborhood, q.city, q.state].filter(Boolean).join(' - ')}
+                              </span>
+                              {q.cep && (
+                                <span className="text-gray-500 font-mono text-[10px] block">
+                                  CEP: {q.cep}
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 uppercase text-[10px] font-bold text-gray-300">
+                              <span className="bg-slate-800 px-2 py-0.5 rounded">
+                                {q.service_type || 'Residencial'}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              {isViable ? (
+                                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950 px-2.5 py-0.5 rounded border border-emerald-500/30 inline-flex items-center space-x-1">
+                                  <CheckCircle2 className="w-3 h-3 mr-1" /> Viável
+                                </span>
+                              ) : isAnalise ? (
+                                <span className="text-[10px] font-bold text-amber-400 bg-amber-950 px-2.5 py-0.5 rounded border border-amber-500/30 inline-flex items-center space-x-1">
+                                  <Clock className="w-3 h-3 mr-1" /> Em Análise
+                                </span>
+                              ) : (
+                                <span className="text-[10px] font-bold text-rose-400 bg-rose-950 px-2.5 py-0.5 rounded border border-rose-500/30 inline-flex items-center space-x-1">
+                                  <XCircle className="w-3 h-3 mr-1" /> Sem Cobertura
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-gray-300 text-[11px]">
+                              {q.plan_interested && (
+                                <span className="font-bold text-emerald-300 block mb-0.5">
+                                  {q.plan_interested}
+                                </span>
+                              )}
+                              {q.notes ? <span className="text-gray-400 block">{q.notes}</span> : !q.plan_interested ? '—' : null}
+                            </td>
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: LEADS COMERCIAIS */}
         {activeTab === 'leads' && (
           <div className="space-y-6 animate-fade-in">
             <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
               <div className="p-5 border-b border-slate-800 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-black text-white">Leads e Propostas Solicitadas</h3>
+                  <h3 className="text-sm font-black text-white flex items-center space-x-2">
+                    <Users className="w-4 h-4 text-emerald-400" />
+                    <span>Leads e Propostas Solicitadas</span>
+                  </h3>
                   <span className="text-xs text-gray-400">Contatos recebidos pelos modais B2B/B2C</span>
                 </div>
-                <span className="text-xs font-bold text-emerald-400 bg-emerald-950 px-3 py-1 rounded-full border border-emerald-500/30">
-                  Total: {leadsData.length}
-                </span>
+                <div className="flex items-center space-x-3">
+                  <a
+                    href="/api/admin/export/leads"
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-xs font-bold flex items-center space-x-1.5 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Exportar CSV</span>
+                  </a>
+                  <span className="text-xs font-bold text-emerald-400 bg-emerald-950 px-3 py-1 rounded-full border border-emerald-500/30">
+                    Total: {leadsData.length}
+                  </span>
+                </div>
               </div>
 
               <div className="overflow-x-auto">
@@ -647,27 +1072,47 @@ export const AdminDashboard: React.FC = () => {
                       <th className="py-3 px-4 font-bold">Nome & Empresa</th>
                       <th className="py-3 px-4 font-bold">Telefone / WhatsApp</th>
                       <th className="py-3 px-4 font-bold">E-mail</th>
+                      <th className="py-3 px-4 font-bold">Detalhes / Localização / Plano</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
                     {leadsData.length > 0 ? (
                       leadsData.map((lead: any) => (
                         <tr key={lead.id} className="hover:bg-slate-850/50">
-                          <td className="py-3 px-4 text-gray-400 font-mono">
+                          <td className="py-3 px-4 text-gray-400 font-mono whitespace-nowrap">
                             {new Date(lead.created_at).toLocaleString('pt-BR')}
                           </td>
                           <td className="py-3 px-4 font-bold text-emerald-400">{lead.source_page}</td>
                           <td className="py-3 px-4">
                             <span className="font-bold text-white block">{lead.name || '—'}</span>
-                            {lead.company && <span className="text-gray-400 text-[11px]">{lead.company}</span>}
+                            {lead.company && <span className="text-gray-400 text-[11px] block">{lead.company}</span>}
+                            {lead.cnpj && <span className="text-gray-500 font-mono text-[10px] block">CNPJ: {lead.cnpj}</span>}
                           </td>
-                          <td className="py-3 px-4 text-gray-200 font-mono">{lead.phone || '—'}</td>
+                          <td className="py-3 px-4 text-gray-200 font-mono">
+                            {lead.phone ? (
+                              <a
+                                href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 font-bold"
+                                title="Iniciar conversa no WhatsApp"
+                              >
+                                <span>{lead.phone}</span>
+                                <PhoneCall className="w-3 h-3 text-emerald-500" />
+                              </a>
+                            ) : (
+                              '—'
+                            )}
+                          </td>
                           <td className="py-3 px-4 text-gray-300">{lead.email || '—'}</td>
+                          <td className="py-3 px-4 text-gray-300 text-[11px] max-w-[280px]">
+                            {lead.details || '—'}
+                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={5} className="text-center py-8 text-gray-500">
+                        <td colSpan={6} className="text-center py-8 text-gray-500">
                           Nenhum lead comercial registrado ainda.
                         </td>
                       </tr>

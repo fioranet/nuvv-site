@@ -103,12 +103,25 @@ export interface AdminMetricsResponse {
   };
   topPages: Array<{ path: string; views: number }>;
   devices: Array<{ device: string; count: number }>;
+  browsers?: Array<{ name: string; count: number }>;
   topCities: Array<{ city: string; count: number }>;
+  trafficSources?: Array<{ source_name: string; count: number }>;
+  recentPageviews?: Array<{
+    id: number;
+    path: string;
+    title: string;
+    referrer: string;
+    city?: string;
+    device: string;
+    browser: string;
+    os: string;
+    created_at: string;
+  }>;
   last7Days: Array<{ date: string; views: number }>;
 }
 
 export const apiService = {
-  // 1. Page View Tracking
+  // 1. Page View Tracking Real
   trackPageView: async (path: string, title?: string, city?: string) => {
     try {
       let sessionId = sessionStorage.getItem('nuvv_session_id');
@@ -117,6 +130,26 @@ export const apiService = {
         sessionStorage.setItem('nuvv_session_id', sessionId);
       }
 
+      // Capturar referrer original inicial da sessão (para preservar ao navegar no SPA)
+      let initialReferrer = sessionStorage.getItem('nuvv_initial_referrer');
+      if (!initialReferrer) {
+        initialReferrer = document.referrer || '';
+        sessionStorage.setItem('nuvv_initial_referrer', initialReferrer);
+      }
+
+      // Capturar parâmetros UTM da URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const utm_source = urlParams.get('utm_source') || sessionStorage.getItem('nuvv_utm_source') || undefined;
+      const utm_medium = urlParams.get('utm_medium') || sessionStorage.getItem('nuvv_utm_medium') || undefined;
+      const utm_campaign = urlParams.get('utm_campaign') || sessionStorage.getItem('nuvv_utm_campaign') || undefined;
+      if (urlParams.get('utm_source')) sessionStorage.setItem('nuvv_utm_source', urlParams.get('utm_source')!);
+      if (urlParams.get('utm_medium')) sessionStorage.setItem('nuvv_utm_medium', urlParams.get('utm_medium')!);
+      if (urlParams.get('utm_campaign')) sessionStorage.setItem('nuvv_utm_campaign', urlParams.get('utm_campaign')!);
+
+      // Não forçar 'Suzano' como padrão falso! Se não houver cidade explicitamente selecionada, passar vazio.
+      const savedCity = localStorage.getItem('nuvv_selected_city');
+      const realCity = city && city !== 'Suzano' ? city : (savedCity || undefined);
+
       await fetch('/api/track/pageview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -124,8 +157,11 @@ export const apiService = {
           session_id: sessionId,
           path,
           title: title || document.title,
-          referrer: document.referrer || '',
-          city: city || 'Suzano',
+          referrer: document.referrer || initialReferrer,
+          city: realCity,
+          utm_source,
+          utm_medium,
+          utm_campaign,
         }),
       });
     } catch {
@@ -244,7 +280,7 @@ export const apiService = {
     return await res.json();
   },
 
-  getViability: async (filters: { status?: string; city?: string; limit?: number }) => {
+  getViability: async (filters: { status?: string; city?: string; limit?: number } = {}) => {
     const query = new URLSearchParams();
     if (filters.status) query.append('status', filters.status);
     if (filters.city) query.append('city', filters.city);

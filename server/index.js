@@ -120,24 +120,67 @@ app.get('/api/health', (req, res) => {
 // -------------------------------------------------------------
 app.post('/api/track/pageview', (req, res) => {
   try {
-    const { session_id, path, title, referrer, city, device } = req.body;
+    const {
+      session_id,
+      path,
+      title,
+      referrer,
+      city,
+      device,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+    } = req.body;
     const userAgent = req.headers['user-agent'] || '';
 
-    // Extract device if not provided
+    // Extrair IP real do visitante
+    const forwarded = req.headers['x-forwarded-for'];
+    const ipAddress = (forwarded ? forwarded.split(',')[0].trim() : req.socket.remoteAddress) || '';
+
+    // Extrair dispositivo real
     const isMobile = /mobile|iphone|ipod|android/i.test(userAgent);
-    const resolvedDevice = device || (isMobile ? 'mobile' : 'desktop');
+    const isTablet = /tablet|ipad/i.test(userAgent);
+    const resolvedDevice = device || (isTablet ? 'tablet' : isMobile ? 'mobile' : 'desktop');
+
+    // Extrair Navegador
+    let browser = 'Outro';
+    if (/edg/i.test(userAgent)) browser = 'Edge';
+    else if (/chrome|crios/i.test(userAgent)) browser = 'Chrome';
+    else if (/safari/i.test(userAgent) && !/chrome/i.test(userAgent)) browser = 'Safari';
+    else if (/firefox|fxios/i.test(userAgent)) browser = 'Firefox';
+    else if (/opera|opr/i.test(userAgent)) browser = 'Opera';
+
+    // Extrair Sistema Operacional
+    let os = 'Outro';
+    if (/windows/i.test(userAgent)) os = 'Windows';
+    else if (/android/i.test(userAgent)) os = 'Android';
+    else if (/iphone|ipad|ipod/i.test(userAgent)) os = 'iOS';
+    else if (/mac os|macintosh/i.test(userAgent)) os = 'macOS';
+    else if (/linux/i.test(userAgent)) os = 'Linux';
+
+    // Cidade real apenas se informada (não simular 'Suzano' como default)
+    const cleanCity = city && typeof city === 'string' && city.trim() ? city.trim() : null;
 
     db.prepare(`
-      INSERT INTO page_views (session_id, path, title, referrer, city, device, user_agent)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO page_views (
+        session_id, path, title, referrer, city, device,
+        browser, os, ip_address, utm_source, utm_medium, utm_campaign, user_agent
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       session_id || 'anonymous',
       path || '/',
       title || 'Nuvv',
       referrer || '',
-      city || 'Suzano',
+      cleanCity,
       resolvedDevice,
-      userAgent.slice(0, 150)
+      browser,
+      os,
+      ipAddress,
+      utm_source || null,
+      utm_medium || null,
+      utm_campaign || null,
+      userAgent.slice(0, 200)
     );
 
     res.json({ success: true });
@@ -147,7 +190,7 @@ app.post('/api/track/pageview', (req, res) => {
 });
 
 // -------------------------------------------------------------
-// 3. ADMIN ANALYTICS METRICS
+// 3. ADMIN ANALYTICS METRICS (DADOS 100% REAIS)
 // -------------------------------------------------------------
 app.get('/api/admin/metrics', (req, res) => {
   try {
@@ -165,7 +208,7 @@ app.get('/api/admin/metrics', (req, res) => {
       FROM page_views
       GROUP BY path
       ORDER BY views DESC
-      LIMIT 8
+      LIMIT 10
     `).all();
 
     // Device breakdown
@@ -175,14 +218,52 @@ app.get('/api/admin/metrics', (req, res) => {
       GROUP BY device
     `).all();
 
-    // Top Cities
+    // Browsers breakdown
+    const browsers = db.prepare(`
+      SELECT COALESCE(browser, 'Outro') as name, COUNT(*) as count
+      FROM page_views
+      GROUP BY name
+      ORDER BY count DESC
+      LIMIT 6
+    `).all();
+
+    // Top Cities (apenas cidades reais com acessos)
     const topCities = db.prepare(`
       SELECT city, COUNT(*) as count
       FROM page_views
       WHERE city IS NOT NULL AND city != ''
       GROUP BY city
       ORDER BY count DESC
-      LIMIT 6
+      LIMIT 8
+    `).all();
+
+    // Origens de Tráfego Reais (Referrers & Campanhas)
+    const trafficSources = db.prepare(`
+      SELECT 
+        CASE 
+          WHEN utm_source IS NOT NULL AND utm_source != '' THEN 'Campanha: ' || utm_source
+          WHEN referrer LIKE '%google%' THEN 'Google (Busca)'
+          WHEN referrer LIKE '%instagram%' THEN 'Instagram'
+          WHEN referrer LIKE '%facebook%' THEN 'Facebook'
+          WHEN referrer LIKE '%whatsapp%' OR referrer LIKE '%wa.me%' THEN 'WhatsApp'
+          WHEN referrer LIKE '%linkedin%' THEN 'LinkedIn'
+          WHEN referrer LIKE '%t.co%' OR referrer LIKE '%twitter%' OR referrer LIKE '%x.com%' THEN 'X / Twitter'
+          WHEN referrer IS NULL OR referrer = '' OR referrer = '/' THEN 'Acesso Direto / Favoritos'
+          ELSE referrer
+        END as source_name,
+        COUNT(*) as count
+      FROM page_views
+      GROUP BY source_name
+      ORDER BY count DESC
+      LIMIT 8
+    `).all();
+
+    // Últimos 15 acessos reais em tempo real
+    const recentPageviews = db.prepare(`
+      SELECT id, path, title, referrer, city, device, browser, os, created_at
+      FROM page_views
+      ORDER BY id DESC
+      LIMIT 15
     `).all();
 
     // 7 Days Daily Pageviews Trend
@@ -213,7 +294,10 @@ app.get('/api/admin/metrics', (req, res) => {
         },
         topPages,
         devices,
+        browsers,
         topCities,
+        trafficSources,
+        recentPageviews,
         last7Days,
       },
     });

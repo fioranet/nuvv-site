@@ -11,7 +11,7 @@ export function usePageViewTracker(currentCity?: string) {
       apiService.trackPageView(
         location.pathname + location.search,
         document.title,
-        currentCity || 'Suzano'
+        currentCity
       );
     }, 200);
 

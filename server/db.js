@@ -168,6 +168,26 @@ export function initDatabase() {
     console.warn('⚠️ Could not run viability_queries migration:', migErr.message);
   }
 
+  // Migration: Ensure page_views has enriched tracking columns
+  try {
+    const existingPVCols = db.prepare("PRAGMA table_info(page_views)").all().map(c => c.name);
+    const pvColumnsToAdd = [
+      { name: 'utm_source', type: 'TEXT' },
+      { name: 'utm_medium', type: 'TEXT' },
+      { name: 'utm_campaign', type: 'TEXT' },
+      { name: 'browser', type: 'TEXT' },
+      { name: 'os', type: 'TEXT' },
+      { name: 'ip_address', type: 'TEXT' },
+    ];
+    for (const col of pvColumnsToAdd) {
+      if (!existingPVCols.includes(col.name)) {
+        db.prepare(`ALTER TABLE page_views ADD COLUMN ${col.name} ${col.type}`).run();
+      }
+    }
+  } catch (pvMigErr) {
+    console.warn('⚠️ Could not run page_views migration:', pvMigErr.message);
+  }
+
   // Seed default viability layer settings
   try {
     db.prepare(`
