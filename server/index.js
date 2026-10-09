@@ -121,7 +121,6 @@ app.get('/api/health', (req, res) => {
 app.post('/api/track/pageview', (req, res) => {
   try {
     const {
-      session_id,
       visitor_id,
       session_id,
       path,
