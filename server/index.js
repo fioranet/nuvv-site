@@ -190,54 +190,91 @@ app.post('/api/track/pageview', (req, res) => {
 });
 
 // -------------------------------------------------------------
-// 3. ADMIN ANALYTICS METRICS (DADOS 100% REAIS)
+// 3. ADMIN ANALYTICS METRICS (DADOS 100% REAIS COM FILTRO TEMPORAL)
 // -------------------------------------------------------------
 app.get('/api/admin/metrics', (req, res) => {
   try {
-    // Total & Today's Pageviews
-    const totalPageviews = db.prepare('SELECT COUNT(*) as count FROM page_views').get().count;
-    const todayPageviews = db.prepare("SELECT COUNT(*) as count FROM page_views WHERE date(created_at) = date('now')").get().count;
-    
-    // Total Unique Visitors (by session)
-    const uniqueVisitors = db.prepare('SELECT COUNT(DISTINCT session_id) as count FROM page_views').get().count;
-    const todayUniqueVisitors = db.prepare("SELECT COUNT(DISTINCT session_id) as count FROM page_views WHERE date(created_at) = date('now')").get().count;
+    const { period = 'month', startDate, endDate } = req.query;
 
-    // Top Pages
+    let dateFilterClause = '';
+    let dateParams = [];
+    let periodLabel = 'Últimos 30 dias (Mês)';
+
+    if (period === 'today') {
+      dateFilterClause = " AND date(created_at) = date('now')";
+      periodLabel = 'Hoje (Dia Atual)';
+    } else if (period === 'week') {
+      dateFilterClause = " AND created_at >= datetime('now', '-7 days')";
+      periodLabel = 'Últimos 7 dias (Semana)';
+    } else if (period === 'month') {
+      dateFilterClause = " AND created_at >= datetime('now', '-30 days')";
+      periodLabel = 'Últimos 30 dias (Mês)';
+    } else if (period === 'custom' && startDate && endDate) {
+      dateFilterClause = ' AND created_at >= ? AND created_at <= ?';
+      dateParams = [`${startDate} 00:00:00`, `${endDate} 23:59:59`];
+      periodLabel = `Período: ${startDate} até ${endDate}`;
+    } else if (period === 'all') {
+      dateFilterClause = '';
+      periodLabel = 'Desde Sempre (Todo o Período)';
+    } else {
+      dateFilterClause = " AND created_at >= datetime('now', '-30 days')";
+      periodLabel = 'Últimos 30 dias (Mês)';
+    }
+
+    // Totais vitalícios (Desde sempre para referência)
+    const lifetimePageviews = db.prepare('SELECT COUNT(*) as count FROM page_views').get().count;
+    const lifetimeUniqueVisitors = db.prepare('SELECT COUNT(DISTINCT session_id) as count FROM page_views').get().count;
+    const lifetimeViability = db.prepare('SELECT COUNT(*) as count FROM viability_queries').get().count;
+    const lifetimeLeads = db.prepare('SELECT COUNT(*) as count FROM commercial_leads').get().count;
+    const totalSubscribers = db.prepare("SELECT COUNT(*) as count FROM newsletter_subscribers WHERE status = 'active'").get().count;
+
+    // Métricas no Período Selecionado
+    const periodPageviews = db.prepare(`SELECT COUNT(*) as count FROM page_views WHERE 1=1 ${dateFilterClause}`).get(...dateParams).count;
+    const periodUniqueVisitors = db.prepare(`SELECT COUNT(DISTINCT session_id) as count FROM page_views WHERE 1=1 ${dateFilterClause}`).get(...dateParams).count;
+    
+    // Viabilidade e Leads no período
+    const periodViability = db.prepare(`SELECT COUNT(*) as count FROM viability_queries WHERE 1=1 ${dateFilterClause}`).get(...dateParams).count;
+    const periodLeads = db.prepare(`SELECT COUNT(*) as count FROM commercial_leads WHERE 1=1 ${dateFilterClause}`).get(...dateParams).count;
+
+    // Top Pages no Período
     const topPages = db.prepare(`
       SELECT path, COUNT(*) as views
       FROM page_views
+      WHERE 1=1 ${dateFilterClause}
       GROUP BY path
       ORDER BY views DESC
       LIMIT 10
-    `).all();
+    `).all(...dateParams);
 
-    // Device breakdown
+    // Device breakdown no Período
     const devices = db.prepare(`
       SELECT device, COUNT(*) as count
       FROM page_views
+      WHERE 1=1 ${dateFilterClause}
       GROUP BY device
-    `).all();
+    `).all(...dateParams);
 
-    // Browsers breakdown
+    // Browsers breakdown no Período
     const browsers = db.prepare(`
       SELECT COALESCE(browser, 'Outro') as name, COUNT(*) as count
       FROM page_views
+      WHERE 1=1 ${dateFilterClause}
       GROUP BY name
       ORDER BY count DESC
       LIMIT 6
-    `).all();
+    `).all(...dateParams);
 
-    // Top Cities (apenas cidades reais com acessos)
+    // Top Cities no Período
     const topCities = db.prepare(`
       SELECT city, COUNT(*) as count
       FROM page_views
-      WHERE city IS NOT NULL AND city != ''
+      WHERE city IS NOT NULL AND city != '' ${dateFilterClause}
       GROUP BY city
       ORDER BY count DESC
       LIMIT 8
-    `).all();
+    `).all(...dateParams);
 
-    // Origens de Tráfego Reais (Referrers & Campanhas)
+    // Origens de Tráfego Reais no Período
     const trafficSources = db.prepare(`
       SELECT 
         CASE 
@@ -253,44 +290,65 @@ app.get('/api/admin/metrics', (req, res) => {
         END as source_name,
         COUNT(*) as count
       FROM page_views
+      WHERE 1=1 ${dateFilterClause}
       GROUP BY source_name
       ORDER BY count DESC
       LIMIT 8
-    `).all();
+    `).all(...dateParams);
 
-    // Últimos 15 acessos reais em tempo real
+    // Últimos acessos reais no Período
     const recentPageviews = db.prepare(`
       SELECT id, path, title, referrer, city, device, browser, os, created_at
       FROM page_views
+      WHERE 1=1 ${dateFilterClause}
       ORDER BY id DESC
       LIMIT 15
-    `).all();
+    `).all(...dateParams);
 
-    // 7 Days Daily Pageviews Trend
-    const last7Days = db.prepare(`
-      SELECT date(created_at) as date, COUNT(*) as views
-      FROM page_views
-      WHERE created_at >= date('now', '-7 days')
-      GROUP BY date(created_at)
-      ORDER BY date ASC
-    `).all();
-
-    // Counters
-    const totalViability = db.prepare('SELECT COUNT(*) as count FROM viability_queries').get().count;
-    const totalSubscribers = db.prepare("SELECT COUNT(*) as count FROM newsletter_subscribers WHERE status = 'active'").get().count;
-    const totalLeads = db.prepare('SELECT COUNT(*) as count FROM commercial_leads').get().count;
+    // Tendência diária no período
+    let dailyTrend = [];
+    if (period === 'today') {
+      dailyTrend = db.prepare(`
+        SELECT strftime('%H:00', created_at) as date, COUNT(*) as views
+        FROM page_views
+        WHERE date(created_at) = date('now')
+        GROUP BY strftime('%H:00', created_at)
+        ORDER BY date ASC
+      `).all();
+    } else {
+      dailyTrend = db.prepare(`
+        SELECT date(created_at) as date, COUNT(*) as views
+        FROM page_views
+        WHERE 1=1 ${dateFilterClause}
+        GROUP BY date(created_at)
+        ORDER BY date ASC
+        LIMIT 31
+      `).all(...dateParams);
+    }
 
     res.json({
       success: true,
       data: {
+        periodInfo: {
+          period,
+          startDate: startDate || null,
+          endDate: endDate || null,
+          label: periodLabel,
+        },
+        lifetime: {
+          totalPageviews: lifetimePageviews,
+          uniqueVisitors: lifetimeUniqueVisitors,
+          totalViability: lifetimeViability,
+          totalLeads: lifetimeLeads,
+        },
         kpis: {
-          totalPageviews,
-          todayPageviews,
-          uniqueVisitors,
-          todayUniqueVisitors,
-          totalViability,
+          totalPageviews: periodPageviews,
+          todayPageviews: db.prepare("SELECT COUNT(*) as count FROM page_views WHERE date(created_at) = date('now')").get().count,
+          uniqueVisitors: periodUniqueVisitors,
+          todayUniqueVisitors: db.prepare("SELECT COUNT(DISTINCT session_id) as count FROM page_views WHERE date(created_at) = date('now')").get().count,
+          totalViability: periodViability,
           totalSubscribers,
-          totalLeads,
+          totalLeads: periodLeads,
         },
         topPages,
         devices,
@@ -298,10 +356,11 @@ app.get('/api/admin/metrics', (req, res) => {
         topCities,
         trafficSources,
         recentPageviews,
-        last7Days,
+        last7Days: dailyTrend,
       },
     });
   } catch (err) {
+    console.error('Error fetching admin metrics:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

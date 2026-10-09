@@ -92,6 +92,18 @@ export interface CommercialLeadPayload {
 }
 
 export interface AdminMetricsResponse {
+  periodInfo?: {
+    period: string;
+    startDate?: string;
+    endDate?: string;
+    label: string;
+  };
+  lifetime?: {
+    totalPageviews: number;
+    uniqueVisitors: number;
+    totalViability: number;
+    totalLeads: number;
+  };
   kpis: {
     totalPageviews: number;
     todayPageviews: number;
@@ -275,8 +287,13 @@ export const apiService = {
     return await res.json();
   },
 
-  getMetrics: async (): Promise<{ success: boolean; data: AdminMetricsResponse }> => {
-    const res = await fetch('/api/admin/metrics');
+  getMetrics: async (params: { period?: string; startDate?: string; endDate?: string } = {}): Promise<{ success: boolean; data: AdminMetricsResponse }> => {
+    const query = new URLSearchParams();
+    if (params.period) query.append('period', params.period);
+    if (params.startDate) query.append('startDate', params.startDate);
+    if (params.endDate) query.append('endDate', params.endDate);
+    const qs = query.toString() ? `?${query.toString()}` : '';
+    const res = await fetch(`/api/admin/metrics${qs}`);
     return await res.json();
   },
 

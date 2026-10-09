@@ -30,6 +30,8 @@ import {
   HardDrive,
   ExternalLink,
   PhoneCall,
+  Calendar,
+  Filter,
 } from 'lucide-react';
 import { apiService, AdminMetricsResponse } from '../services/apiService';
 import { BLOG_POSTS } from '../data/blog';
@@ -55,6 +57,18 @@ export const AdminDashboard: React.FC = () => {
   const [viabilityStatusFilter, setViabilityStatusFilter] = useState<string>('all');
   const [viabilitySearch, setViabilitySearch] = useState<string>('');
   const [healthStatus, setHealthStatus] = useState<any>(null);
+
+  // Filtro de Tempo do Analytics
+  const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'all' | 'custom'>('month');
+  const [customStartDate, setCustomStartDate] = useState<string>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d.toISOString().slice(0, 10);
+  });
+  const [customEndDate, setCustomEndDate] = useState<string>(() => {
+    return new Date().toISOString().slice(0, 10);
+  });
+  const [metricsLoading, setMetricsLoading] = useState(false);
 
   // Newsletter Broadcast Composer
   const [selectedPostId, setSelectedPostId] = useState<string>(String(BLOG_POSTS[0]?.id || ''));
@@ -93,13 +107,53 @@ export const AdminDashboard: React.FC = () => {
     sessionStorage.removeItem('nuvv_admin_auth');
   };
 
+  // Carregar métricas filtradas por período
+  const fetchMetrics = async (
+    period: 'today' | 'week' | 'month' | 'all' | 'custom' = selectedPeriod,
+    start: string = customStartDate,
+    end: string = customEndDate
+  ) => {
+    setMetricsLoading(true);
+    try {
+      const res = await apiService.getMetrics({
+        period,
+        startDate: period === 'custom' ? start : undefined,
+        endDate: period === 'custom' ? end : undefined,
+      });
+      if (res.success) {
+        setMetrics(res.data);
+      }
+    } catch (err) {
+      console.error('Error fetching filtered metrics:', err);
+    } finally {
+      setMetricsLoading(false);
+    }
+  };
+
+  const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'all' | 'custom') => {
+    setSelectedPeriod(period);
+    if (period !== 'custom') {
+      fetchMetrics(period);
+    }
+  };
+
+  const handleApplyCustomPeriod = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customStartDate || !customEndDate) return;
+    fetchMetrics('custom', customStartDate, customEndDate);
+  };
+
   // Load all dashboard data
   const loadDashboardData = async () => {
     setLoading(true);
     try {
       const [healthRes, metricsRes, newsRes, leadsRes, smtpRes, viabilityRes] = await Promise.allSettled([
         apiService.getHealth(),
-        apiService.getMetrics(),
+        apiService.getMetrics({
+          period: selectedPeriod,
+          startDate: selectedPeriod === 'custom' ? customStartDate : undefined,
+          endDate: selectedPeriod === 'custom' ? customEndDate : undefined,
+        }),
         apiService.getNewsletter(),
         apiService.getLeads(),
         apiService.getSmtpConfig(),
@@ -330,18 +384,114 @@ export const AdminDashboard: React.FC = () => {
         {/* TAB 1: VISÃO GERAL & ANALYTICS */}
         {activeTab === 'analytics' && (
           <div className="space-y-8 animate-fade-in">
-            {/* 4 KPI Cards */}
+            {/* Barra de Filtro de Tempo (Período Analítico) */}
+            <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0 shadow-inner">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-black text-white flex items-center space-x-2">
+                      <span>Filtro de Período & Análise Temporal</span>
+                      {metricsLoading && <RefreshCw className="w-3.5 h-3.5 text-emerald-400 animate-spin" />}
+                    </h2>
+                    <span className="text-xs text-gray-400">
+                      Isole os dados por dia, semana, mês ou selecione datas específicas
+                    </span>
+                  </div>
+                </div>
+
+                <div className="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-emerald-400 self-start md:self-auto shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2" />
+                  <span>{metrics?.periodInfo?.label || 'Últimos 30 dias (Mês)'}</span>
+                </div>
+              </div>
+
+              {/* Botões Rápidos de Período */}
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/60">
+                {[
+                  { id: 'today', label: '☀️ Hoje (Do Dia)' },
+                  { id: 'week', label: '📅 Últimos 7 Dias (Semana)' },
+                  { id: 'month', label: '📊 Últimos 30 Dias (Mês)' },
+                  { id: 'all', label: '🌐 Desde Sempre (Geral)' },
+                  { id: 'custom', label: '🎯 Seleção Personalizada' },
+                ].map((p) => {
+                  const isActive = selectedPeriod === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      disabled={metricsLoading}
+                      onClick={() => handlePeriodChange(p.id as any)}
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 ${
+                        isActive
+                          ? 'bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/25'
+                          : 'bg-slate-950 text-gray-400 hover:text-white hover:bg-slate-800 border border-slate-800/80'
+                      }`}
+                    >
+                      <span>{p.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Seletor Customizado de Período (De -> Até) */}
+              {selectedPeriod === 'custom' && (
+                <form
+                  onSubmit={handleApplyCustomPeriod}
+                  className="flex flex-wrap items-end gap-3 p-4 bg-slate-950 rounded-2xl border border-slate-800 animate-fade-in"
+                >
+                  <div className="flex-1 min-w-[140px]">
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">
+                      Data Inicial
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={customStartDate}
+                      onChange={(e) => setCustomStartDate(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white outline-none focus:border-emerald-500 transition-colors"
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-[140px]">
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">
+                      Data Final
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={customEndDate}
+                      onChange={(e) => setCustomEndDate(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white outline-none focus:border-emerald-500 transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={metricsLoading}
+                    className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs transition-colors flex items-center space-x-1.5 shadow-md shadow-emerald-500/25 h-[36px]"
+                  >
+                    <Filter className="w-3.5 h-3.5" />
+                    <span>{metricsLoading ? 'Filtrando...' : 'Aplicar Período'}</span>
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* 4 KPI Cards (Dinamizados pelo Período Selecionado) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
-                  <span>Pageviews Hoje</span>
+                  <span>Pageviews no Período</span>
                   <Eye className="w-4 h-4 text-emerald-400" />
                 </div>
                 <div className="text-3xl font-black text-white">
-                  {metrics?.kpis?.todayPageviews || 0}
+                  {metrics?.kpis?.totalPageviews || 0}
                 </div>
                 <span className="text-[11px] text-gray-400 block">
-                  Total acumulado: <strong>{metrics?.kpis?.totalPageviews || 0}</strong>
+                  Hoje: <strong>{metrics?.kpis?.todayPageviews || 0}</strong> • Vitalício: <strong>{metrics?.lifetime?.totalPageviews || metrics?.kpis?.totalPageviews || 0}</strong>
                 </span>
               </div>
 
@@ -351,10 +501,10 @@ export const AdminDashboard: React.FC = () => {
                   <Users className="w-4 h-4 text-blue-400" />
                 </div>
                 <div className="text-3xl font-black text-white">
-                  {metrics?.kpis?.todayUniqueVisitors || 0}
+                  {metrics?.kpis?.uniqueVisitors || 0}
                 </div>
                 <span className="text-[11px] text-gray-400 block">
-                  Total de sessões: <strong>{metrics?.kpis?.uniqueVisitors || 0}</strong>
+                  Hoje: <strong>{metrics?.kpis?.todayUniqueVisitors || 0}</strong> • Vitalício: <strong>{metrics?.lifetime?.uniqueVisitors || metrics?.kpis?.uniqueVisitors || 0}</strong>
                 </span>
               </div>
 
@@ -366,19 +516,21 @@ export const AdminDashboard: React.FC = () => {
                 <div className="text-3xl font-black text-emerald-400">
                   {metrics?.kpis?.totalViability || 0}
                 </div>
-                <span className="text-[11px] text-gray-400 block">Endereços mapeados na base</span>
+                <span className="text-[11px] text-gray-400 block">
+                  No período • Vitalício: <strong>{metrics?.lifetime?.totalViability || metrics?.kpis?.totalViability || 0}</strong>
+                </span>
               </div>
 
               <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
-                  <span>Assinantes Nuvv News</span>
+                  <span>Leads Comerciais</span>
                   <Mail className="w-4 h-4 text-nuvv-purple" />
                 </div>
                 <div className="text-3xl font-black text-white">
-                  {metrics?.kpis?.totalSubscribers || 0}
+                  {metrics?.kpis?.totalLeads || 0}
                 </div>
                 <span className="text-[11px] text-gray-400 block">
-                  Leads comerciais: <strong>{metrics?.kpis?.totalLeads || 0}</strong>
+                  No período • Vitalício: <strong>{metrics?.lifetime?.totalLeads || metrics?.kpis?.totalLeads || 0}</strong>
                 </span>
               </div>
             </div>
