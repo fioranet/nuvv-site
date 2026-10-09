@@ -27,12 +27,16 @@ import {
   Globe,
   Layers,
   BookOpen,
+  HardDrive,
+  ExternalLink,
+  PhoneCall,
 } from 'lucide-react';
 import { apiService, AdminMetricsResponse } from '../services/apiService';
 import { BLOG_POSTS } from '../data/blog';
-import { CoverageManager } from '../components/admin/CoverageManager';
 import { BlogManager } from '../components/admin/BlogManager';
 import { PortalUsersManager } from '../components/admin/PortalUsersManager';
+import { FileManager } from '../components/admin/FileManager';
+import { ContactsManager } from '../components/admin/ContactsManager';
 
 export const AdminDashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -41,19 +45,13 @@ export const AdminDashboard: React.FC = () => {
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'analytics' | 'viability' | 'blog' | 'newsletter' | 'leads' | 'smtp' | 'portal_users'>('analytics');
-  const [viabilityViewMode, setViabilityViewMode] = useState<'manager' | 'queries'>('manager');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'files' | 'contacts' | 'blog' | 'newsletter' | 'leads' | 'portal_users' | 'smtp'>('analytics');
   const [loading, setLoading] = useState(false);
 
   const [metrics, setMetrics] = useState<AdminMetricsResponse | null>(null);
-  const [viabilityData, setViabilityData] = useState<any>(null);
   const [newsletterData, setNewsletterData] = useState<any>(null);
   const [leadsData, setLeadsData] = useState<any[]>([]);
   const [healthStatus, setHealthStatus] = useState<any>(null);
-
-  // Viability Filters
-  const [viabilityFilter, setViabilityFilter] = useState<'all' | 'yes' | 'no' | 'EM_ANALISE'>('all');
-  const [viabilitySearch, setViabilitySearch] = useState('');
 
   // Newsletter Broadcast Composer
   const [selectedPostId, setSelectedPostId] = useState<string>(String(BLOG_POSTS[0]?.id || ''));
@@ -96,10 +94,9 @@ export const AdminDashboard: React.FC = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const [healthRes, metricsRes, viabilityRes, newsRes, leadsRes, smtpRes] = await Promise.allSettled([
+      const [healthRes, metricsRes, newsRes, leadsRes, smtpRes] = await Promise.allSettled([
         apiService.getHealth(),
         apiService.getMetrics(),
-        apiService.getViability({ status: viabilityFilter === 'all' ? undefined : viabilityFilter }),
         apiService.getNewsletter(),
         apiService.getLeads(),
         apiService.getSmtpConfig(),
@@ -107,7 +104,6 @@ export const AdminDashboard: React.FC = () => {
 
       if (healthRes.status === 'fulfilled') setHealthStatus(healthRes.value);
       if (metricsRes.status === 'fulfilled' && metricsRes.value.success) setMetrics(metricsRes.value.data);
-      if (viabilityRes.status === 'fulfilled' && viabilityRes.value.success) setViabilityData(viabilityRes.value.data);
       if (newsRes.status === 'fulfilled' && newsRes.value.success) setNewsletterData(newsRes.value.data);
       if (leadsRes.status === 'fulfilled' && leadsRes.value.success) setLeadsData(leadsRes.value.data);
       if (smtpRes.status === 'fulfilled' && smtpRes.value.success) {
@@ -124,7 +120,7 @@ export const AdminDashboard: React.FC = () => {
     if (isAuthenticated) {
       loadDashboardData();
     }
-  }, [isAuthenticated, viabilityFilter]);
+  }, [isAuthenticated]);
 
   // Broadcast blog post to subscribers
   const handleBroadcast = async () => {
@@ -227,19 +223,6 @@ export const AdminDashboard: React.FC = () => {
     );
   }
 
-  // Filtered Viability Queries
-  const filteredViability = viabilityData?.queries?.filter((q: any) => {
-    if (!viabilitySearch.trim()) return true;
-    const s = viabilitySearch.toLowerCase();
-    return (
-      q.cep?.toLowerCase().includes(s) ||
-      q.street?.toLowerCase().includes(s) ||
-      q.neighborhood?.toLowerCase().includes(s) ||
-      q.city?.toLowerCase().includes(s) ||
-      q.name?.toLowerCase().includes(s)
-    );
-  }) || [];
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-20">
       {/* Top Navigation Bar */}
@@ -261,6 +244,18 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-3">
+            <a
+              href="/portal"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 px-3 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold flex items-center space-x-1.5 transition-colors shadow-sm cursor-pointer"
+              title="Acessar o Portal do Colaborador (nova aba)"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Portal do Colaborador</span>
+              <ExternalLink className="w-3 h-3 text-cyan-400/70" />
+            </a>
+
             <button
               type="button"
               onClick={loadDashboardData}
@@ -286,7 +281,8 @@ export const AdminDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-2 overflow-x-auto py-2 border-t border-slate-800/60 text-xs font-bold custom-scrollbar">
           {[
             { id: 'analytics', label: 'Visão Geral & Analytics', icon: BarChart3 },
-            { id: 'viability', label: 'Mapa & Viabilidade', icon: MapPin, badge: metrics?.kpis?.totalViability },
+            { id: 'files', label: '📁 Arquivos & Docs (FTP)', icon: HardDrive },
+            { id: 'contacts', label: '📞 Contatos & Ramais', icon: PhoneCall },
             { id: 'blog', label: 'Blog & Artigos', icon: BookOpen },
             { id: 'newsletter', label: 'Nuvv News & Disparador', icon: Mail, badge: metrics?.kpis?.totalSubscribers },
             { id: 'leads', label: 'Leads Comerciais', icon: Users, badge: metrics?.kpis?.totalLeads },
@@ -460,231 +456,6 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* TAB 2: MAPA DE VIABILIDADE & GESTÃO DE COBERTURA */}
-        {activeTab === 'viability' && (
-          <div className="space-y-8 animate-fade-in">
-            {/* Sub-view Switcher Bar */}
-            <div className="flex items-center justify-between bg-slate-900 border border-slate-800 p-2 rounded-2xl">
-              <div className="flex space-x-2 text-xs font-bold">
-                <button
-                  type="button"
-                  onClick={() => setViabilityViewMode('manager')}
-                  className={`px-4 py-2 rounded-xl flex items-center space-x-2 transition-all ${
-                    viabilityViewMode === 'manager'
-                      ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
-                      : 'text-gray-400 hover:text-white hover:bg-slate-800'
-                  }`}
-                >
-                  <Layers className="w-4 h-4" />
-                  <span>Configuração de Manchas & API Externa</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setViabilityViewMode('queries')}
-                  className={`px-4 py-2 rounded-xl flex items-center space-x-2 transition-all ${
-                    viabilityViewMode === 'queries'
-                      ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
-                      : 'text-gray-400 hover:text-white hover:bg-slate-800'
-                  }`}
-                >
-                  <MapPin className="w-4 h-4" />
-                  <span>Histórico de Consultas & Demanda Reprimida ({viabilityData?.stats?.total || 0})</span>
-                </button>
-              </div>
-
-              <span className="text-[11px] text-gray-400 hidden sm:inline mr-2">
-                {viabilityViewMode === 'manager' ? 'Configuração de Polígonos de Fibra' : 'Leads Georreferenciados'}
-              </span>
-            </div>
-
-            {/* View 1: Complete Coverage & KMZ Manager */}
-            {viabilityViewMode === 'manager' && <CoverageManager />}
-
-            {/* View 2: Client Queries History & Demand */}
-            {viabilityViewMode === 'queries' && (
-              <div className="space-y-8 animate-fade-in">
-                {/* Header & Demanda Reprimida Alert Card */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  <div className="lg:col-span-8 p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                      <div>
-                        <h3 className="text-base font-black text-white">Consultas de Cobertura</h3>
-                        <span className="text-xs text-gray-400">
-                          Mapeamento de viabilidade georreferenciada via CEP
-                        </span>
-                      </div>
-                      <a
-                        href="/api/admin/export/viability"
-                        className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center space-x-1.5 transition-colors self-start"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Exportar CSV</span>
-                      </a>
-                    </div>
-
-                    {/* Filter and Search Bar */}
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <div className="relative flex-1">
-                        <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                        <input
-                          type="text"
-                          placeholder="Buscar por CEP, bairro, rua ou nome..."
-                          value={viabilitySearch}
-                          onChange={(e) => setViabilitySearch(e.target.value)}
-                          className="w-full pl-9 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white outline-none focus:border-emerald-500"
-                        />
-                      </div>
-
-                      <div className="inline-flex p-1 bg-slate-950 rounded-xl border border-slate-800 text-xs font-bold">
-                        <button
-                          type="button"
-                          onClick={() => setViabilityFilter('all')}
-                          className={`px-3 py-1.5 rounded-lg ${viabilityFilter === 'all' ? 'bg-slate-800 text-white' : 'text-gray-400'}`}
-                        >
-                          Todos ({viabilityData?.stats?.total || 0})
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setViabilityFilter('yes')}
-                          className={`px-3 py-1.5 rounded-lg text-emerald-400 ${viabilityFilter === 'yes' ? 'bg-emerald-950 border border-emerald-500/30' : ''}`}
-                        >
-                          Viável ({viabilityData?.stats?.withFeasibility || 0})
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setViabilityFilter('EM_ANALISE')}
-                          className={`px-3 py-1.5 rounded-lg text-blue-400 ${viabilityFilter === 'EM_ANALISE' ? 'bg-blue-950 border border-blue-500/30' : ''}`}
-                        >
-                          Em Análise ({viabilityData?.stats?.emAnalise || 0})
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setViabilityFilter('no')}
-                          className={`px-3 py-1.5 rounded-lg text-red-400 ${viabilityFilter === 'no' ? 'bg-red-950 border border-red-500/30' : ''}`}
-                        >
-                          Sem Cobertura ({viabilityData?.stats?.withoutFeasibility || 0})
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Demanda Reprimida (Bairros Sem Cobertura mais buscados) */}
-                  <div className="lg:col-span-4 p-6 rounded-3xl bg-red-950/20 border border-red-900/40 space-y-3">
-                    <div className="flex items-center space-x-2 text-red-400 font-bold text-xs uppercase tracking-wider">
-                      <AlertTriangle className="w-4 h-4" />
-                      <span>Demanda Reprimida (Expansão)</span>
-                    </div>
-                    <h4 className="text-sm font-black text-white">Bairros com Mais Buscas Sem Cobertura</h4>
-                    <div className="space-y-1.5">
-                      {viabilityData?.unmetNeighborhoods?.length > 0 ? (
-                        viabilityData.unmetNeighborhoods.map((n: any, i: number) => (
-                          <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-red-900/20">
-                            <span className="text-gray-300">
-                              {n.neighborhood}, {n.city}
-                            </span>
-                            <span className="font-bold text-red-400 bg-red-950 px-2 py-0.5 rounded">
-                              {n.demand_count} pedidos
-                            </span>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="text-xs text-gray-500 py-2">Nenhuma busca sem cobertura registrada ainda.</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Viability Queries Table */}
-                <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-950 text-gray-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
-                        <tr>
-                          <th className="py-3.5 px-4 font-bold">Data</th>
-                          <th className="py-3.5 px-4 font-bold">Status</th>
-                          <th className="py-3.5 px-4 font-bold">CEP / Endereço</th>
-                          <th className="py-3.5 px-4 font-bold">Bairro / Cidade</th>
-                          <th className="py-3.5 px-4 font-bold">Mancha / Distância</th>
-                          <th className="py-3.5 px-4 font-bold">Contato</th>
-                          <th className="py-3.5 px-4 font-bold">Serviço</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800/60">
-                        {filteredViability.length > 0 ? (
-                          filteredViability.map((row: any) => (
-                            <tr key={row.id} className="hover:bg-slate-850/50 transition-colors">
-                              <td className="py-3 px-4 text-gray-400 font-mono">
-                                {new Date(row.created_at).toLocaleString('pt-BR')}
-                              </td>
-                              <td className="py-3 px-4">
-                                {row.status === 'VIAVEL' || row.has_feasibility ? (
-                                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
-                                    <CheckCircle2 className="w-3 h-3" />
-                                    <span>Viável</span>
-                                  </span>
-                                ) : row.status === 'EM_ANALISE' ? (
-                                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-400 border border-blue-500/30 text-[10px] font-bold">
-                                    <Sparkles className="w-3 h-3" />
-                                    <span>Em Análise</span>
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-500/30 text-[10px] font-bold">
-                                    <XCircle className="w-3 h-3" />
-                                    <span>Inviável</span>
-                                  </span>
-                                )}
-                              </td>
-                              <td className="py-3 px-4">
-                                <strong className="text-white font-mono">{row.cep}</strong>
-                                <span className="text-gray-400 block text-[11px]">
-                                  {row.street} {row.number ? `, nº ${row.number}` : ''}
-                                </span>
-                              </td>
-                              <td className="py-3 px-4 text-gray-300">
-                                <strong>{row.neighborhood || '—'}</strong>, {row.city || 'Suzano'}
-                              </td>
-                              <td className="py-3 px-4">
-                                <span className="font-mono text-indigo-300 font-bold block text-[11px]">
-                                  {row.matched_polygon || row.matched_layer || '—'}
-                                </span>
-                                {row.distance_meters > 0 && (
-                                  <span className="text-gray-400 text-[10px] block">
-                                    {row.distance_meters > 1000
-                                      ? `${(row.distance_meters / 1000).toFixed(1)} km da rede`
-                                      : `${row.distance_meters}m da rede`}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="py-3 px-4">
-                                {row.name && <span className="font-bold text-white block">{row.name}</span>}
-                                {row.phone && <span className="text-emerald-400 block">{row.phone}</span>}
-                                {row.email && <span className="text-gray-400 block">{row.email}</span>}
-                                {!row.name && !row.phone && !row.email && (
-                                  <span className="text-gray-500">Consulta anônima</span>
-                                )}
-                              </td>
-                              <td className="py-3 px-4 uppercase text-[10px] font-bold text-gray-400">
-                                {row.service_type || 'Residencial'}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={7} className="text-center py-8 text-gray-500">
-                              Nenhuma consulta de viabilidade encontrada com os filtros selecionados.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -1094,6 +865,16 @@ export const AdminDashboard: React.FC = () => {
         {/* 7. Portal Users Management Tab */}
         {activeTab === 'portal_users' && (
           <PortalUsersManager />
+        )}
+
+        {/* 8. Gerenciador de Arquivos & FTP Online */}
+        {activeTab === 'files' && (
+          <FileManager />
+        )}
+
+        {/* 9. Contatos & Ramais Corporativos */}
+        {activeTab === 'contacts' && (
+          <ContactsManager />
         )}
       </main>
     </div>

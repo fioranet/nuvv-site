@@ -15,8 +15,8 @@ npm install --include=dev
 echo "🏗️ Compilando o frontend (Vite)..."
 npm run build
 
-echo "📁 Garantindo permissões do diretório de dados (SQLite)..."
-mkdir -p data logs
+echo "📁 Garantindo permissões do diretório de dados (SQLite e Uploads)..."
+mkdir -p data/uploads logs
 chmod -R 775 data logs
 
 echo "🔄 Reiniciando serviço no PM2..."

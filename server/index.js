@@ -15,6 +15,7 @@ import {
 } from './smtp.js';
 import { validateCpfCnpj } from './validatorService.js';
 import { buscarDadosSegundaVia, obterPixFaturamento } from './hubsoft.js';
+import multer from 'multer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,9 +23,42 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Diretório de Uploads Persistentes (data/uploads)
+const uploadsDir = path.resolve(__dirname, '../data/uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Inicializar subpastas padrão caso não existam
+const defaultUploadSubfolders = [
+  'equipamentos/manuais',
+  'equipamentos/firmware',
+  'produtos/manuais',
+  'produtos/fichas',
+  'procedimentos',
+  'treinamento',
+];
+for (const sub of defaultUploadSubfolders) {
+  const p = path.join(uploadsDir, sub);
+  if (!fs.existsSync(p)) {
+    fs.mkdirSync(p, { recursive: true });
+  }
+}
+
 // Middlewares
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
+
+// Servir arquivos estáticos em /uploads com suporte a renderização de HTML, PDF e imagens
+app.use('/uploads', express.static(uploadsDir, {
+  setHeaders: (res, filePath) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    if (filePath.endsWith('.html') || filePath.endsWith('.htm')) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    }
+  }
+}));
 
 // Initialize DB schema on startup
 initDatabase();
@@ -861,65 +895,7 @@ app.post('/api/admin/smtp/test', async (req, res) => {
   }
 });
 
-// -------------------------------------------------------------
-// 7.1 COVERAGE & GEOGRAPHIC FEASIBILITY LAYERS MANAGEMENT
-// -------------------------------------------------------------
-app.get('/api/coverage/layers', (req, res) => {
-  try {
-    const row = db.prepare('SELECT value, updated_at FROM settings WHERE key = ?').get('coverage_layers');
-    if (row && row.value) {
-      return res.json({
-        success: true,
-        custom: true,
-        updatedAt: row.updated_at,
-        data: JSON.parse(row.value),
-      });
-    }
-    res.json({
-      success: true,
-      custom: false,
-      data: null,
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
 
-app.post('/api/admin/coverage/layers', (req, res) => {
-  try {
-    const { layers } = req.body;
-    if (!layers || typeof layers !== 'object') {
-      return res.status(400).json({ success: false, error: 'Camadas de cobertura inválidas.' });
-    }
-
-    const payload = JSON.stringify(layers);
-    db.prepare(`
-      INSERT INTO settings (key, value, updated_at)
-      VALUES ('coverage_layers', ?, CURRENT_TIMESTAMP)
-      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
-    `).run(payload);
-
-    res.json({
-      success: true,
-      message: 'Camadas e zonas de cobertura salvas com sucesso no banco de dados!',
-      updatedAt: new Date().toISOString(),
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-app.post('/api/admin/coverage/reset', (req, res) => {
-  try {
-    db.prepare('DELETE FROM settings WHERE key = ?').run('coverage_layers');
-    res.json({
-      success: true,
-      message: 'Camadas de cobertura restauradas para os padrões do sistema.',
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
 
 // -------------------------------------------------------------
 // 8. DATA EXPORTS (CSV)
@@ -1298,6 +1274,630 @@ app.get('/api/portal/docs/:slug', (req, res) => {
     });
   } catch (err) {
     console.error('[GET PORTAL DOC CONTENT ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// -------------------------------------------------------------
+// 6.5. ADMIN FILE MANAGER & ONLINE FTP (/uploads)
+// -------------------------------------------------------------
+function getSafeUploadPath(subPath = '') {
+  const cleanSub = path.normalize(String(subPath || '')).replace(/^(\.\.[\/\\])+/, '');
+  const parts = cleanSub.split(/[\\/]/).filter(p => p && p !== '..' && p !== '.');
+  const resolved = path.resolve(uploadsDir, ...parts);
+  if (!resolved.startsWith(uploadsDir)) {
+    throw new Error('Acesso negado: tentativa de navegação fora do diretório de uploads.');
+  }
+  return { resolved, relative: parts.join('/') };
+}
+
+function getFolderStats(dir) {
+  let totalFiles = 0;
+  let totalFolders = 0;
+  let totalSize = 0;
+  let htmlFiles = 0;
+  let pdfFiles = 0;
+  let imageFiles = 0;
+
+  function traverse(current) {
+    if (!fs.existsSync(current)) return;
+    try {
+      const entries = fs.readdirSync(current, { withFileTypes: true });
+      for (const entry of entries) {
+        const full = path.join(current, entry.name);
+        if (entry.isDirectory()) {
+          totalFolders++;
+          traverse(full);
+        } else if (entry.isFile()) {
+          totalFiles++;
+          try {
+            const st = fs.statSync(full);
+            totalSize += st.size;
+            const ext = path.extname(entry.name).toLowerCase();
+            if (ext === '.html' || ext === '.htm') htmlFiles++;
+            else if (ext === '.pdf') pdfFiles++;
+            else if (['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.avif', '.ico'].includes(ext)) imageFiles++;
+          } catch (_) {}
+        }
+      }
+    } catch (_) {}
+  }
+
+  traverse(dir);
+  return { totalFiles, totalFolders, totalSize, htmlFiles, pdfFiles, imageFiles };
+}
+
+const uploadStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    try {
+      const folder = req.query.folder || req.body.folder || '';
+      const safe = getSafeUploadPath(folder);
+      if (!fs.existsSync(safe.resolved)) {
+        fs.mkdirSync(safe.resolved, { recursive: true });
+      }
+      cb(null, safe.resolved);
+    } catch (err) {
+      cb(err);
+    }
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const rawName = path.basename(file.originalname, ext);
+    const sanitized = rawName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9_\-\.]/g, '-')
+      .replace(/-+/g, '-');
+    cb(null, `${sanitized || 'arquivo'}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage: uploadStorage,
+  limits: { fileSize: 50 * 1024 * 1024 } // 50MB
+});
+
+app.get('/api/admin/files', (req, res) => {
+  try {
+    const rawFolder = req.query.folder || '';
+    const { resolved: currentDir, relative: currentRelative } = getSafeUploadPath(rawFolder);
+
+    if (!fs.existsSync(currentDir)) {
+      fs.mkdirSync(currentDir, { recursive: true });
+    }
+
+    const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+    const items = [];
+
+    for (const entry of entries) {
+      const fullPath = path.join(currentDir, entry.name);
+      try {
+        const stat = fs.statSync(fullPath);
+        const itemRelative = currentRelative ? `${currentRelative}/${entry.name}` : entry.name;
+
+        if (entry.isDirectory()) {
+          let childCount = 0;
+          try {
+            childCount = fs.readdirSync(fullPath).length;
+          } catch (_) {}
+
+          items.push({
+            name: entry.name,
+            isDirectory: true,
+            relativePath: itemRelative,
+            updatedAt: stat.mtime,
+            itemsCount: childCount,
+          });
+        } else if (entry.isFile()) {
+          const ext = path.extname(entry.name).toLowerCase();
+          items.push({
+            name: entry.name,
+            isDirectory: false,
+            relativePath: itemRelative,
+            size: stat.size,
+            extension: ext,
+            updatedAt: stat.mtime,
+            publicUrl: `/uploads/${itemRelative}`,
+          });
+        }
+      } catch (err) {
+        console.warn(`[WARN] Erro ao inspecionar item ${entry.name}:`, err.message);
+      }
+    }
+
+    // Ordenação: pastas primeiro, depois arquivos em ordem alfabética
+    items.sort((a, b) => {
+      if (a.isDirectory && !b.isDirectory) return -1;
+      if (!a.isDirectory && b.isDirectory) return 1;
+      return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    const breadcrumbParts = currentRelative ? currentRelative.split('/') : [];
+    const breadcrumbs = [{ name: 'Raiz (/uploads)', path: '' }];
+    let accum = '';
+    for (const part of breadcrumbParts) {
+      accum = accum ? `${accum}/${part}` : part;
+      breadcrumbs.push({ name: part, path: accum });
+    }
+
+    const stats = getFolderStats(uploadsDir);
+
+    return res.json({
+      success: true,
+      currentFolder: currentRelative,
+      breadcrumbs,
+      items,
+      stats,
+    });
+  } catch (err) {
+    console.error('[GET ADMIN FILES ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/admin/files/upload', upload.array('files', 50), (req, res) => {
+  try {
+    const rawFolder = req.query.folder || req.body.folder || '';
+    const { relative: currentRelative } = getSafeUploadPath(rawFolder);
+
+    const uploadedFiles = (req.files || []).map(f => {
+      const itemRelative = currentRelative ? `${currentRelative}/${f.filename}` : f.filename;
+      return {
+        name: f.filename,
+        originalName: f.originalname,
+        size: f.size,
+        relativePath: itemRelative,
+        publicUrl: `/uploads/${itemRelative}`,
+      };
+    });
+
+    return res.json({
+      success: true,
+      message: `${uploadedFiles.length} arquivo(s) enviado(s) com sucesso.`,
+      files: uploadedFiles,
+    });
+  } catch (err) {
+    console.error('[UPLOAD FILES ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/admin/files/create-folder', (req, res) => {
+  try {
+    const { folder = '', name = '' } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: 'Nome da pasta é obrigatório.' });
+    }
+
+    const safeFolderName = name.trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9_\-\.]/g, '-')
+      .replace(/-+/g, '-');
+
+    const parentPath = getSafeUploadPath(folder);
+    const targetFolder = path.join(parentPath.resolved, safeFolderName);
+
+    if (fs.existsSync(targetFolder)) {
+      return res.status(400).json({ success: false, message: 'Já existe uma pasta ou arquivo com este nome.' });
+    }
+
+    fs.mkdirSync(targetFolder, { recursive: true });
+
+    return res.json({
+      success: true,
+      message: `Pasta "${safeFolderName}" criada com sucesso.`,
+      folderName: safeFolderName,
+    });
+  } catch (err) {
+    console.error('[CREATE FOLDER ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/admin/files/save-file', (req, res) => {
+  try {
+    const { folder = '', filename = '', content = '' } = req.body;
+    if (!filename || !filename.trim()) {
+      return res.status(400).json({ success: false, message: 'Nome do arquivo é obrigatório.' });
+    }
+
+    const ext = path.extname(filename.trim()).toLowerCase();
+    const basename = path.basename(filename.trim(), ext)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9_\-\.]/g, '-')
+      .replace(/-+/g, '-');
+
+    const safeName = `${basename || 'documento'}${ext || '.html'}`;
+    const parentPath = getSafeUploadPath(folder);
+    const targetFile = path.join(parentPath.resolved, safeName);
+
+    fs.writeFileSync(targetFile, String(content), 'utf-8');
+
+    const itemRelative = parentPath.relative ? `${parentPath.relative}/${safeName}` : safeName;
+
+    return res.json({
+      success: true,
+      message: `Arquivo "${safeName}" salvo com sucesso.`,
+      filename: safeName,
+      relativePath: itemRelative,
+      publicUrl: `/uploads/${itemRelative}`,
+    });
+  } catch (err) {
+    console.error('[SAVE FILE ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.get('/api/admin/files/content', (req, res) => {
+  try {
+    const filePath = req.query.path;
+    if (!filePath) {
+      return res.status(400).json({ success: false, message: 'Caminho do arquivo não fornecido.' });
+    }
+
+    const { resolved: targetFile, relative: currentRelative } = getSafeUploadPath(filePath);
+
+    if (!fs.existsSync(targetFile) || !fs.statSync(targetFile).isFile()) {
+      return res.status(404).json({ success: false, message: 'Arquivo não encontrado.' });
+    }
+
+    const stat = fs.statSync(targetFile);
+    if (stat.size > 10 * 1024 * 1024) {
+      return res.status(400).json({ success: false, message: 'Arquivo muito grande para edição inline (máx. 10MB).' });
+    }
+
+    const content = fs.readFileSync(targetFile, 'utf-8');
+    const ext = path.extname(targetFile).toLowerCase();
+
+    return res.json({
+      success: true,
+      filename: path.basename(targetFile),
+      relativePath: currentRelative,
+      publicUrl: `/uploads/${currentRelative}`,
+      extension: ext,
+      size: stat.size,
+      content,
+    });
+  } catch (err) {
+    console.error('[GET FILE CONTENT ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/admin/files/rename', (req, res) => {
+  try {
+    const { oldPath = '', newName = '' } = req.body;
+    if (!oldPath || !newName || !newName.trim()) {
+      return res.status(400).json({ success: false, message: 'Parâmetros inválidos.' });
+    }
+
+    const { resolved: sourcePath } = getSafeUploadPath(oldPath);
+    if (!fs.existsSync(sourcePath)) {
+      return res.status(404).json({ success: false, message: 'Item de origem não encontrado.' });
+    }
+
+    const isDir = fs.statSync(sourcePath).isDirectory();
+    let safeNewName = '';
+
+    if (isDir) {
+      safeNewName = newName.trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9_\-\.]/g, '-')
+        .replace(/-+/g, '-');
+    } else {
+      const ext = path.extname(newName.trim()).toLowerCase() || path.extname(sourcePath).toLowerCase();
+      const base = path.basename(newName.trim(), path.extname(newName.trim()))
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9_\-\.]/g, '-')
+        .replace(/-+/g, '-');
+      safeNewName = `${base}${ext}`;
+    }
+
+    const targetDir = path.dirname(sourcePath);
+    const destPath = path.join(targetDir, safeNewName);
+
+    if (fs.existsSync(destPath)) {
+      return res.status(400).json({ success: false, message: 'Já existe um item com esse novo nome.' });
+    }
+
+    fs.renameSync(sourcePath, destPath);
+
+    return res.json({
+      success: true,
+      message: `Renomeado para "${safeNewName}" com sucesso.`,
+      newName: safeNewName,
+    });
+  } catch (err) {
+    console.error('[RENAME ITEM ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.delete('/api/admin/files', (req, res) => {
+  try {
+    const targetPath = req.query.path || req.body.path;
+    if (!targetPath) {
+      return res.status(400).json({ success: false, message: 'Caminho do item não fornecido.' });
+    }
+
+    const { resolved: targetResolved, relative: currentRelative } = getSafeUploadPath(targetPath);
+
+    if (targetResolved === uploadsDir) {
+      return res.status(400).json({ success: false, message: 'A pasta raiz de uploads não pode ser excluída.' });
+    }
+
+    if (!fs.existsSync(targetResolved)) {
+      return res.status(404).json({ success: false, message: 'Item não encontrado.' });
+    }
+
+    const stat = fs.statSync(targetResolved);
+    if (stat.isDirectory()) {
+      fs.rmSync(targetResolved, { recursive: true, force: true });
+    } else {
+      fs.unlinkSync(targetResolved);
+    }
+
+    return res.json({
+      success: true,
+      message: `"${path.basename(targetResolved)}" excluído com sucesso.`,
+      deletedPath: currentRelative,
+    });
+  } catch (err) {
+    console.error('[DELETE FILE ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// -------------------------------------------------------------
+// 6.2 PORTAL DO COLABORADOR - REPOSITÓRIO READ-ONLY & CONTATOS
+// -------------------------------------------------------------
+
+// Contatos Corporativos Padrão
+const DEFAULT_PORTAL_CONTACTS = [
+  {
+    id: 1,
+    name: 'NOC / Central de Operações de Rede',
+    department: 'Engenharia & Suporte N2',
+    role: 'Plantão Técnico 24x7',
+    extension: '2001',
+    phone: '(11) 4741-9000',
+    whatsapp: '11947419000',
+    email: 'noc@nuvv.com.br',
+    notes: 'Escalonamento de incidentes de fibra, quedas de POP e monitoramento Zabbix/ACS.',
+    isEmergency: true,
+  },
+  {
+    id: 2,
+    name: 'Suporte N1 & Atendimento ao Cliente',
+    department: 'Suporte ao Cliente',
+    role: 'Supervisão de Help Desk',
+    extension: '2010',
+    phone: '(11) 4741-9001',
+    whatsapp: '11947419001',
+    email: 'suporte@nuvv.com.br',
+    notes: 'Atendimento aos assinantes: Seg a Sáb 08h às 22h, Dom/Feriados 08h às 18h.',
+    isEmergency: false,
+  },
+  {
+    id: 3,
+    name: 'Equipe de Campo & Fusão de Fibra',
+    department: 'Operações de Rede',
+    role: 'Supervisão Técnica Externa',
+    extension: '2020',
+    phone: '(11) 4741-9005',
+    whatsapp: '11947419005',
+    email: 'operacoes@nuvv.com.br',
+    notes: 'Ativações residenciais/corporativas, caixas de emenda CTO/CEO e vistorias.',
+    isEmergency: true,
+  },
+  {
+    id: 4,
+    name: 'Comercial & Vendas B2B/B2C',
+    department: 'Comercial',
+    role: 'Gerência Comercial',
+    extension: '2030',
+    phone: '(11) 4741-9010',
+    whatsapp: '11947419010',
+    email: 'comercial@nuvv.com.br',
+    notes: 'Planos corporativos, links dedicados, combos de telefonia e parcerias.',
+    isEmergency: false,
+  },
+  {
+    id: 5,
+    name: 'Financeiro & Faturamento HubSoft',
+    department: 'Financeiro',
+    role: 'Contas a Receber / Faturamento',
+    extension: '2040',
+    phone: '(11) 4741-9020',
+    whatsapp: '11947419020',
+    email: 'financeiro@nuvv.com.br',
+    notes: 'Baixas manuais, cobrança, renegociação, emissão de NF e suporte financeiro.',
+    isEmergency: false,
+  },
+  {
+    id: 6,
+    name: 'Recursos Humanos & D.P.',
+    department: 'Administração & RH',
+    role: 'Atendimento ao Colaborador',
+    extension: '2050',
+    phone: '(11) 4741-9030',
+    whatsapp: '11947419030',
+    email: 'rh@nuvv.com.br',
+    notes: 'Holerites, ponto, benefícios, atestados e comunicados institucionais.',
+    isEmergency: false,
+  },
+];
+
+// Listagem de Arquivos para o Colaborador (SOMENTE LEITURA / DOWNLOAD)
+app.get('/api/portal/files', (req, res) => {
+  try {
+    const rawFolder = req.query.folder || '';
+    const searchQuery = (req.query.search || '').trim().toLowerCase();
+    const { resolved: targetDir, relative: currentRelative } = getSafeUploadPath(rawFolder);
+
+    if (!fs.existsSync(targetDir)) {
+      return res.json({
+        success: true,
+        currentFolder: currentRelative,
+        breadcrumbs: [{ name: 'Início', path: '' }],
+        items: [],
+        categories: [
+          { name: 'Equipamentos & Manuais', path: 'equipamentos/manuais' },
+          { name: 'Firmwares & Imagens', path: 'equipamentos/firmware' },
+          { name: 'Fichas de Produtos', path: 'produtos/fichas' },
+          { name: 'Manuais de Produtos', path: 'produtos/manuais' },
+          { name: 'Procedimentos & POPs', path: 'procedimentos' },
+          { name: 'Treinamento', path: 'treinamento' },
+        ],
+      });
+    }
+
+    // Busca recursiva global caso haja termo de pesquisa
+    if (searchQuery) {
+      const results = [];
+      const searchRecursive = (dir, rel) => {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const itemRelative = rel ? `${rel}/${entry.name}` : entry.name;
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            searchRecursive(fullPath, itemRelative);
+          } else {
+            if (entry.name.toLowerCase().includes(searchQuery) || itemRelative.toLowerCase().includes(searchQuery)) {
+              try {
+                const stat = fs.statSync(fullPath);
+                results.push({
+                  name: entry.name,
+                  relativePath: itemRelative,
+                  publicUrl: `/uploads/${itemRelative}`,
+                  isDirectory: false,
+                  size: stat.size,
+                  updatedAt: stat.mtime.toISOString(),
+                  extension: path.extname(entry.name).toLowerCase(),
+                });
+              } catch {
+                // ignore
+              }
+            }
+          }
+        }
+      };
+
+      searchRecursive(uploadsDir, '');
+
+      return res.json({
+        success: true,
+        currentFolder: currentRelative,
+        search: searchQuery,
+        items: results,
+      });
+    }
+
+    // Listagem normal da pasta solicitada
+    const entries = fs.readdirSync(targetDir, { withFileTypes: true });
+    const items = [];
+
+    for (const entry of entries) {
+      const fullPath = path.join(targetDir, entry.name);
+      try {
+        const stat = fs.statSync(fullPath);
+        const itemRelative = currentRelative ? `${currentRelative}/${entry.name}` : entry.name;
+        items.push({
+          name: entry.name,
+          relativePath: itemRelative,
+          publicUrl: entry.isDirectory() ? null : `/uploads/${itemRelative}`,
+          isDirectory: entry.isDirectory(),
+          size: entry.isDirectory() ? 0 : stat.size,
+          updatedAt: stat.mtime.toISOString(),
+          extension: entry.isDirectory() ? '' : path.extname(entry.name).toLowerCase(),
+        });
+      } catch (err) {
+        console.warn(`Could not stat ${fullPath}:`, err.message);
+      }
+    }
+
+    // Ordenação: pastas primeiro, depois arquivos por ordem alfabética
+    items.sort((a, b) => {
+      if (a.isDirectory && !b.isDirectory) return -1;
+      if (!a.isDirectory && b.isDirectory) return 1;
+      return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    // Construção de Breadcrumbs amigáveis
+    const breadcrumbParts = currentRelative ? currentRelative.split('/') : [];
+    const breadcrumbs = [{ name: 'Início', path: '' }];
+    let accum = '';
+    for (const part of breadcrumbParts) {
+      accum = accum ? `${accum}/${part}` : part;
+      breadcrumbs.push({ name: part, path: accum });
+    }
+
+    return res.json({
+      success: true,
+      currentFolder: currentRelative,
+      breadcrumbs,
+      items,
+      categories: [
+        { name: 'Equipamentos & Manuais', path: 'equipamentos/manuais' },
+        { name: 'Firmwares & Imagens', path: 'equipamentos/firmware' },
+        { name: 'Fichas de Produtos', path: 'produtos/fichas' },
+        { name: 'Manuais de Produtos', path: 'produtos/manuais' },
+        { name: 'Procedimentos & POPs', path: 'procedimentos' },
+        { name: 'Treinamento', path: 'treinamento' },
+      ],
+    });
+  } catch (err) {
+    console.error('[GET PORTAL FILES ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Contatos Corporativos - Obter lista (Público / Colaborador)
+app.get('/api/portal/contacts', (req, res) => {
+  try {
+    const saved = getSetting('portal_contacts');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return res.json({ success: true, contacts: parsed });
+    }
+    return res.json({ success: true, contacts: DEFAULT_PORTAL_CONTACTS });
+  } catch (err) {
+    console.error('[GET PORTAL CONTACTS ERROR]:', err);
+    return res.json({ success: true, contacts: DEFAULT_PORTAL_CONTACTS });
+  }
+});
+
+// Contatos Corporativos - Obter lista (Admin)
+app.get('/api/admin/contacts', (req, res) => {
+  try {
+    const saved = getSetting('portal_contacts');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return res.json({ success: true, contacts: parsed });
+    }
+    return res.json({ success: true, contacts: DEFAULT_PORTAL_CONTACTS });
+  } catch (err) {
+    console.error('[GET ADMIN CONTACTS ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Contatos Corporativos - Salvar / Atualizar lista (Admin)
+app.post('/api/admin/contacts', (req, res) => {
+  try {
+    const { contacts } = req.body;
+    if (!Array.isArray(contacts)) {
+      return res.status(400).json({ success: false, message: 'A lista de contatos deve ser um array válido.' });
+    }
+
+    setSetting('portal_contacts', JSON.stringify(contacts));
+    return res.json({ success: true, message: 'Lista de contatos corporativos atualizada com sucesso!' });
+  } catch (err) {
+    console.error('[SAVE ADMIN CONTACTS ERROR]:', err);
     return res.status(500).json({ success: false, message: err.message });
   }
 });

@@ -399,6 +399,93 @@ export const apiService = {
     const res = await fetch(`/api/portal/docs/${slug}`);
     return await res.json();
   },
+
+  // Gerenciador de Arquivos & FTP Online
+  getAdminFiles: async (folder: string = ''): Promise<AdminFilesResponse> => {
+    const res = await fetch(`/api/admin/files?folder=${encodeURIComponent(folder)}`);
+    return await res.json();
+  },
+
+  uploadAdminFiles: async (folder: string, files: File[]): Promise<{ success: boolean; message: string; files: any[] }> => {
+    const formData = new FormData();
+    formData.append('folder', folder);
+    files.forEach(file => formData.append('files', file));
+    const res = await fetch(`/api/admin/files/upload?folder=${encodeURIComponent(folder)}`, {
+      method: 'POST',
+      body: formData,
+    });
+    return await res.json();
+  },
+
+  createAdminFolder: async (folder: string, name: string): Promise<{ success: boolean; message: string; folderName?: string }> => {
+    const res = await fetch('/api/admin/files/create-folder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folder, name }),
+    });
+    return await res.json();
+  },
+
+  saveAdminFile: async (folder: string, filename: string, content: string): Promise<{ success: boolean; message: string; publicUrl?: string; relativePath?: string }> => {
+    const res = await fetch('/api/admin/files/save-file', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folder, filename, content }),
+    });
+    return await res.json();
+  },
+
+  getAdminFileContent: async (filePath: string): Promise<AdminFileContentResponse> => {
+    const res = await fetch(`/api/admin/files/content?path=${encodeURIComponent(filePath)}`);
+    return await res.json();
+  },
+
+  renameAdminFile: async (oldPath: string, newName: string): Promise<{ success: boolean; message: string; newName?: string }> => {
+    const res = await fetch('/api/admin/files/rename', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oldPath, newName }),
+    });
+    return await res.json();
+  },
+
+  deleteAdminFile: async (path: string): Promise<{ success: boolean; message: string }> => {
+    const res = await fetch('/api/admin/files', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path }),
+    });
+    return await res.json();
+  },
+
+  // Portal do Colaborador - Arquivos Somente Leitura
+  getPortalFiles: async (folder: string = '', search: string = ''): Promise<PortalFilesResponse> => {
+    const params = new URLSearchParams();
+    if (folder) params.append('folder', folder);
+    if (search) params.append('search', search);
+    const res = await fetch(`/api/portal/files?${params.toString()}`);
+    return await res.json();
+  },
+
+  // Portal do Colaborador - Contatos & Ramais Corporativos
+  getPortalContacts: async (): Promise<PortalContactsResponse> => {
+    const res = await fetch('/api/portal/contacts');
+    return await res.json();
+  },
+
+  getAdminContacts: async (): Promise<PortalContactsResponse> => {
+    const res = await fetch('/api/admin/contacts');
+    return await res.json();
+  },
+
+  saveAdminContacts: async (contacts: PortalContactItem[]): Promise<{ success: boolean; message: string }> => {
+    const res = await fetch('/api/admin/contacts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contacts }),
+    });
+    return await res.json();
+  },
 };
 
 export interface PortalUser {
@@ -428,4 +515,86 @@ export interface PortalDocDetail {
   content: string;
 }
 
+export interface AdminFileItem {
+  name: string;
+  isDirectory: boolean;
+  relativePath: string;
+  size?: number;
+  extension?: string;
+  updatedAt?: string;
+  publicUrl?: string;
+  itemsCount?: number;
+}
 
+export interface AdminFileBreadcrumb {
+  name: string;
+  path: string;
+}
+
+export interface AdminFileStats {
+  totalFiles: number;
+  totalFolders: number;
+  totalSize: number;
+  htmlFiles: number;
+  pdfFiles: number;
+  imageFiles: number;
+}
+
+export interface AdminFilesResponse {
+  success: boolean;
+  currentFolder: string;
+  breadcrumbs: AdminFileBreadcrumb[];
+  items: AdminFileItem[];
+  stats: AdminFileStats;
+  message?: string;
+}
+
+export interface AdminFileContentResponse {
+  success: boolean;
+  filename: string;
+  relativePath: string;
+  publicUrl: string;
+  extension: string;
+  size: number;
+  content: string;
+  message?: string;
+}
+
+export interface PortalFileItem {
+  name: string;
+  relativePath: string;
+  publicUrl: string | null;
+  isDirectory: boolean;
+  size: number;
+  updatedAt: string;
+  extension: string;
+}
+
+export interface PortalFilesResponse {
+  success: boolean;
+  currentFolder?: string;
+  search?: string;
+  breadcrumbs?: Array<{ name: string; path: string }>;
+  items?: PortalFileItem[];
+  categories?: Array<{ name: string; path: string }>;
+  message?: string;
+}
+
+export interface PortalContactItem {
+  id: number;
+  name: string;
+  department: string;
+  role: string;
+  extension: string;
+  phone: string;
+  whatsapp?: string;
+  email: string;
+  notes?: string;
+  isEmergency?: boolean;
+}
+
+export interface PortalContactsResponse {
+  success: boolean;
+  contacts?: PortalContactItem[];
+  message?: string;
+}

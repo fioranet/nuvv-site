@@ -37,6 +37,8 @@ server/data/*.db-wal
 server/data/*.db-shm
 data/*.sqlite*
 data/*.db*
+data/uploads/*
+!data/uploads/.gitkeep
 *.sqlite
 *.sqlite3
 

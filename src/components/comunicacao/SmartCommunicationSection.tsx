@@ -43,72 +43,105 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
 }) => {
   const [activeTab, setActiveTab] = useState<'messaging' | 'voice-ai'>(defaultTab);
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState<number>(0);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [currentTimeSec, setCurrentTimeSec] = useState<number>(0);
   const [audioProgress, setAudioProgress] = useState<number>(0);
   const [activeSpeechBubble, setActiveSpeechBubble] = useState<number>(0);
   const [currentTimeFormatted, setCurrentTimeFormatted] = useState<string>('0:00');
 
   const scenario = VOICE_AI_SCENARIOS[selectedScenarioIndex];
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const dialogueContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Sync audio playback with dialogue stepper
-  const handleTimeUpdate = () => {
-    if (!audioRef.current) return;
-    const current = audioRef.current.currentTime;
-    const duration = audioRef.current.duration || 1;
-    const progressPct = Math.min((current / duration) * 100, 100);
-    setAudioProgress(progressPct);
-
-    // Format current time
-    const mins = Math.floor(current / 60);
-    const secs = Math.floor(current % 60);
-    setCurrentTimeFormatted(`${mins}:${secs < 10 ? '0' : ''}${secs}`);
-
-    // Map time to current dialogue turn
-    const fraction = current / duration;
-    const bubbleIndex = Math.min(
-      Math.floor(fraction * scenario.dialogue.length),
-      scenario.dialogue.length - 1
-    );
-    setActiveSpeechBubble(bubbleIndex);
+  // Converte "M:SS" em segundos
+  const parseSeconds = (timeStr: string): number => {
+    if (!timeStr) return 0;
+    const parts = timeStr.split(':').map(Number);
+    if (parts.length === 2) {
+      return parts[0] * 60 + parts[1];
+    }
+    return 0;
   };
 
-  const handleAudioEnded = () => {
-    setIsPlaying(false);
-    setAudioProgress(0);
-    setActiveSpeechBubble(0);
-    setCurrentTimeFormatted('0:00');
-  };
+  // Loop de simulação automática de atendimento e transcrição (sem áudio)
+  useEffect(() => {
+    if (activeTab !== 'voice-ai' || !isPlaying) return;
+
+    const totalDuration = parseSeconds(scenario.duration) || 24;
+    const intervalTimeMs = 100;
+    const stepSeconds = intervalTimeMs / 1000;
+    const pauseBeforeNextSec = 2.2; // Pausa confortável na última fala antes do próximo cenário
+
+    const interval = setInterval(() => {
+      setCurrentTimeSec((prevTime) => {
+        const nextTime = prevTime + stepSeconds;
+
+        if (nextTime >= totalDuration + pauseBeforeNextSec) {
+          // Muda para o próximo tipo/cenário automaticamente
+          setSelectedScenarioIndex((prevIdx) => (prevIdx + 1) % VOICE_AI_SCENARIOS.length);
+          setActiveSpeechBubble(0);
+          setAudioProgress(0);
+          setCurrentTimeFormatted('0:00');
+          return 0;
+        }
+
+        // Progresso percentual da barra
+        const progressPct = Math.min((nextTime / totalDuration) * 100, 100);
+        setAudioProgress(progressPct);
+
+        // Formatação do tempo decorrido "M:SS"
+        const clampedTime = Math.min(nextTime, totalDuration);
+        const mins = Math.floor(clampedTime / 60);
+        const secs = Math.floor(clampedTime % 60);
+        setCurrentTimeFormatted(`${mins}:${secs < 10 ? '0' : ''}${secs}`);
+
+        // Identifica fala ativa da conversa pelos tempos acumulados
+        let currentBubble = 0;
+        for (let i = 0; i < scenario.dialogue.length; i++) {
+          const itemTime = parseSeconds(scenario.dialogue[i].time);
+          if (nextTime <= itemTime) {
+            currentBubble = i;
+            break;
+          }
+          currentBubble = i;
+        }
+        setActiveSpeechBubble(currentBubble);
+
+        return nextTime;
+      });
+    }, intervalTimeMs);
+
+    return () => clearInterval(interval);
+  }, [activeTab, isPlaying, scenario.duration, scenario.dialogue, selectedScenarioIndex]);
+
+  // Rolagem suave para manter a fala ativa sempre visível
+  useEffect(() => {
+    if (dialogueContainerRef.current) {
+      const activeEl = dialogueContainerRef.current.querySelector(
+        `[data-bubble-index="${activeSpeechBubble}"]`
+      ) as HTMLElement | null;
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  }, [activeSpeechBubble, selectedScenarioIndex]);
+
+  // Reseta rolagem para o topo quando o cenário troca
+  useEffect(() => {
+    if (dialogueContainerRef.current) {
+      dialogueContainerRef.current.scrollTop = 0;
+    }
+  }, [selectedScenarioIndex]);
 
   const handleTogglePlay = () => {
-    if (!audioRef.current) return;
-
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch((err) => {
-          console.warn('Audio playback error:', err);
-          setIsPlaying(true);
-        });
-    }
+    setIsPlaying((prev) => !prev);
   };
 
   const handleSelectScenario = (index: number) => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-    setIsPlaying(false);
+    setSelectedScenarioIndex(index);
+    setCurrentTimeSec(0);
     setAudioProgress(0);
     setActiveSpeechBubble(0);
     setCurrentTimeFormatted('0:00');
-    setSelectedScenarioIndex(index);
   };
 
   const handleConsultantClick = (serviceName: string) => {
@@ -481,13 +514,13 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
               {/* Player Top Header */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
                 <div>
-                  <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-nuvv-purple/30 border border-nuvv-purple/50 text-emerald-400 text-xs font-bold mb-2">
+                  <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold mb-2">
                     <Radio className="w-3.5 h-3.5 animate-pulse" />
-                    <span>DEMONSTRAÇÃO DE AGENTE IA DE VOZ</span>
+                    <span>DEMONSTRAÇÃO INTERATIVA DO AGENTE IA</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-black">Ouça nosso Agente IA de Voz em Ação</h3>
+                  <h3 className="text-2xl sm:text-3xl font-black">Veja o Agente IA de Voz em Ação</h3>
                   <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                    Selecione um cenário de negócio e acompanhe a conversa natural entre o cliente e nosso agente virtual.
+                    Acompanhe a conversa humanizada entre o cliente e nossa IA. A simulação avança automaticamente pelos cenários de atendimento.
                   </p>
                 </div>
 
@@ -498,41 +531,42 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
                       key={sc.id}
                       type="button"
                       onClick={() => handleSelectScenario(idx)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
                         selectedScenarioIndex === idx
-                          ? 'bg-nuvv-purple text-white shadow-md shadow-nuvv-purple/30 ring-1 ring-white/20'
+                          ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 ring-1 ring-emerald-400/40'
                           : 'bg-slate-800 text-gray-400 hover:text-white hover:bg-slate-700'
                       }`}
                     >
-                      {sc.title}
+                      {selectedScenarioIndex === idx && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      )}
+                      <span>{sc.title}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Audio Controls & Waveform Bar */}
+              {/* Controls & Waveform Bar */}
               <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800/80 space-y-4">
-                {/* Hidden Real HTML5 Audio Element */}
-                <audio
-                  ref={audioRef}
-                  src={scenario.audioSrc}
-                  onTimeUpdate={handleTimeUpdate}
-                  onEnded={handleAudioEnded}
-                  preload="auto"
-                />
-
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center space-x-4">
                     <button
                       type="button"
                       onClick={handleTogglePlay}
-                      className="w-14 h-14 rounded-2xl bg-nuvv-purple hover:bg-nuvv-purple-hover text-white flex items-center justify-center shadow-lg shadow-nuvv-purple/40 transition-transform active:scale-95 flex-shrink-0"
+                      title={isPlaying ? 'Pausar simulação' : 'Continuar simulação'}
+                      className="w-14 h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-600/30 transition-transform active:scale-95 flex-shrink-0 cursor-pointer"
                     >
                       {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
                     </button>
                     <div>
-                      <h4 className="text-sm sm:text-base font-black text-white">{scenario.title}</h4>
-                      <p className="text-xs text-gray-400">{scenario.tagline}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="text-sm sm:text-base font-black text-white">{scenario.title}</h4>
+                        <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <span className={`w-1.5 h-1.5 rounded-full bg-emerald-400 ${isPlaying ? 'animate-ping' : ''}`} />
+                          <span>{isPlaying ? 'Reproduzindo Simulação' : 'Pausado'}</span>
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-0.5">{scenario.tagline}</p>
                     </div>
                   </div>
 
@@ -541,7 +575,10 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
                       {scenario.category}
                     </span>
                     <span className="text-xs text-emerald-400 block mt-1 font-mono">
-                      {isPlaying ? currentTimeFormatted : '0:00'} / {scenario.duration}
+                      {currentTimeFormatted} / {scenario.duration}
+                    </span>
+                    <span className="text-[10px] text-gray-400 block mt-0.5">
+                      Cenário {selectedScenarioIndex + 1} de {VOICE_AI_SCENARIOS.length}
                     </span>
                   </div>
                 </div>
@@ -552,7 +589,7 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
                     const activeBar = (i / 48) * 100 <= audioProgress;
                     const baseHeight = ((Math.sin(i * 0.4) + 1.2) / 2.2) * 80 + 15;
                     const animatedHeight = isPlaying
-                      ? `${Math.max(20, Math.min(95, baseHeight + Math.sin(Date.now() / 200 + i) * 15))}%`
+                      ? `${Math.max(18, Math.min(95, baseHeight + Math.sin(currentTimeSec * 5 + i * 0.6) * 20))}%`
                       : `${baseHeight}%`;
 
                     return (
@@ -571,41 +608,64 @@ export const SmartCommunicationSection: React.FC<SmartCommunicationSectionProps>
               {/* Live Interactive Transcript Dialog */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs font-bold text-gray-400 px-1">
-                  <span>Transcrição da Chamada em Tempo Real</span>
-                  <span className="text-emerald-400 flex items-center space-x-1">
+                  <span>Transcrição do Diálogo em Tempo Real</span>
+                  <span className="text-emerald-400 flex items-center space-x-1.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Linguagem Natural Português (Brasil)</span>
+                    <span>Avanço automático entre cenários • Sem áudio</span>
                   </span>
                 </div>
 
-                <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                <div
+                  ref={dialogueContainerRef}
+                  className="space-y-2.5 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar scroll-smooth"
+                >
                   {scenario.dialogue.map((item, idx) => {
                     const isAgent = item.speaker === 'agent';
                     const isCurrent = isPlaying && activeSpeechBubble === idx;
+                    const isPast = idx < activeSpeechBubble;
 
                     return (
                       <div
                         key={idx}
-                        className={`p-3.5 rounded-2xl text-xs transition-all flex items-start space-x-3 ${
+                        data-bubble-index={idx}
+                        className={`p-3.5 rounded-2xl text-xs transition-all duration-300 flex items-start space-x-3 ${
                           isAgent
                             ? isCurrent
-                              ? 'bg-nuvv-purple/30 border border-nuvv-purple text-white shadow-md'
-                              : 'bg-slate-800/80 text-gray-200 border border-slate-700/60'
+                              ? 'bg-slate-800/95 border-2 border-emerald-400 text-white shadow-lg shadow-emerald-500/10'
+                              : isPast
+                              ? 'bg-slate-800/80 text-gray-200 border border-slate-700/60'
+                              : 'bg-slate-800/40 text-gray-400 border border-slate-700/30 opacity-40'
                             : isCurrent
-                            ? 'bg-emerald-950/60 border border-emerald-500/80 text-emerald-100 shadow-md ml-6 sm:ml-12'
-                            : 'bg-slate-950/60 text-gray-300 border border-slate-800/80 ml-6 sm:ml-12'
+                            ? 'bg-emerald-950/80 border-2 border-emerald-400 text-emerald-50 shadow-lg shadow-emerald-500/10 ml-6 sm:ml-12'
+                            : isPast
+                            ? 'bg-slate-950/60 text-gray-300 border border-slate-800/80 ml-6 sm:ml-12'
+                            : 'bg-slate-950/30 text-gray-500 border border-slate-800/30 ml-6 sm:ml-12 opacity-40'
                         }`}
                       >
                         <div
-                          className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-bold ${
-                            isAgent ? 'bg-nuvv-purple text-white' : 'bg-slate-700 text-gray-200'
+                          className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-bold transition-colors ${
+                            isAgent
+                              ? isCurrent
+                                ? 'bg-emerald-600 text-white shadow-xs'
+                                : 'bg-nuvv-purple text-white'
+                              : isCurrent
+                              ? 'bg-emerald-500 text-slate-950 font-black'
+                              : 'bg-slate-700 text-gray-200'
                           }`}
                         >
-                          {isAgent ? <Bot className="w-4 h-4 text-emerald-400" /> : 'C'}
+                          {isAgent ? <Bot className="w-4 h-4" /> : 'C'}
                         </div>
                         <div className="space-y-1 flex-1">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-[11px] text-gray-300">{item.speakerName}</span>
+                            <div className="flex items-center space-x-2">
+                              <span className="font-bold text-[11px] text-gray-300">{item.speakerName}</span>
+                              {isCurrent && (
+                                <span className="inline-flex items-center space-x-1 text-[9px] font-bold text-emerald-300 bg-emerald-950/90 px-2 py-0.5 rounded-full border border-emerald-500/40 animate-pulse">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                  <span>{isAgent ? 'Atendente falando...' : 'Cliente respondendo...'}</span>
+                                </span>
+                              )}
+                            </div>
                             <span className="text-[10px] text-gray-500 font-mono">{item.time}</span>
                           </div>
                           <p className="leading-relaxed">{item.text}</p>

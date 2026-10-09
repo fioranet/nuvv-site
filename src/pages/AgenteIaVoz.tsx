@@ -153,8 +153,8 @@ export const AgenteIaVoz: React.FC<AgenteIaVozProps> = ({
                   href="#demonstracao-voz"
                   className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border-2 border-emerald-300 text-slate-800 font-bold text-sm flex items-center justify-center space-x-2 transition-all active:scale-98 cursor-pointer"
                 >
-                  <Volume2 className="w-4 h-4 text-emerald-600" />
-                  <span>Ouvir Demonstração de Áudio</span>
+                  <Bot className="w-4 h-4 text-emerald-600" />
+                  <span>Ver Simulação da Conversa</span>
                 </a>
               </div>
 

@@ -125,7 +125,12 @@ export function App() {
         <ScrollToTop />
         <Routes>
           <Route path="/portal" element={<PortalColaborador />} />
+          <Route path="/portal/*" element={<PortalColaborador />} />
           <Route path="/colaborador" element={<PortalColaborador />} />
+          <Route path="/colaborador/*" element={<PortalColaborador />} />
+          <Route path="/portal-colaborador" element={<PortalColaborador />} />
+          <Route path="/portal-colaborador/*" element={<PortalColaborador />} />
+          <Route path="*" element={<PortalColaborador />} />
         </Routes>
       </div>
     );
