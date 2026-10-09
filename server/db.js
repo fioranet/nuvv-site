@@ -178,12 +178,23 @@ export function initDatabase() {
       { name: 'browser', type: 'TEXT' },
       { name: 'os', type: 'TEXT' },
       { name: 'ip_address', type: 'TEXT' },
+      { name: 'visitor_id', type: 'TEXT' },
+      { name: 'is_bot', type: 'INTEGER DEFAULT 0' },
+      { name: 'is_admin', type: 'INTEGER DEFAULT 0' },
     ];
     for (const col of pvColumnsToAdd) {
       if (!existingPVCols.includes(col.name)) {
         db.prepare(`ALTER TABLE page_views ADD COLUMN ${col.name} ${col.type}`).run();
       }
     }
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_page_views_visitor_id ON page_views(visitor_id)').run();
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_page_views_is_bot ON page_views(is_bot)').run();
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_page_views_is_admin ON page_views(is_admin)').run();
+
+    // Higienização de dados históricos
+    db.prepare("UPDATE page_views SET is_admin = 1 WHERE path LIKE '/admin%' OR path LIKE '/portal%'").run();
+    db.prepare("UPDATE page_views SET is_bot = 1 WHERE path LIKE '%<%' OR path LIKE '%>%' OR path LIKE '%onerror%' OR path LIKE '%rel=nofollow%'").run();
+    db.prepare("UPDATE page_views SET visitor_id = session_id WHERE visitor_id IS NULL").run();
   } catch (pvMigErr) {
     console.warn('⚠️ Could not run page_views migration:', pvMigErr.message);
   }

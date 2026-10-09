@@ -122,6 +122,8 @@ app.post('/api/track/pageview', (req, res) => {
   try {
     const {
       session_id,
+      visitor_id,
+      session_id,
       path,
       title,
       referrer,
@@ -130,8 +132,16 @@ app.post('/api/track/pageview', (req, res) => {
       utm_source,
       utm_medium,
       utm_campaign,
+      is_admin,
     } = req.body;
     const userAgent = req.headers['user-agent'] || '';
+
+    // Detectar bots, spiders, crawlers e scans automáticos
+    const isBot = /bot|spider|crawl|slurp|bing|yandex|baidu|semrush|ahrefs|dotbot|rogerbot|headless|curl|python|wget|scanner|nikto|sqlmap/i.test(userAgent) ||
+      (path && (path.includes('<') || path.includes('>') || path.includes('onerror=') || path.includes('rel=nofollow') || path.includes('search_term_string')));
+
+    // Detectar acessos administrativos internos
+    const isAdmin = is_admin === true || is_admin === 1 || (path && (path.startsWith('/admin') || path.startsWith('/portal')));
 
     // Extrair IP real do visitante
     const forwarded = req.headers['x-forwarded-for'];
@@ -163,11 +173,13 @@ app.post('/api/track/pageview', (req, res) => {
 
     db.prepare(`
       INSERT INTO page_views (
-        session_id, path, title, referrer, city, device,
-        browser, os, ip_address, utm_source, utm_medium, utm_campaign, user_agent
+        visitor_id, session_id, path, title, referrer, city, device,
+        browser, os, ip_address, utm_source, utm_medium, utm_campaign,
+        is_bot, is_admin, user_agent
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
+      visitor_id || session_id || 'anonymous',
       session_id || 'anonymous',
       path || '/',
       title || 'Nuvv',
@@ -180,6 +192,8 @@ app.post('/api/track/pageview', (req, res) => {
       utm_source || null,
       utm_medium || null,
       utm_campaign || null,
+      isBot ? 1 : 0,
+      isAdmin ? 1 : 0,
       userAgent.slice(0, 200)
     );
 
@@ -221,16 +235,27 @@ app.get('/api/admin/metrics', (req, res) => {
       periodLabel = 'Últimos 30 dias (Mês)';
     }
 
-    // Totais vitalícios (Desde sempre para referência)
-    const lifetimePageviews = db.prepare('SELECT COUNT(*) as count FROM page_views').get().count;
-    const lifetimeUniqueVisitors = db.prepare('SELECT COUNT(DISTINCT session_id) as count FROM page_views').get().count;
+    // Filtro base: IGNORAR estritamente acessos do admin, portal e robôs/scanners automáticos
+    const baseFilter = " AND (path NOT LIKE '/admin%' AND path NOT LIKE '/portal%') AND (is_admin = 0 OR is_admin IS NULL) AND (is_bot = 0 OR is_bot IS NULL)";
+    const fullPeriodFilter = `WHERE 1=1 ${baseFilter} ${dateFilterClause}`;
+
+    // Totais vitalícios públicos (Reais e limpos)
+    const lifetimePageviews = db.prepare(`SELECT COUNT(*) as count FROM page_views WHERE 1=1 ${baseFilter}`).get().count;
+    const lifetimeUniqueVisitors = db.prepare(`SELECT COUNT(DISTINCT COALESCE(visitor_id, session_id)) as count FROM page_views WHERE 1=1 ${baseFilter}`).get().count;
+    const lifetimeSessions = db.prepare(`SELECT COUNT(DISTINCT session_id) as count FROM page_views WHERE 1=1 ${baseFilter}`).get().count;
     const lifetimeViability = db.prepare('SELECT COUNT(*) as count FROM viability_queries').get().count;
     const lifetimeLeads = db.prepare('SELECT COUNT(*) as count FROM commercial_leads').get().count;
     const totalSubscribers = db.prepare("SELECT COUNT(*) as count FROM newsletter_subscribers WHERE status = 'active'").get().count;
 
     // Métricas no Período Selecionado
-    const periodPageviews = db.prepare(`SELECT COUNT(*) as count FROM page_views WHERE 1=1 ${dateFilterClause}`).get(...dateParams).count;
-    const periodUniqueVisitors = db.prepare(`SELECT COUNT(DISTINCT session_id) as count FROM page_views WHERE 1=1 ${dateFilterClause}`).get(...dateParams).count;
+    const periodPageviews = db.prepare(`SELECT COUNT(*) as count FROM page_views ${fullPeriodFilter}`).get(...dateParams).count;
+    const periodUniqueVisitors = db.prepare(`SELECT COUNT(DISTINCT COALESCE(visitor_id, session_id)) as count FROM page_views ${fullPeriodFilter}`).get(...dateParams).count;
+    const periodSessions = db.prepare(`SELECT COUNT(DISTINCT session_id) as count FROM page_views ${fullPeriodFilter}`).get(...dateParams).count;
+
+    // Hoje
+    const todayPageviews = db.prepare(`SELECT COUNT(*) as count FROM page_views WHERE date(created_at) = date('now') ${baseFilter}`).get().count;
+    const todayUniqueVisitors = db.prepare(`SELECT COUNT(DISTINCT COALESCE(visitor_id, session_id)) as count FROM page_views WHERE date(created_at) = date('now') ${baseFilter}`).get().count;
+    const todaySessions = db.prepare(`SELECT COUNT(DISTINCT session_id) as count FROM page_views WHERE date(created_at) = date('now') ${baseFilter}`).get().count;
     
     // Viabilidade e Leads no período
     const periodViability = db.prepare(`SELECT COUNT(*) as count FROM viability_queries WHERE 1=1 ${dateFilterClause}`).get(...dateParams).count;
@@ -240,7 +265,7 @@ app.get('/api/admin/metrics', (req, res) => {
     const topPages = db.prepare(`
       SELECT path, COUNT(*) as views
       FROM page_views
-      WHERE 1=1 ${dateFilterClause}
+      ${fullPeriodFilter}
       GROUP BY path
       ORDER BY views DESC
       LIMIT 10
@@ -250,7 +275,7 @@ app.get('/api/admin/metrics', (req, res) => {
     const devices = db.prepare(`
       SELECT device, COUNT(*) as count
       FROM page_views
-      WHERE 1=1 ${dateFilterClause}
+      ${fullPeriodFilter}
       GROUP BY device
     `).all(...dateParams);
 
@@ -258,7 +283,7 @@ app.get('/api/admin/metrics', (req, res) => {
     const browsers = db.prepare(`
       SELECT COALESCE(browser, 'Outro') as name, COUNT(*) as count
       FROM page_views
-      WHERE 1=1 ${dateFilterClause}
+      ${fullPeriodFilter}
       GROUP BY name
       ORDER BY count DESC
       LIMIT 6
@@ -268,7 +293,7 @@ app.get('/api/admin/metrics', (req, res) => {
     const topCities = db.prepare(`
       SELECT city, COUNT(*) as count
       FROM page_views
-      WHERE city IS NOT NULL AND city != '' ${dateFilterClause}
+      ${fullPeriodFilter} AND city IS NOT NULL AND city != ''
       GROUP BY city
       ORDER BY count DESC
       LIMIT 8
@@ -290,7 +315,7 @@ app.get('/api/admin/metrics', (req, res) => {
         END as source_name,
         COUNT(*) as count
       FROM page_views
-      WHERE 1=1 ${dateFilterClause}
+      ${fullPeriodFilter}
       GROUP BY source_name
       ORDER BY count DESC
       LIMIT 8
@@ -300,7 +325,7 @@ app.get('/api/admin/metrics', (req, res) => {
     const recentPageviews = db.prepare(`
       SELECT id, path, title, referrer, city, device, browser, os, created_at
       FROM page_views
-      WHERE 1=1 ${dateFilterClause}
+      ${fullPeriodFilter}
       ORDER BY id DESC
       LIMIT 15
     `).all(...dateParams);
@@ -311,7 +336,7 @@ app.get('/api/admin/metrics', (req, res) => {
       dailyTrend = db.prepare(`
         SELECT strftime('%H:00', created_at) as date, COUNT(*) as views
         FROM page_views
-        WHERE date(created_at) = date('now')
+        WHERE date(created_at) = date('now') ${baseFilter}
         GROUP BY strftime('%H:00', created_at)
         ORDER BY date ASC
       `).all();
@@ -319,7 +344,7 @@ app.get('/api/admin/metrics', (req, res) => {
       dailyTrend = db.prepare(`
         SELECT date(created_at) as date, COUNT(*) as views
         FROM page_views
-        WHERE 1=1 ${dateFilterClause}
+        ${fullPeriodFilter}
         GROUP BY date(created_at)
         ORDER BY date ASC
         LIMIT 31
@@ -338,14 +363,17 @@ app.get('/api/admin/metrics', (req, res) => {
         lifetime: {
           totalPageviews: lifetimePageviews,
           uniqueVisitors: lifetimeUniqueVisitors,
+          totalSessions: lifetimeSessions,
           totalViability: lifetimeViability,
           totalLeads: lifetimeLeads,
         },
         kpis: {
           totalPageviews: periodPageviews,
-          todayPageviews: db.prepare("SELECT COUNT(*) as count FROM page_views WHERE date(created_at) = date('now')").get().count,
+          todayPageviews,
           uniqueVisitors: periodUniqueVisitors,
-          todayUniqueVisitors: db.prepare("SELECT COUNT(DISTINCT session_id) as count FROM page_views WHERE date(created_at) = date('now')").get().count,
+          todayUniqueVisitors,
+          totalSessions: periodSessions,
+          todaySessions,
           totalViability: periodViability,
           totalSubscribers,
           totalLeads: periodLeads,

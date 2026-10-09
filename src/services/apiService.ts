@@ -101,6 +101,7 @@ export interface AdminMetricsResponse {
   lifetime?: {
     totalPageviews: number;
     uniqueVisitors: number;
+    totalSessions?: number;
     totalViability: number;
     totalLeads: number;
   };
@@ -109,6 +110,8 @@ export interface AdminMetricsResponse {
     todayPageviews: number;
     uniqueVisitors: number;
     todayUniqueVisitors: number;
+    totalSessions?: number;
+    todaySessions?: number;
     totalViability: number;
     totalSubscribers: number;
     totalLeads: number;
@@ -136,11 +139,33 @@ export const apiService = {
   // 1. Page View Tracking Real
   trackPageView: async (path: string, title?: string, city?: string) => {
     try {
+      // Ignorar rotas de administração ou colaboradores e logins de admin
+      if (
+        path.startsWith('/admin') ||
+        path.startsWith('/portal') ||
+        path.startsWith('/portalcolaborador') ||
+        sessionStorage.getItem('nuvv_admin_auth') === 'true'
+      ) {
+        return;
+      }
+
+      // 1. Visitante Único Real (Persistente no dispositivo via localStorage)
+      let visitorId = localStorage.getItem('nuvv_visitor_id');
+      if (!visitorId) {
+        visitorId = 'v_' + Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
+        localStorage.setItem('nuvv_visitor_id', visitorId);
+      }
+
+      // 2. Sessão de Navegação (Expira com 30 min de inatividade ou nova sessão)
+      const now = Date.now();
+      const lastActivity = parseInt(sessionStorage.getItem('nuvv_last_activity') || '0', 10);
       let sessionId = sessionStorage.getItem('nuvv_session_id');
-      if (!sessionId) {
+
+      if (!sessionId || (lastActivity > 0 && now - lastActivity > 30 * 60 * 1000)) {
         sessionId = 'sess_' + Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
         sessionStorage.setItem('nuvv_session_id', sessionId);
       }
+      sessionStorage.setItem('nuvv_last_activity', now.toString());
 
       // Capturar referrer original inicial da sessão (para preservar ao navegar no SPA)
       let initialReferrer = sessionStorage.getItem('nuvv_initial_referrer');
@@ -167,6 +192,7 @@ export const apiService = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           session_id: sessionId,
+          visitor_id: visitorId,
           path,
           title: title || document.title,
           referrer: document.referrer || initialReferrer,
@@ -174,6 +200,7 @@ export const apiService = {
           utm_source,
           utm_medium,
           utm_campaign,
+          is_admin: 0,
         }),
       });
     } catch {

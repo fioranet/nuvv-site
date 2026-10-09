@@ -6,6 +6,15 @@ export function usePageViewTracker(currentCity?: string) {
   const location = useLocation();
 
   useEffect(() => {
+    // Ignorar rotas de administração ou colaboradores e logins de admin
+    if (
+      location.pathname.startsWith('/admin') ||
+      location.pathname.startsWith('/portal') ||
+      sessionStorage.getItem('nuvv_admin_auth') === 'true'
+    ) {
+      return;
+    }
+
     // Delay slightly to ensure document.title is updated by SEO component
     const timer = setTimeout(() => {
       apiService.trackPageView(

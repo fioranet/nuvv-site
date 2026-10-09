@@ -480,8 +480,42 @@ export const AdminDashboard: React.FC = () => {
               )}
             </div>
 
-            {/* 4 KPI Cards (Dinamizados pelo Período Selecionado) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Aviso de Auditoria e Filtro Anti-Bot / Anti-Admin */}
+            <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-gray-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <span>
+                <strong className="text-white">Auditoria Ativa:</strong> Acessos ao painel administrativo (<code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded text-[11px]">/admin</code>, equipe interna) e requisições de robôs/crawlers automatizados foram isolados e não inflam as contagens comerciais.
+              </span>
+            </div>
+
+            {/* 5 KPI Cards (Dinamizados pelo Período Selecionado) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
+                  <span>Visitantes Únicos (Aparelhos)</span>
+                  <Users className="w-4 h-4 text-blue-400" />
+                </div>
+                <div className="text-3xl font-black text-white">
+                  {metrics?.kpis?.uniqueVisitors || 0}
+                </div>
+                <span className="text-[11px] text-gray-400 block">
+                  Hoje: <strong>{metrics?.kpis?.todayUniqueVisitors || 0}</strong> • Vitalício: <strong>{metrics?.lifetime?.uniqueVisitors || metrics?.kpis?.uniqueVisitors || 0}</strong>
+                </span>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
+                  <span>Sessões / Visitas</span>
+                  <Layers className="w-4 h-4 text-indigo-400" />
+                </div>
+                <div className="text-3xl font-black text-white">
+                  {metrics?.kpis?.totalSessions || 0}
+                </div>
+                <span className="text-[11px] text-gray-400 block">
+                  Hoje: <strong>{metrics?.kpis?.todaySessions || 0}</strong> • Vitalício: <strong>{metrics?.lifetime?.totalSessions || metrics?.kpis?.totalSessions || 0}</strong>
+                </span>
+              </div>
+
               <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
                   <span>Pageviews no Período</span>
@@ -492,19 +526,6 @@ export const AdminDashboard: React.FC = () => {
                 </div>
                 <span className="text-[11px] text-gray-400 block">
                   Hoje: <strong>{metrics?.kpis?.todayPageviews || 0}</strong> • Vitalício: <strong>{metrics?.lifetime?.totalPageviews || metrics?.kpis?.totalPageviews || 0}</strong>
-                </span>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-gray-400 text-xs font-bold">
-                  <span>Visitantes Únicos</span>
-                  <Users className="w-4 h-4 text-blue-400" />
-                </div>
-                <div className="text-3xl font-black text-white">
-                  {metrics?.kpis?.uniqueVisitors || 0}
-                </div>
-                <span className="text-[11px] text-gray-400 block">
-                  Hoje: <strong>{metrics?.kpis?.todayUniqueVisitors || 0}</strong> • Vitalício: <strong>{metrics?.lifetime?.uniqueVisitors || metrics?.kpis?.uniqueVisitors || 0}</strong>
                 </span>
               </div>
 
