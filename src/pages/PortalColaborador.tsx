@@ -388,8 +388,8 @@ export const PortalColaborador: React.FC = () => {
 
         <div className="w-full max-w-md bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl relative z-10 space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center font-black text-slate-950 text-2xl mx-auto shadow-lg shadow-cyan-500/20">
-              N
+            <div className="w-16 h-16 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-center mx-auto shadow-xl shadow-cyan-500/10 p-2.5">
+              <img src="/images/nuvv-icon.png" alt="Nuvv Telecom" className="w-full h-full object-contain" />
             </div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight">Portal do Colaborador</h1>
             <p className="text-xs text-slate-400">
@@ -500,8 +500,8 @@ export const PortalColaborador: React.FC = () => {
       <header className="print:hidden bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-500 text-slate-950 flex items-center justify-center font-black text-base shadow-lg shadow-cyan-500/20">
-              N
+            <div className="w-9 h-9 rounded-xl bg-slate-950/90 border border-slate-800 flex items-center justify-center p-1.5 shadow-md shadow-cyan-500/10 flex-shrink-0">
+              <img src="/images/nuvv-icon.png" alt="Nuvv Telecom" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="flex items-center space-x-2">

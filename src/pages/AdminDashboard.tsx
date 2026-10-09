@@ -181,8 +181,8 @@ export const AdminDashboard: React.FC = () => {
       <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-inner">
-              <Lock className="w-7 h-7" />
+            <div className="w-16 h-16 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-center mx-auto shadow-xl p-3">
+              <img src="/images/nuvv-icon.png" alt="Nuvv Telecom" className="w-full h-full object-contain" />
             </div>
             <h2 className="text-2xl font-black tracking-tight">Nuvv Intelligence Hub</h2>
             <p className="text-xs text-gray-400">
@@ -229,8 +229,8 @@ export const AdminDashboard: React.FC = () => {
       <header className="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-black text-sm">
-              NV
+            <div className="w-9 h-9 rounded-xl bg-slate-950/90 border border-slate-800 flex items-center justify-center p-1.5 shadow-md flex-shrink-0">
+              <img src="/images/nuvv-icon.png" alt="Nuvv Telecom" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
