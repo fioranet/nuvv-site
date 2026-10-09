@@ -191,9 +191,29 @@ export function initDatabase() {
     db.prepare('CREATE INDEX IF NOT EXISTS idx_page_views_is_bot ON page_views(is_bot)').run();
     db.prepare('CREATE INDEX IF NOT EXISTS idx_page_views_is_admin ON page_views(is_admin)').run();
 
-    // Higienização de dados históricos
+    // Higienização de dados históricos (excluir admin e bots/crawlers das métricas)
     db.prepare("UPDATE page_views SET is_admin = 1 WHERE path LIKE '/admin%' OR path LIKE '/portal%'").run();
-    db.prepare("UPDATE page_views SET is_bot = 1 WHERE path LIKE '%<%' OR path LIKE '%>%' OR path LIKE '%onerror%' OR path LIKE '%rel=nofollow%'").run();
+    db.prepare(`
+      UPDATE page_views 
+      SET is_bot = 1 
+      WHERE path LIKE '%<%' 
+         OR path LIKE '%>%' 
+         OR path LIKE '%onerror%' 
+         OR path LIKE '%rel=nofollow%'
+         OR user_agent LIKE '%bot%'
+         OR user_agent LIKE '%spider%'
+         OR user_agent LIKE '%crawl%'
+         OR user_agent LIKE '%bing%'
+         OR user_agent LIKE '%ahrefs%'
+         OR user_agent LIKE '%semrush%'
+         OR user_agent LIKE '%dotbot%'
+         OR user_agent LIKE '%slurp%'
+         OR user_agent LIKE '%Nexus 5X%'
+         OR user_agent LIKE '%python%'
+         OR user_agent LIKE '%curl%'
+         OR user_agent LIKE '%wget%'
+         OR user_agent LIKE '%Googlebot%'
+    `).run();
     db.prepare("UPDATE page_views SET visitor_id = session_id WHERE visitor_id IS NULL").run();
   } catch (pvMigErr) {
     console.warn('⚠️ Could not run page_views migration:', pvMigErr.message);
