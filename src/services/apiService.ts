@@ -486,6 +486,26 @@ export const apiService = {
     });
     return await res.json();
   },
+
+  // Abas e Categorias do Portal do Colaborador
+  getPortalFileCategories: async (): Promise<PortalFileCategoriesResponse> => {
+    const res = await fetch('/api/portal/file-categories');
+    return await res.json();
+  },
+
+  getAdminFileCategories: async (): Promise<PortalFileCategoriesResponse> => {
+    const res = await fetch('/api/admin/file-categories');
+    return await res.json();
+  },
+
+  saveAdminFileCategories: async (categories: PortalFileCategory[] | null): Promise<{ success: boolean; message: string; categories?: PortalFileCategory[] }> => {
+    const res = await fetch('/api/admin/file-categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categories }),
+    });
+    return await res.json();
+  },
 };
 
 export interface PortalUser {
@@ -596,5 +616,18 @@ export interface PortalContactItem {
 export interface PortalContactsResponse {
   success: boolean;
   contacts?: PortalContactItem[];
+  message?: string;
+}
+
+export interface PortalFileCategory {
+  name: string;
+  path: string;
+}
+
+export interface PortalFileCategoriesResponse {
+  success: boolean;
+  categories: PortalFileCategory[];
+  availableFolders?: string[];
+  isCustom?: boolean;
   message?: string;
 }

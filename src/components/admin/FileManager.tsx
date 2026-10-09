@@ -23,12 +23,17 @@ import {
   FolderOpen,
   LayoutGrid,
   List,
+  Tag,
+  Sliders,
+  Plus,
+  Bookmark,
 } from 'lucide-react';
 import {
   apiService,
   AdminFileItem,
   AdminFileBreadcrumb,
   AdminFileStats,
+  PortalFileCategory,
 } from '../../services/apiService';
 
 export const FileManager: React.FC = () => {
@@ -42,6 +47,21 @@ export const FileManager: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'html' | 'pdf' | 'image' | 'other'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+
+  // Configuração das Abas do Portal do Colaborador
+  const [isTabsModalOpen, setIsTabsModalOpen] = useState(false);
+  const [tabsList, setTabsList] = useState<PortalFileCategory[]>([]);
+  const [availableFolders, setAvailableFolders] = useState<string[]>([]);
+  const [isCustomTabs, setIsCustomTabs] = useState(false);
+  const [loadingTabs, setLoadingTabs] = useState(false);
+  const [savingTabs, setSavingTabs] = useState(false);
+  const [newTabName, setNewTabName] = useState('');
+  const [newTabPath, setNewTabPath] = useState('');
+
+  // Opções na criação de pasta
+  const [createAsCollaboratorTab, setCreateAsCollaboratorTab] = useState(true);
+  const [tabFriendlyName, setTabFriendlyName] = useState('');
+  const [tabFriendlyNameTouched, setTabFriendlyNameTouched] = useState(false);
 
   // Feedback Toast
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
@@ -138,6 +158,107 @@ export const FileManager: React.FC = () => {
     }
   };
 
+  const loadCollaboratorTabs = async () => {
+    setLoadingTabs(true);
+    try {
+      const res = await apiService.getAdminFileCategories();
+      if (res.success) {
+        setTabsList(res.categories || []);
+        setAvailableFolders(res.availableFolders || []);
+        setIsCustomTabs(Boolean(res.isCustom));
+      }
+    } catch (err) {
+      console.error('Erro ao carregar abas do colaborador:', err);
+    } finally {
+      setLoadingTabs(false);
+    }
+  };
+
+  const handleSaveCollaboratorTabs = async () => {
+    setSavingTabs(true);
+    try {
+      const res = await apiService.saveAdminFileCategories(tabsList);
+      if (res.success) {
+        showNotification('success', res.message || 'Abas salvas com sucesso!');
+        setIsCustomTabs(true);
+        if (res.categories) setTabsList(res.categories);
+      } else {
+        showNotification('error', res.message || 'Erro ao salvar abas.');
+      }
+    } catch (err: any) {
+      showNotification('error', 'Falha ao salvar abas.');
+    } finally {
+      setSavingTabs(false);
+    }
+  };
+
+  const handleResetAutoTabs = async () => {
+    setSavingTabs(true);
+    try {
+      const res = await apiService.saveAdminFileCategories(null);
+      if (res.success) {
+        showNotification('success', 'Abas redefinidas para detecção automática de pastas!');
+        setIsCustomTabs(false);
+        if (res.categories) setTabsList(res.categories);
+      } else {
+        showNotification('error', res.message);
+      }
+    } catch (err: any) {
+      showNotification('error', 'Erro ao redefinir abas automáticas.');
+    } finally {
+      setSavingTabs(false);
+    }
+  };
+
+  const handleAddTabItem = () => {
+    if (!newTabName.trim()) {
+      showNotification('error', 'Informe o nome da aba.');
+      return;
+    }
+    const cleanPath = newTabPath.trim().replace(/^\/+/, '').replace(/\/+$/, '');
+    const updated = [...tabsList, { name: newTabName.trim(), path: cleanPath }];
+    setTabsList(updated);
+    setNewTabName('');
+    setNewTabPath('');
+  };
+
+  const handleRemoveTabItem = (index: number) => {
+    const updated = tabsList.filter((_, i) => i !== index);
+    setTabsList(updated);
+  };
+
+  const handleQuickAddFolderAsTab = async (folderPath: string) => {
+    try {
+      let relPath = folderPath;
+      if (folderPath.startsWith('colaborador/')) {
+        relPath = folderPath.slice('colaborador/'.length);
+      } else if (folderPath === 'colaborador') {
+        relPath = '';
+      }
+
+      const catRes = await apiService.getAdminFileCategories();
+      const existing = catRes.categories || [];
+      if (existing.some((c) => c.path === relPath)) {
+        showNotification('success', 'Esta pasta já está registrada como aba no portal.');
+        return;
+      }
+
+      const parts = relPath.split('/').filter(Boolean);
+      const defaultName = parts.length > 0
+        ? parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1).replace(/[-_]/g, ' ')).join(' > ')
+        : 'Todos os Arquivos';
+
+      const updated = [...existing, { name: defaultName, path: relPath }];
+      const saveRes = await apiService.saveAdminFileCategories(updated);
+      if (saveRes.success) {
+        showNotification('success', `Aba "${defaultName}" adicionada ao Portal do Colaborador!`);
+        loadCollaboratorTabs();
+      }
+    } catch (err) {
+      showNotification('error', 'Erro ao adicionar pasta às abas do colaborador.');
+    }
+  };
+
   const handleCreateFolder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFolderName.trim()) return;
@@ -145,9 +266,38 @@ export const FileManager: React.FC = () => {
     try {
       const res = await apiService.createAdminFolder(currentFolder, newFolderName.trim());
       if (res.success) {
-        showNotification('success', res.message);
+        const isCollabScope = currentFolder === 'colaborador' || currentFolder.startsWith('colaborador/');
+        if (createAsCollaboratorTab && isCollabScope) {
+          try {
+            let relPath = '';
+            if (currentFolder === 'colaborador') {
+              relPath = newFolderName.trim();
+            } else if (currentFolder.startsWith('colaborador/')) {
+              relPath = `${currentFolder.slice('colaborador/'.length)}/${newFolderName.trim()}`;
+            }
+
+            const tabLabel = tabFriendlyName.trim() || newFolderName.trim()
+              .split(/[-_]/)
+              .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+              .join(' ');
+
+            const catRes = await apiService.getAdminFileCategories();
+            const existingCategories = catRes.categories || [];
+            const exists = existingCategories.some((c) => c.path === relPath);
+            if (!exists) {
+              const updated = [...existingCategories, { name: tabLabel, path: relPath }];
+              await apiService.saveAdminFileCategories(updated);
+            }
+          } catch (tabErr) {
+            console.warn('Não foi possível registrar aba do colaborador automaticamente:', tabErr);
+          }
+        }
+
+        showNotification('success', res.message + (createAsCollaboratorTab && isCollabScope ? ' (Aba adicionada ao Portal!)' : ''));
         setIsFolderModalOpen(false);
         setNewFolderName('');
+        setTabFriendlyName('');
+        setTabFriendlyNameTouched(false);
         loadFiles(currentFolder);
       } else {
         showNotification('error', res.message);
@@ -434,12 +584,28 @@ export const FileManager: React.FC = () => {
             type="button"
             onClick={() => {
               setNewFolderName('');
+              setCreateAsCollaboratorTab(currentFolder === 'colaborador' || currentFolder.startsWith('colaborador/'));
+              setTabFriendlyName('');
+              setTabFriendlyNameTouched(false);
               setIsFolderModalOpen(true);
             }}
             className="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 border border-slate-700 text-xs font-bold flex items-center space-x-2 transition-all cursor-pointer"
           >
             <FolderPlus className="w-4 h-4 text-amber-400" />
             <span>Nova Pasta</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              loadCollaboratorTabs();
+              setIsTabsModalOpen(true);
+            }}
+            className="px-3.5 py-2.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-700/60 text-xs font-bold flex items-center space-x-2 transition-all cursor-pointer shadow-sm"
+            title="Determinar e configurar as abas de filtro do Portal do Colaborador"
+          >
+            <Tag className="w-4 h-4 text-cyan-400" />
+            <span>Abas do Colaborador</span>
           </button>
 
           <button
@@ -592,6 +758,53 @@ export const FileManager: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Banner de Pasta do Colaborador & Ações Rápidas de Abas */}
+      {(currentFolder === 'colaborador' || currentFolder.startsWith('colaborador/')) && (
+        <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center space-x-3">
+            <span className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 flex items-center justify-center font-bold text-sm">
+              👥
+            </span>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="font-extrabold text-white">Pasta do Portal do Colaborador</span>
+                <span className="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded border border-cyan-700/50 font-mono">
+                  /colaborador/{currentFolder.slice('colaborador'.length).replace(/^\/+/, '')}
+                </span>
+              </div>
+              <p className="text-slate-400 text-[11px] mt-0.5">
+                Esta pasta é acessada pelos colaboradores como somente leitura e download através das abas do Portal.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {currentFolder !== 'colaborador' && (
+              <button
+                type="button"
+                onClick={() => handleQuickAddFolderAsTab(currentFolder)}
+                className="px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Tornar esta pasta uma aba no Portal do Colaborador"
+              >
+                <Plus className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Definir como Aba</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                loadCollaboratorTabs();
+                setIsTabsModalOpen(true);
+              }}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Gerenciar Abas</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Drag & Drop Dropzone Overlay Wrapper */}
       <div
@@ -1010,15 +1223,55 @@ export const FileManager: React.FC = () => {
                   type="text"
                   required
                   autoFocus
-                  placeholder="ex: documentos, manuais, contratos"
+                  placeholder="ex: equipamentos, manuais, contratos"
                   value={newFolderName}
-                  onChange={(e) => setNewFolderName(e.target.value)}
+                  onChange={(e) => {
+                    setNewFolderName(e.target.value);
+                    if (!tabFriendlyNameTouched) {
+                      setTabFriendlyName(e.target.value);
+                    }
+                  }}
                   className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-sky-500"
                 />
                 <span className="text-[11px] text-gray-500 mt-1 block">
                   A pasta será criada em: <strong>/uploads/{currentFolder ? `${currentFolder}/` : ''}</strong>
                 </span>
               </div>
+
+              {/* Opção para vincular como Aba de Filtro no Portal do Colaborador */}
+              {(currentFolder === 'colaborador' || currentFolder.startsWith('colaborador/')) && (
+                <div className="p-3.5 bg-cyan-950/30 border border-cyan-800/60 rounded-xl space-y-2">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-cyan-300 select-none">
+                    <input
+                      type="checkbox"
+                      checked={createAsCollaboratorTab}
+                      onChange={(e) => setCreateAsCollaboratorTab(e.target.checked)}
+                      className="rounded border-slate-700 bg-slate-800 text-cyan-500 focus:ring-0"
+                    />
+                    <span>Criar como Aba de Filtro no Portal do Colaborador</span>
+                  </label>
+                  {createAsCollaboratorTab && (
+                    <div className="space-y-1 pt-1">
+                      <label className="block text-[11px] text-slate-400">
+                        Nome da Aba para os colaboradores:
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ex: Manuais de ONUs, Firmwares Recentes"
+                        value={tabFriendlyName}
+                        onChange={(e) => {
+                          setTabFriendlyNameTouched(true);
+                          setTabFriendlyName(e.target.value);
+                        }}
+                        className="w-full px-3 py-1.5 bg-slate-900 border border-cyan-700/60 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                      />
+                      <span className="text-[10px] text-slate-400 block">
+                        Aparecerá automaticamente como botão de filtro no topo do portal do colaborador.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="flex justify-end space-x-2 pt-2">
                 <button
@@ -1241,6 +1494,185 @@ export const FileManager: React.FC = () => {
                   className="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black shadow-md shadow-emerald-500/20"
                 >
                   {savingFile ? 'Salvando...' : 'Salvar Alterações'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* MODAL: GERENCIADOR DE ABAS DO PORTAL DO COLABORADOR */}
+      {isTabsModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl p-6 sm:p-8 space-y-6 shadow-2xl animate-scale-up max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-slate-800 pb-4">
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 flex items-center justify-center">
+                    <Tag className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-lg font-black text-white">
+                    Abas & Filtros do Portal do Colaborador
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Determine quais abas aparecem no topo do repositório para os colaboradores navegarem e filtrarem arquivos em <strong>/uploads/colaborador</strong>.
+                </p>
+                <div className="pt-1">
+                  {isCustomTabs ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-700/60 text-[10px] font-bold font-mono">
+                      ● Modo: Abas Personalizadas
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-[10px] font-bold font-mono">
+                      ⚡ Modo: Detecção Automática das Pastas de /colaborador
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsTabsModalOpen(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto space-y-5 custom-scrollbar pr-1">
+              {/* Lista de Abas */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-300">
+                  Abas Atuais ({tabsList.length})
+                </label>
+
+                {loadingTabs ? (
+                  <div className="p-8 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
+                    <RefreshCw className="w-4 h-4 animate-spin text-cyan-400" />
+                    <span>Carregando abas...</span>
+                  </div>
+                ) : tabsList.length === 0 ? (
+                  <div className="p-6 rounded-2xl bg-slate-950/60 border border-slate-800 text-center text-xs text-slate-500">
+                    Nenhuma aba configurada. Adicione uma aba abaixo ou clique em Auto-Detectar.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {tabsList.map((tab, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between gap-3 text-xs"
+                      >
+                        <div className="flex items-center space-x-3 min-w-0">
+                          <span className="w-6 h-6 rounded-lg bg-cyan-500/10 text-cyan-400 font-mono text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+                            {idx + 1}
+                          </span>
+                          <div className="min-w-0">
+                            <span className="font-extrabold text-white truncate block">
+                              {tab.name}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-mono truncate block">
+                              {tab.path ? `/colaborador/${tab.path}` : 'Início / Raiz do Colaborador'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTabItem(idx)}
+                          className="p-1.5 rounded-lg hover:bg-rose-950/60 text-slate-500 hover:text-rose-400 transition-colors"
+                          title="Remover Aba"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Formulário: Adicionar Nova Aba */}
+              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/90 space-y-3">
+                <span className="text-xs font-extrabold text-cyan-300 block flex items-center gap-1.5">
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Adicionar Nova Aba de Filtro</span>
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] text-slate-400 font-bold mb-1">
+                      Nome da Aba
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: Manuais de ONUs"
+                      value={newTabName}
+                      onChange={(e) => setNewTabName(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] text-slate-400 font-bold mb-1">
+                      Pasta em /colaborador
+                    </label>
+                    <select
+                      value={newTabPath}
+                      onChange={(e) => setNewTabPath(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                    >
+                      <option value="">Raiz de /colaborador (Início)</option>
+                      {availableFolders.filter(Boolean).map((folder) => (
+                        <option key={folder} value={folder}>
+                          {folder}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={handleAddTabItem}
+                    className="px-3.5 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs shadow-md shadow-cyan-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Incluir Aba</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-slate-800 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={handleResetAutoTabs}
+                disabled={savingTabs}
+                className="w-full sm:w-auto px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                title="Redefinir para sincronizar automaticamente com todas as pastas de /colaborador"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${savingTabs ? 'animate-spin' : ''}`} />
+                <span>Auto-Detectar Pastas de /colaborador</span>
+              </button>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsTabsModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700 cursor-pointer"
+                >
+                  Fechar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveCollaboratorTabs}
+                  disabled={savingTabs}
+                  className="px-5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs shadow-lg shadow-cyan-500/20 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {savingTabs ? 'Salvando...' : 'Salvar Abas do Portal'}
                 </button>
               </div>
             </div>

@@ -51,6 +51,7 @@ import {
   PortalDocDetail,
   PortalFileItem,
   PortalContactItem,
+  PortalFileCategory,
 } from '../services/apiService';
 import { renderMarkdown } from '../utils/markdownRenderer';
 
@@ -90,6 +91,7 @@ export const PortalColaborador: React.FC = () => {
 
   // Repositório de Arquivos do Colaborador (Somente Leitura / Download)
   const [portalFiles, setPortalFiles] = useState<PortalFileItem[]>([]);
+  const [portalCategories, setPortalCategories] = useState<PortalFileCategory[]>([]);
   const [portalFolder, setPortalFolder] = useState<string>('');
   const [portalBreadcrumbs, setPortalBreadcrumbs] = useState<Array<{ name: string; path: string }>>([
     { name: 'Início', path: '' },
@@ -194,6 +196,9 @@ export const PortalColaborador: React.FC = () => {
         setPortalFiles(res.items);
         if (res.breadcrumbs) setPortalBreadcrumbs(res.breadcrumbs);
         if (res.currentFolder !== undefined) setPortalFolder(res.currentFolder);
+        if (res.categories && res.categories.length > 0) {
+          setPortalCategories(res.categories);
+        }
       }
     } catch (err) {
       console.error('Erro ao buscar arquivos do portal:', err);
@@ -201,6 +206,17 @@ export const PortalColaborador: React.FC = () => {
       setPortalFilesLoading(false);
     }
   };
+
+  // Carregar Abas / Categorias do Portal
+  useEffect(() => {
+    if (user) {
+      apiService.getPortalFileCategories().then((res) => {
+        if (res.success && res.categories) {
+          setPortalCategories(res.categories);
+        }
+      }).catch((err) => console.error('Erro ao carregar categorias do portal:', err));
+    }
+  }, [user]);
 
   // Carregar Contatos Corporativos
   const loadContacts = async () => {
@@ -618,31 +634,30 @@ export const PortalColaborador: React.FC = () => {
             <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-cyan-950/40 border border-slate-800 p-6 sm:p-8 rounded-3xl relative overflow-hidden">
               <div className="relative z-10 max-w-2xl space-y-2">
                 <span className="px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-[10px] font-bold font-mono uppercase">
-                  Repositório Corporativo Somente Leitura
+                  Repositório /colaborador // Somente Leitura & Download
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                   Arquivos, Manuais & Downloads
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                   Acesse firmwares oficiais, manuais de fabricantes de ONUs e roteadores, fichas técnicas de produtos e
-                  documentos homologados pela engenharia Nuvv.
+                  documentos corporativos na pasta exclusiva de colaboradores.
                 </p>
               </div>
             </div>
 
-            {/* Categorias Rápidas */}
+            {/* Categorias & Abas Rápidas (Configuradas pelo Admin ou Auto-Detectadas de /colaborador) */}
             <div className="flex gap-2 overflow-x-auto pb-1 text-xs font-semibold custom-scrollbar">
-              {PRESET_CATEGORIES.map((cat, idx) => {
-                const Icon = cat.icon;
-                const isSelected = portalFolder === cat.folder && !portalSearch;
+              {(portalCategories.length > 0 ? portalCategories : [{ name: 'Todos os Arquivos', path: '' }]).map((cat, idx) => {
+                const isSelected = (portalFolder === cat.path || (!portalFolder && !cat.path)) && !portalSearch;
                 return (
                   <button
-                    key={idx}
+                    key={`${cat.path}-${idx}`}
                     type="button"
                     onClick={() => {
                       setPortalSearch('');
-                      setPortalFolder(cat.folder);
-                      loadPortalFiles(cat.folder, '');
+                      setPortalFolder(cat.path);
+                      loadPortalFiles(cat.path, '');
                     }}
                     className={`px-3.5 py-2 rounded-xl flex items-center gap-2 whitespace-nowrap transition-all border ${
                       isSelected
@@ -650,8 +665,8 @@ export const PortalColaborador: React.FC = () => {
                         : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
                     }`}
                   >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{cat.label}</span>
+                    <Folder className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>{cat.name}</span>
                   </button>
                 );
               })}

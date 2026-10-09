@@ -23,14 +23,18 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Diretório de Uploads Persistentes (data/uploads)
+// Diretório de Uploads Persistentes (data/uploads) e escopo do Colaborador (/uploads/colaborador)
 const uploadsDir = path.resolve(__dirname, '../data/uploads');
+const collaboratorBaseDir = path.resolve(uploadsDir, 'colaborador');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
+if (!fs.existsSync(collaboratorBaseDir)) {
+  fs.mkdirSync(collaboratorBaseDir, { recursive: true });
+}
 
-// Inicializar subpastas padrão caso não existam
-const defaultUploadSubfolders = [
+// Inicializar subpastas padrão dentro de /colaborador
+const defaultCollaboratorSubfolders = [
   'equipamentos/manuais',
   'equipamentos/firmware',
   'produtos/manuais',
@@ -38,8 +42,8 @@ const defaultUploadSubfolders = [
   'procedimentos',
   'treinamento',
 ];
-for (const sub of defaultUploadSubfolders) {
-  const p = path.join(uploadsDir, sub);
+for (const sub of defaultCollaboratorSubfolders) {
+  const p = path.join(collaboratorBaseDir, sub);
   if (!fs.existsSync(p)) {
     fs.mkdirSync(p, { recursive: true });
   }
@@ -1732,12 +1736,89 @@ const DEFAULT_PORTAL_CONTACTS = [
   },
 ];
 
-// Listagem de Arquivos para o Colaborador (SOMENTE LEITURA / DOWNLOAD)
+// Função de segurança para navegação estritamente restrita à pasta /colaborador
+function getSafeCollaboratorPath(subPath = '') {
+  const collaboratorBase = path.resolve(uploadsDir, 'colaborador');
+  if (!fs.existsSync(collaboratorBase)) {
+    fs.mkdirSync(collaboratorBase, { recursive: true });
+  }
+
+  const cleanSub = path.normalize(String(subPath || '')).replace(/^(\.\.[\/\\])+/, '');
+  const parts = cleanSub.split(/[\\/]/).filter(p => p && p !== '..' && p !== '.');
+  const resolved = path.resolve(collaboratorBase, ...parts);
+  if (!resolved.startsWith(collaboratorBase)) {
+    return { resolved: collaboratorBase, relative: '' };
+  }
+  const relative = path.relative(collaboratorBase, resolved).replace(/\\/g, '/');
+  return { resolved, relative };
+}
+
+// Função para obter as abas/categorias do colaborador (customizadas ou auto-detectadas das pastas)
+function getCollaboratorCategories() {
+  const saved = getSetting('portal_file_tabs');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    } catch (_) {}
+  }
+
+  // Auto-descoberta dinâmica de todas as pastas existentes em data/uploads/colaborador
+  const collaboratorBase = path.resolve(uploadsDir, 'colaborador');
+  const tabs = [{ name: 'Todos os Arquivos', path: '' }];
+  if (!fs.existsSync(collaboratorBase)) return tabs;
+
+  function scan(dir, rel = '') {
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          const subRel = rel ? `${rel}/${entry.name}` : entry.name;
+          const parts = subRel.split('/');
+          const label = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1).replace(/[-_]/g, ' ')).join(' > ');
+          tabs.push({ name: label, path: subRel });
+          if (parts.length < 2) {
+            scan(path.join(dir, entry.name), subRel);
+          }
+        }
+      }
+    } catch (_) {}
+  }
+  scan(collaboratorBase, '');
+  return tabs;
+}
+
+function getAllCollaboratorFolderPaths() {
+  const collaboratorBase = path.resolve(uploadsDir, 'colaborador');
+  const list = [''];
+  if (!fs.existsSync(collaboratorBase)) return list;
+
+  function scan(dir, rel = '') {
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          const subRel = rel ? `${rel}/${entry.name}` : entry.name;
+          list.push(subRel);
+          scan(path.join(dir, entry.name), subRel);
+        }
+      }
+    } catch (_) {}
+  }
+  scan(collaboratorBase, '');
+  return list;
+}
+
+// Listagem de Arquivos para o Colaborador (SOMENTE LEITURA / DOWNLOAD - ESCOPO EXCLUSIVO: /colaborador)
 app.get('/api/portal/files', (req, res) => {
   try {
     const rawFolder = req.query.folder || '';
     const searchQuery = (req.query.search || '').trim().toLowerCase();
-    const { resolved: targetDir, relative: currentRelative } = getSafeUploadPath(rawFolder);
+    const { resolved: targetDir, relative: currentRelative } = getSafeCollaboratorPath(rawFolder);
+    const collaboratorBase = path.resolve(uploadsDir, 'colaborador');
+    const categories = getCollaboratorCategories();
 
     if (!fs.existsSync(targetDir)) {
       return res.json({
@@ -1745,18 +1826,11 @@ app.get('/api/portal/files', (req, res) => {
         currentFolder: currentRelative,
         breadcrumbs: [{ name: 'Início', path: '' }],
         items: [],
-        categories: [
-          { name: 'Equipamentos & Manuais', path: 'equipamentos/manuais' },
-          { name: 'Firmwares & Imagens', path: 'equipamentos/firmware' },
-          { name: 'Fichas de Produtos', path: 'produtos/fichas' },
-          { name: 'Manuais de Produtos', path: 'produtos/manuais' },
-          { name: 'Procedimentos & POPs', path: 'procedimentos' },
-          { name: 'Treinamento', path: 'treinamento' },
-        ],
+        categories,
       });
     }
 
-    // Busca recursiva global caso haja termo de pesquisa
+    // Busca recursiva global EXCLUSIVAMENTE DENTRO de /uploads/colaborador
     if (searchQuery) {
       const results = [];
       const searchRecursive = (dir, rel) => {
@@ -1773,7 +1847,7 @@ app.get('/api/portal/files', (req, res) => {
                 results.push({
                   name: entry.name,
                   relativePath: itemRelative,
-                  publicUrl: `/uploads/${itemRelative}`,
+                  publicUrl: `/uploads/colaborador/${itemRelative}`,
                   isDirectory: false,
                   size: stat.size,
                   updatedAt: stat.mtime.toISOString(),
@@ -1787,17 +1861,18 @@ app.get('/api/portal/files', (req, res) => {
         }
       };
 
-      searchRecursive(uploadsDir, '');
+      searchRecursive(collaboratorBase, '');
 
       return res.json({
         success: true,
         currentFolder: currentRelative,
         search: searchQuery,
         items: results,
+        categories,
       });
     }
 
-    // Listagem normal da pasta solicitada
+    // Listagem da pasta solicitada (dentro do escopo /colaborador)
     const entries = fs.readdirSync(targetDir, { withFileTypes: true });
     const items = [];
 
@@ -1809,7 +1884,7 @@ app.get('/api/portal/files', (req, res) => {
         items.push({
           name: entry.name,
           relativePath: itemRelative,
-          publicUrl: entry.isDirectory() ? null : `/uploads/${itemRelative}`,
+          publicUrl: entry.isDirectory() ? null : `/uploads/colaborador/${itemRelative}`,
           isDirectory: entry.isDirectory(),
           size: entry.isDirectory() ? 0 : stat.size,
           updatedAt: stat.mtime.toISOString(),
@@ -1827,7 +1902,7 @@ app.get('/api/portal/files', (req, res) => {
       return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
     });
 
-    // Construção de Breadcrumbs amigáveis
+    // Construção de Breadcrumbs relativos à raiz /colaborador
     const breadcrumbParts = currentRelative ? currentRelative.split('/') : [];
     const breadcrumbs = [{ name: 'Início', path: '' }];
     let accum = '';
@@ -1841,17 +1916,77 @@ app.get('/api/portal/files', (req, res) => {
       currentFolder: currentRelative,
       breadcrumbs,
       items,
-      categories: [
-        { name: 'Equipamentos & Manuais', path: 'equipamentos/manuais' },
-        { name: 'Firmwares & Imagens', path: 'equipamentos/firmware' },
-        { name: 'Fichas de Produtos', path: 'produtos/fichas' },
-        { name: 'Manuais de Produtos', path: 'produtos/manuais' },
-        { name: 'Procedimentos & POPs', path: 'procedimentos' },
-        { name: 'Treinamento', path: 'treinamento' },
-      ],
+      categories,
     });
   } catch (err) {
     console.error('[GET PORTAL FILES ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Obter Abas/Categorias do Colaborador (Público/Portal)
+app.get('/api/portal/file-categories', (req, res) => {
+  try {
+    return res.json({
+      success: true,
+      categories: getCollaboratorCategories(),
+    });
+  } catch (err) {
+    console.error('[GET PORTAL CATEGORIES ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Obter Abas/Categorias e Pastas Disponíveis (Admin)
+app.get('/api/admin/file-categories', (req, res) => {
+  try {
+    const isCustom = Boolean(getSetting('portal_file_tabs'));
+    return res.json({
+      success: true,
+      categories: getCollaboratorCategories(),
+      availableFolders: getAllCollaboratorFolderPaths(),
+      isCustom,
+    });
+  } catch (err) {
+    console.error('[GET ADMIN CATEGORIES ERROR]:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Salvar / Definir Abas/Categorias do Colaborador (Admin)
+app.post('/api/admin/file-categories', (req, res) => {
+  try {
+    const { categories } = req.body;
+    if (categories === null || (Array.isArray(categories) && categories.length === 0)) {
+      // Resetar para auto-detecção
+      setSetting('portal_file_tabs', '');
+      return res.json({
+        success: true,
+        message: 'Abas resetadas para detecção automática das pastas de /colaborador.',
+        categories: getCollaboratorCategories(),
+      });
+    }
+
+    if (!Array.isArray(categories)) {
+      return res.status(400).json({ success: false, message: 'Formato inválido para abas.' });
+    }
+
+    // Normalizar itens
+    const valid = categories
+      .filter(c => c && c.name && typeof c.name === 'string')
+      .map(c => ({
+        name: c.name.trim(),
+        path: String(c.path || '').trim().replace(/^\/+/, '').replace(/\/+$/, ''),
+      }));
+
+    setSetting('portal_file_tabs', JSON.stringify(valid));
+    return res.json({
+      success: true,
+      message: 'Abas do Portal do Colaborador atualizadas com sucesso!',
+      categories: valid,
+    });
+  } catch (err) {
+    console.error('[SAVE ADMIN CATEGORIES ERROR]:', err);
     return res.status(500).json({ success: false, message: err.message });
   }
 });
