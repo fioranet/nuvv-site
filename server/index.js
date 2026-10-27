@@ -2215,7 +2215,15 @@ const distPath = path.resolve(__dirname, '../dist');
 
 if (fs.existsSync(distPath)) {
   console.log(`📦 Serving static files from: ${distPath}`);
-  app.use(express.static(distPath));
+  app.use(express.static(distPath, {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('index.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      }
+    }
+  }));
 
   // SPA fallback for non-API routes (Express 5 compatible)
   app.use((req, res, next) => {
@@ -2223,6 +2231,9 @@ if (fs.existsSync(distPath)) {
       return res.status(404).json({ error: 'Endpoint não encontrado' });
     }
     if (req.method === 'GET' || req.method === 'HEAD') {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       return res.sendFile(path.join(distPath, 'index.html'));
     }
     next();
