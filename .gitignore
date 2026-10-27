@@ -45,6 +45,7 @@ data/uploads/*
 # Temp files
 .tmp
 .temp
+*.backup.*
 
 # Reference & legacy
 _reference/

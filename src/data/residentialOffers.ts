@@ -179,7 +179,7 @@ export const getPackageDigitalApps = (pkg: PackageOffer): DigitalAppInfo[] => {
   return apps;
 };
 
-export type ResidentialTabId = 'destaques' | 'completo' | 'essencial' | 'basico' | 'internet';
+export type ResidentialTabId = 'destaques' | 'tv' | 'saude' | 'internet' | 'completo' | 'essencial' | 'basico';
 
 /**
  * CATÁLOGO DE PLANOS ORGANIZADOS POR ABA
@@ -278,7 +278,181 @@ export const RESIDENTIAL_TAB_OFFERS: Record<ResidentialTabId, PackageOffer[]> = 
   ],
 
   // --------------------------------------------------------------------------
-  // ABA 2: COMPLETO (Grade máxima de canais ao vivo)
+  // ABA: TV (Planos Básico, Essencial e Completo)
+  // --------------------------------------------------------------------------
+  tv: [
+    {
+      id: 'tv-basico-padrao',
+      category: 'completo',
+      badge: 'BÁSICO (28 CANAIS)',
+      badgeColor: 'slate',
+      title: 'Básico',
+      tagline: '28 canais selecionados com TV aberta e variedades pelo menor custo de TV.',
+      channelsCount: 28,
+      channelsTitle: 'Grade de Canais Básico (28 Canais)',
+      channelsImage: '/images/external/tv_basico.png',
+      catalogImage: '/images/external/cat_completo.png',
+      heroLogos: [
+        { name: 'Watch', logo: '/images/external/watch-.png' },
+      ],
+      contentHighlights: [
+        '28 canais de TV ao vivo com grade aberta e variedades',
+        'App Awdio incluso com conteúdos em áudio',
+        '100% Fibra óptica com Wi-Fi incluso',
+        'Transmissão leve no app NuvvPlay (Watch)',
+      ],
+      basePrice400M: 109.80,
+      originalBasePrice: 139.90,
+      defaultSpeed: '400',
+      detailsSummary: 'Grade essencial de canais para quem quer TV ao vivo gastando muito pouco.',
+    },
+    {
+      id: 'tv-essencial-padrao',
+      category: 'completo',
+      badge: 'ESSENCIAL (68 CANAIS)',
+      badgeColor: 'cyan',
+      title: 'Essencial',
+      tagline: '68 canais de TV ao vivo com notícias, entretenimento e variedades.',
+      channelsCount: 68,
+      channelsTitle: 'Grade de Canais Essencial (68 Canais)',
+      channelsImage: '/images/external/tv_essencial.png',
+      catalogImage: '/images/external/cat_completo.png',
+      hasCanaisGlobo: false,
+      heroLogos: [
+        { name: 'Watch', logo: '/images/external/watch-.png' },
+      ],
+      contentHighlights: [
+        '68 canais de TV ao vivo em Full HD',
+        'Programação de notícias, séries e entretenimento',
+        'App Awdio com audiobooks, podcasts e conteúdos',
+        'Acesso simultâneo no NuvvPlay (Watch)',
+      ],
+      basePrice400M: 129.80,
+      originalBasePrice: 169.90,
+      defaultSpeed: '400',
+      detailsSummary: 'Excelente equilíbrio de canais de TV ao vivo para o dia a dia da família.',
+    },
+    {
+      id: 'tv-completo-padrao',
+      category: 'completo',
+      badge: 'COMPLETO (93 CANAIS)',
+      badgeColor: 'purple',
+      isPopular: true,
+      title: 'Completo',
+      tagline: 'Grade ampla com 93 canais ao vivo, variedades, infantis, Premiere e Combate inclusos.',
+      channelsCount: 93,
+      channelsTitle: 'Grade de Canais Completo (93 Canais)',
+      channelsImage: '/images/external/tv_completo.png',
+      catalogImage: '/images/external/cat_completo.png',
+      hasCanaisGlobo: false,
+      heroLogos: [
+        { name: 'Watch', logo: '/images/external/watch-.png' },
+        { name: 'Premiere', logo: '/images/external/premiere.png' },
+        { name: 'Combate', logo: '/images/external/combate.png' },
+      ],
+      contentHighlights: [
+        'Premiere e Combate inclusos (jogos e grandes lutas)',
+        '93 canais de TV ao vivo com esportes e infantis',
+        'App Awdio com podcasts e audiobooks',
+        'Plataforma completa NuvvPlay (Watch)',
+      ],
+      basePrice400M: 159.80,
+      originalBasePrice: 209.90,
+      defaultSpeed: '400',
+      detailsSummary: 'Grade completa com esportes ao vivo, canais infantis e variedades.',
+    },
+  ],
+
+  // --------------------------------------------------------------------------
+  // ABA: SAÚDE (Fibra + Telemedicina 24h & Cuidado)
+  // --------------------------------------------------------------------------
+  saude: [
+    {
+      id: 'saude-essencial-ind',
+      category: 'saude',
+      badge: 'ESSENCIAL INDIVIDUAL',
+      badgeColor: 'cyan',
+      title: 'Essencial Individual',
+      tagline: '100% Fibra Óptica somada a Telemedicina 24h ilimitada por vídeo para o titular sem filas.',
+      channelsCount: 18,
+      channelsTitle: 'Grade de Canais Cortesia (18 Canais)',
+      channelsImage: '/images/external/tv_cortesia.png',
+      catalogImage: '/images/external/cat_min.png',
+      heroLogos: [
+        { name: 'Watch', logo: '/images/external/watch-.png' },
+        { name: 'TurboMed 24h', logo: '/images/apps/turbomed_icon.svg' },
+      ],
+      contentHighlights: [
+        'Telemedicina 24 horas por dia, 7 dias por semana para o titular',
+        'Pronto atendimento por vídeo em até 10 minutos',
+        'Acesso a 19 especialidades médicas, receitas e atestados válidos',
+        'Desconto de até 80% em farmácias credenciadas e exames laboratoriais',
+        '100% Fibra Óptica com Wi-Fi incluso e 18 canais cortesia',
+      ],
+      basePrice400M: 109.80,
+      originalBasePrice: 139.90,
+      defaultSpeed: '400',
+      detailsSummary: 'Plano com 100% fibra óptica e cobertura de telemedicina 24h para você cuidar da sua saúde com agilidade e economia.',
+    },
+    {
+      id: 'saude-premium-ind',
+      category: 'saude',
+      badge: 'PREMIUM INDIVIDUAL',
+      badgeColor: 'purple',
+      title: 'Premium Individual',
+      tagline: 'Telemedicina 24h online sem filas + consultas presenciais em até 50 especialidades com preços reduzidos.',
+      channelsCount: 18,
+      channelsTitle: 'Grade de Canais Cortesia (18 Canais)',
+      channelsImage: '/images/external/tv_cortesia.png',
+      catalogImage: '/images/external/cat_min.png',
+      heroLogos: [
+        { name: 'Watch', logo: '/images/external/watch-.png' },
+        { name: 'TurboMed 24h', logo: '/images/apps/turbomed_icon.svg' },
+      ],
+      contentHighlights: [
+        'Todas as vantagens da Telemedicina 24h online ilimitada',
+        'Consultas presenciais em até 50 especialidades com preços reduzidos',
+        'Rede médica presencial credenciada em todo o Brasil',
+        'Tratamentos odontológicos com desconto e parcelamento em 12x',
+        '100% Fibra Óptica com Wi-Fi incluso e 18 canais cortesia',
+      ],
+      basePrice400M: 114.80,
+      originalBasePrice: 144.90,
+      defaultSpeed: '400',
+      detailsSummary: 'Plano completo com telemedicina online 24h e atendimento médico presencial em ampla rede credenciada.',
+    },
+    {
+      id: 'saude-premium-fam',
+      category: 'saude',
+      badge: 'PREMIUM FAMILIAR',
+      badgeColor: 'emerald',
+      isPopular: true,
+      title: 'Premium Familiar',
+      tagline: 'A máxima cobertura em saúde online e presencial para o titular e seus dependentes.',
+      channelsCount: 18,
+      channelsTitle: 'Grade de Canais Cortesia (18 Canais)',
+      channelsImage: '/images/external/tv_cortesia.png',
+      catalogImage: '/images/external/cat_min.png',
+      heroLogos: [
+        { name: 'Watch', logo: '/images/external/watch-.png' },
+        { name: 'TurboMed 24h', logo: '/images/apps/turbomed_icon.svg' },
+      ],
+      contentHighlights: [
+        'Telemedicina 24h sem limite de uso para titular + dependentes',
+        'Pronto atendimento pediátrico e clínico em até 10 minutos',
+        'Consultas médicas presenciais em mais de 50 especialidades',
+        'Odontologia familiar com tabela diferenciada e descontos de até 80% em farmácias',
+        '100% Fibra Óptica com Wi-Fi incluso e 18 canais cortesia',
+      ],
+      basePrice400M: 124.80,
+      originalBasePrice: 159.90,
+      defaultSpeed: '400',
+      detailsSummary: 'Cobertura abrangente de saúde para toda a família: pronto atendimento pediátrico e clínico 24h por vídeo para dependentes e consultas presenciais.',
+    },
+  ],
+
+  // --------------------------------------------------------------------------
+  // ABA: COMPLETO (Grade máxima de canais ao vivo - mantido para compatibilidade)
   // --------------------------------------------------------------------------
   completo: [
     {

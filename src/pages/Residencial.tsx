@@ -553,15 +553,34 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
             </p>
           </div>
 
-          {/* Seletor de Abas por Nível de TV & Ofertas (Scroll horizontal no mobile com fácil leitura e toque) */}
+          {/* Seletor de Abas por Nível de TV & Ofertas (Tamanhos harmoniosos e descrições comerciais de vendas) */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2.5 sm:gap-3.5 overflow-x-auto scrollbar-none pb-2 px-1 max-w-full sm:flex-wrap sm:justify-center">
+            <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 overflow-x-auto sm:overflow-visible scrollbar-none pb-2 sm:pb-0 px-1 sm:px-0 max-w-6xl mx-auto">
               {[
-                { id: 'destaques', label: 'Super Ofertas', sublabel: 'Combos Prontos', icon: Sparkles },
-                { id: 'completo', label: 'Completo', sublabel: 'Grade Máxima', icon: Crown },
-                { id: 'essencial', label: 'Essencial', sublabel: 'Filmes & Séries', icon: Tv },
-                { id: 'basico', label: 'Básico', sublabel: 'Super Econômico', icon: Layers },
-                { id: 'internet', label: 'Só Fibra', sublabel: 'TV Cortesia', icon: Wifi },
+                {
+                  id: 'destaques',
+                  label: 'Super Ofertas',
+                  sublabel: 'Muito Conteúdo!',
+                  icon: Sparkles,
+                },
+                {
+                  id: 'tv',
+                  label: 'Combo TV',
+                  sublabel: 'TV ao Vivo & Streaming',
+                  icon: Tv,
+                },
+                {
+                  id: 'saude',
+                  label: 'Combo Saúde',
+                  sublabel: 'Telemedicina 24h',
+                  icon: HeartPulse,
+                },
+                {
+                  id: 'internet',
+                  label: 'Só Fibra',
+                  sublabel: 'Internet Pura & Wi-Fi',
+                  icon: Wifi,
+                },
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isSelected = activeTab === tab.id;
@@ -573,23 +592,29 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
                       setActiveTab(tab.id as ResidentialTabId);
                       setActiveCardCarouselIndex(0);
                     }}
-                    className={`flex items-center space-x-3 sm:space-x-3.5 px-4.5 py-3 sm:px-6 sm:py-3.5 rounded-2xl transition-all cursor-pointer flex-shrink-0 ${
+                    className={`flex items-center space-x-3 px-3.5 sm:px-4 py-3.5 rounded-2xl transition-all cursor-pointer flex-shrink-0 min-w-[225px] sm:min-w-0 w-auto sm:w-full ${
                       isSelected
-                        ? 'bg-nuvv-dark text-white shadow-lg ring-2 ring-nuvv-dark scale-102'
-                        : 'bg-white hover:bg-slate-50 text-slate-800 border-2 border-slate-200/80 shadow-xs hover:border-slate-300 hover:scale-101'
+                        ? 'bg-nuvv-dark text-white shadow-lg ring-2 ring-nuvv-dark -translate-y-0.5'
+                        : 'bg-white hover:bg-slate-50 text-slate-800 border-2 border-slate-200/90 shadow-xs hover:border-nuvv-purple/40 hover:-translate-y-0.5'
                     }`}
                   >
                     <div
-                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${
-                        isSelected ? 'bg-nuvv-purple text-white shadow-xs' : 'bg-slate-100 text-nuvv-purple'
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${
+                        isSelected
+                          ? tab.id === 'saude'
+                            ? 'bg-rose-600 text-white shadow-xs'
+                            : 'bg-nuvv-purple text-white shadow-xs'
+                          : 'bg-slate-100 text-nuvv-purple'
                       }`}
                     >
                       <Icon className="w-5 h-5" />
                     </div>
-                    <div className="text-left">
-                      <span className="block text-sm sm:text-base font-black leading-tight tracking-tight">{tab.label}</span>
+                    <div className="text-left min-w-0 flex-1">
+                      <span className="block text-sm sm:text-base font-black leading-tight tracking-tight whitespace-nowrap">
+                        {tab.label}
+                      </span>
                       <span
-                        className={`text-xs sm:text-[13px] font-semibold block mt-0.5 leading-tight ${
+                        className={`text-xs font-semibold block mt-0.5 leading-tight whitespace-nowrap ${
                           isSelected ? 'text-slate-300' : 'text-slate-500'
                         }`}
                       >
@@ -601,22 +626,19 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
               })}
             </div>
 
-            {/* Subtítulo dinâmico explicativo da categoria selecionada */}
-            <div className="text-center text-xs text-slate-500 font-medium max-w-xl mx-auto px-4">
+            {/* Subtítulo dinâmico explicativo da categoria selecionada (Copy de vendas persuasiva) */}
+            <div className="text-center text-xs sm:text-sm text-slate-600 font-medium max-w-2xl mx-auto px-4">
               {activeTab === 'destaques' && (
-                <span>⭐ Combos prontos mais vantajosos com os melhores streamings e descontos inclusos.</span>
+                <span>⭐ <strong>Super Ofertas:</strong> muito conteúdo com os streamings mais amados e a maior economia do mês.</span>
               )}
-              {activeTab === 'completo' && (
-                <span>👑 Grade máxima de canais ao vivo com Premiere, Combate e opção de Telecine.</span>
+              {activeTab === 'tv' && (
+                <span>📺 <strong>Experiência Completa:</strong> canais ao vivo, esportes, filmes, notícias e entretenimento completo para toda a família.</span>
               )}
-              {activeTab === 'essencial' && (
-                <span>🎯 Canais populares da TV por assinatura com opções modulares de Telecine ou HBO Max.</span>
-              )}
-              {activeTab === 'basico' && (
-                <span>💡 Grade essencial com canais abertos e variedades pelo menor custo mensal.</span>
+              {activeTab === 'saude' && (
+                <span>🩺 <strong>Cuidado Médico Imediato:</strong> consultas 24h por vídeo sem filas, receitas no celular e descontos em farmácias com fibra ultraestável.</span>
               )}
               {activeTab === 'internet' && (
-                <span>🚀 Ultravelocidade pura 100% fibra óptica com Wi-Fi incluso e 18 canais cortesia.</span>
+                <span>🚀 <strong>Conexão Pura & Veloz:</strong> ultravelocidade 100% fibra dedicada, Wi-Fi incluso e máxima estabilidade pelo menor custo.</span>
               )}
             </div>
           </div>
@@ -1149,67 +1171,70 @@ export const Residencial: React.FC<ResidencialPageProps> = ({
             );
           })()}
 
-          {/* GAP DE ADICIONAIS E SERVIÇOS EXTRAS (Fluido, Leve e Elegante) */}
-          {/* GAP DE ADICIONAIS E SERVIÇOS EXTRAS -> DIRECIONAMENTO PARA O PLANÔMETRO COMPLETO */}
+          {/* GAP DE ADICIONAIS E SERVIÇOS EXTRAS -> DIRECIONAMENTO PARA O PLANÔMETRO COMPLETO (DESTAQUE ELEVADO) */}
           <div className="max-w-6xl mx-auto pt-6">
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200/90 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-6">
-              <div className="space-y-2 text-center lg:text-left flex-1">
-                <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-purple-50 text-nuvv-purple text-[10px] font-black uppercase tracking-wider">
-                  <Sparkles className="w-3 h-3 text-nuvv-purple" />
-                  <span>Personalize seu Combo • Adicionais a partir de R$ 9,90</span>
+            <div className="relative p-0.5 sm:p-1 rounded-[28px] bg-gradient-to-r from-nuvv-purple via-indigo-500 to-emerald-400 shadow-xl shadow-nuvv-purple/15">
+              <div className="p-6 sm:p-8 rounded-[26px] bg-gradient-to-br from-white via-purple-50/40 to-slate-50 flex flex-col lg:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                {/* Glow decorativo sutil de fundo */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-nuvv-purple/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="space-y-2.5 text-center lg:text-left flex-1 relative z-10">
+                  <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-nuvv-purple/10 border border-nuvv-purple/30 text-nuvv-purple text-[10.5px] font-black uppercase tracking-wider shadow-2xs">
+                    <Sparkles className="w-3.5 h-3.5 text-nuvv-purple fill-current" />
+                    <span>Personalize seu Combo • Adicionais a partir de R$ 9,90</span>
+                  </div>
+                  <h4 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
+                    Quer montar um combo 100% sob medida com todos os produtos?
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed font-medium">
+                    Personalize velocidade, canais de TV, Telemedicina 24h e segurança digital diretamente no nosso simulador completo.
+                  </p>
+
+                  {/* Badges dos Serviços Extras em Pílulas Interativas */}
+                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1.5 sm:gap-2 pt-1 text-xs font-bold text-slate-700">
+                    {/* 1. Telemedicina 24h */}
+                    <span
+                      className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-xs cursor-default transition-all"
+                      title="Consultas online 24h por vídeo com receitas e atestados"
+                    >
+                      <HeartPulse className="w-3.5 h-3.5 text-rose-500" />
+                      <span>Telemedicina 24h <span className="text-slate-400 font-medium">(+R$ 9,90)</span></span>
+                    </span>
+
+                    {/* 2. Segurança Digital */}
+                    <span
+                      className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-xs cursor-default transition-all"
+                      title="Proteção contra vírus e navegação segura para toda a família"
+                    >
+                      <Zap className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Segurança Digital <span className="text-slate-400 font-medium">(+R$ 9,90)</span></span>
+                    </span>
+
+                    {/* 3. Telefonia Fixa */}
+                    <span
+                      className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-xs cursor-default transition-all"
+                      title="Ligações ilimitadas para fixos de todo o Brasil e celulares locais"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-nuvv-purple" />
+                      <span>Telefonia Fixa Ilimitada <span className="text-slate-400 font-medium">(+R$ 19,90)</span></span>
+                    </span>
+                  </div>
                 </div>
-                <h4 className="text-base sm:text-xl font-black text-slate-900">
-                  Quer montar um combo 100% sob medida com todos os produtos?
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
-                  Personalize velocidade, canais de TV, Telemedicina 24h e segurança digital diretamente no nosso simulador completo.
-                </p>
 
-                {/* Badges dos Serviços Extras em Pílulas Interativas */}
-                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1.5 sm:gap-2 pt-1 text-xs font-bold text-slate-700">
-                  {/* 1. Telemedicina 24h */}
-                  <span
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-2xs cursor-default"
-                    title="Consultas online 24h por vídeo com receitas e atestados"
+                {/* Botão de Ação Direto para o Planômetro */}
+                <div className="flex flex-col items-center lg:items-end flex-shrink-0 relative z-10">
+                  <button
+                    type="button"
+                    onClick={() => navigate('/residencial/monte-seu-combo')}
+                    className="px-7 py-4 rounded-2xl bg-nuvv-purple hover:bg-nuvv-purple-hover text-white font-black text-xs sm:text-sm transition-all shadow-xl shadow-nuvv-purple/35 flex items-center space-x-2.5 cursor-pointer active:scale-98 hover:scale-102"
                   >
-                    <HeartPulse className="w-3.5 h-3.5 text-rose-500" />
-                    <span>Telemedicina 24h <span className="text-slate-400 font-medium">(+R$ 9,90)</span></span>
-                  </span>
-
-                  {/* 2. Segurança Digital */}
-                  <span
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-2xs cursor-default"
-                    title="Proteção contra vírus e navegação segura para toda a família"
-                  >
-                    <Zap className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Segurança Digital <span className="text-slate-400 font-medium">(+R$ 9,90)</span></span>
-                  </span>
-
-                  {/* 3. Telefonia Fixa */}
-                  <span
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-2xs cursor-default"
-                    title="Ligações ilimitadas para fixos de todo o Brasil e celulares locais"
-                  >
-                    <Phone className="w-3.5 h-3.5 text-nuvv-purple" />
-                    <span>Telefonia Fixa Ilimitada <span className="text-slate-400 font-medium">(+R$ 19,90)</span></span>
+                    <Sparkles className="w-4 h-4 text-amber-300 fill-amber-300" />
+                    <span>Montar no Planômetro</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <span className="text-[11px] text-slate-500 mt-2 font-semibold">
+                    Simulação instantânea em tempo real
                   </span>
                 </div>
-              </div>
-
-              {/* Botão de Ação Direto para o Planômetro */}
-              <div className="flex flex-col items-center lg:items-end flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={() => navigate('/residencial/monte-seu-combo')}
-                  className="px-6 py-4 rounded-2xl bg-nuvv-purple hover:bg-nuvv-purple-hover text-white font-black text-xs sm:text-sm transition-all shadow-lg hover:shadow-nuvv-purple/30 flex items-center space-x-2 cursor-pointer active:scale-98"
-                >
-                  <Sparkles className="w-4 h-4 text-amber-300 fill-amber-300" />
-                  <span>Montar no Planômetro</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <span className="text-[10.5px] text-slate-400 mt-2 font-medium">
-                  Simulação instantânea em tempo real
-                </span>
               </div>
             </div>
           </div>
