@@ -246,3 +246,56 @@ export async function sendViabilityAlert(viability) {
     return { success: false, error: err.message };
   }
 }
+
+// 4. Send Internal Alert for Commercial / Wholesale / International RFQ Leads
+export async function sendCommercialLeadAlert(lead) {
+  const config = getSmtpConfig();
+  const transporter = createTransporter();
+  const recipient = config.adminEmail;
+
+  const isInternational = lead.source_page?.startsWith('/en') || lead.details?.includes('GLOBAL PARTNER');
+  const subjectPrefix = isInternational ? '🌐 [Global Partner RFQ]' : '💼 [Novo Lead Comercial]';
+  const subject = `${subjectPrefix} ${lead.company || lead.name || 'Nova Viabilidade'} (${lead.source_page || 'Geral'})`;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FFFFFF; color: #1E293B; border-radius: 12px; border: 1px solid #E2E8F0; overflow: hidden;">
+      <div style="background: ${isInternational ? '#0F172A' : '#7C3AED'}; color: #FFFFFF; padding: 20px 24px;">
+        <h2 style="margin: 0; font-size: 18px;">${isInternational ? 'International RFQ & Circuit Feasibility' : 'Novo Lead Comercial'}</h2>
+        <span style="font-size: 13px; font-weight: bold; color: ${isInternational ? '#38BDF8' : '#FCD34D'};">Origem: ${lead.source_page || 'Site Nuvv'}</span>
+      </div>
+
+      <div style="padding: 24px; font-size: 13px; line-height: 1.6;">
+        <p><strong>Empresa / Company:</strong> ${lead.company || 'Não informado'}</p>
+        <p><strong>Nome / Contact:</strong> ${lead.name || 'Não informado'}</p>
+        <p><strong>E-mail:</strong> <a href="mailto:${lead.email}">${lead.email || 'Não informado'}</a></p>
+        <p><strong>Telefone / WhatsApp / Phone:</strong> ${lead.phone || 'Não informado'}</p>
+        ${lead.cnpj ? `<p><strong>CNPJ:</strong> ${lead.cnpj}</p>` : ''}
+        <div style="margin-top: 16px; padding: 12px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0;">
+          <strong>Detalhes / Technical Requirements:</strong>
+          <p style="margin: 6px 0 0 0; white-space: pre-wrap; font-family: monospace; font-size: 12px; color: #334155;">${lead.details || 'Sem detalhes informados'}</p>
+        </div>
+        <p style="margin-top: 16px; color: #64748B; font-size: 11px;">Recebido em: ${new Date().toLocaleString('pt-BR')}</p>
+      </div>
+    </div>
+  `;
+
+  if (!transporter) {
+    logEmail(recipient, subject, 'lead_alert', 'simulated_no_smtp');
+    return { success: true, simulated: true };
+  }
+
+  try {
+    await transporter.sendMail({
+      from: config.from,
+      to: recipient,
+      subject,
+      html,
+    });
+    logEmail(recipient, subject, 'lead_alert', 'sent');
+    return { success: true };
+  } catch (err) {
+    logEmail(recipient, subject, 'lead_alert', 'failed', err.message);
+    return { success: false, error: err.message };
+  }
+}
+

@@ -31,6 +31,12 @@ import { Privacidade } from './pages/Privacidade';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { PortalColaborador } from './pages/PortalColaborador';
 import { TestePlanos } from './pages/TestePlanos';
+import { GlobalHome } from './pages/en/GlobalHome';
+import { Partners } from './pages/en/Partners';
+import { WholesaleConnectivity } from './pages/en/WholesaleConnectivity';
+import { DedicatedInternetBrazil } from './pages/en/DedicatedInternetBrazil';
+import { MultiSiteConnectivity } from './pages/en/MultiSiteConnectivity';
+import { Contact as InternationalContact } from './pages/en/Contact';
 import { usePageViewTracker } from './hooks/usePageViewTracker';
 import { DEFAULT_CITY } from './data/cities';
 import { ComboLeadSummary } from './services/comboSummary';
@@ -131,6 +137,34 @@ export function App() {
           <Route path="/portal-colaborador" element={<PortalColaborador />} />
           <Route path="/portal-colaborador/*" element={<PortalColaborador />} />
           <Route path="*" element={<PortalColaborador />} />
+        </Routes>
+      </div>
+    );
+  }
+
+  const isEnRoute = location.pathname.startsWith('/en');
+
+  if (isEnRoute) {
+    return (
+      <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans">
+        <ScrollToTop />
+        <Routes>
+          <Route path="/en" element={<GlobalHome />} />
+          <Route path="/en/" element={<GlobalHome />} />
+          <Route path="/en/partners" element={<Partners />} />
+          <Route path="/en/partners/" element={<Partners />} />
+          <Route path="/en/wholesale-connectivity" element={<WholesaleConnectivity />} />
+          <Route path="/en/wholesale-connectivity/" element={<WholesaleConnectivity />} />
+          <Route path="/en/dedicated-internet-brazil" element={<DedicatedInternetBrazil />} />
+          <Route path="/en/dedicated-internet-brazil/" element={<DedicatedInternetBrazil />} />
+          <Route path="/en/multi-site-connectivity" element={<MultiSiteConnectivity />} />
+          <Route path="/en/multi-site-connectivity/" element={<MultiSiteConnectivity />} />
+          <Route path="/en/contact" element={<InternationalContact />} />
+          <Route path="/en/contact/" element={<InternationalContact />} />
+          {/* Aliases for query variations */}
+          <Route path="/en/brazil-local-loop" element={<Navigate to="/en/wholesale-connectivity" replace />} />
+          <Route path="/en/last-mile-connectivity" element={<Navigate to="/en/wholesale-connectivity" replace />} />
+          <Route path="/en/*" element={<Navigate to="/en/" replace />} />
         </Routes>
       </div>
     );

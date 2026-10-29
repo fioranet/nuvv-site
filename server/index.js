@@ -10,6 +10,7 @@ import {
   sendWelcomeEmail,
   sendBlogBroadcast,
   sendViabilityAlert,
+  sendCommercialLeadAlert,
   createTransporter,
   logEmail,
 } from './smtp.js';
@@ -954,7 +955,7 @@ app.get('/api/admin/leads', (req, res) => {
   }
 });
 
-app.post('/api/leads', (req, res) => {
+const handleLeadSubmission = async (req, res) => {
   try {
     const { source_page, name, company, cnpj, phone, email, details } = req.body;
 
@@ -971,11 +972,25 @@ app.post('/api/leads', (req, res) => {
       details || ''
     );
 
+    // Send internal alert asynchronously without delaying client response
+    sendCommercialLeadAlert({
+      source_page: source_page || 'Geral',
+      name,
+      company,
+      cnpj,
+      phone,
+      email,
+      details,
+    }).catch(err => console.error('Error sending commercial lead alert:', err));
+
     res.json({ success: true, id: info.lastInsertRowid });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
-});
+};
+
+app.post('/api/leads', handleLeadSubmission);
+app.post('/api/commercial-leads', handleLeadSubmission);
 
 // -------------------------------------------------------------
 // 7. SMTP SETTINGS & TESTER
@@ -2234,6 +2249,15 @@ if (fs.existsSync(distPath)) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
+
+      if (req.path.startsWith('/en')) {
+        const cleanPath = req.path.replace(/\/$/, '');
+        const localizedFile = path.join(distPath, cleanPath, 'index.html');
+        if (fs.existsSync(localizedFile)) {
+          return res.sendFile(localizedFile);
+        }
+      }
+
       return res.sendFile(path.join(distPath, 'index.html'));
     }
     next();
