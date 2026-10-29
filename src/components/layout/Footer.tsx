@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { siteConfig } from '../../data/siteConfig';
-import { Gauge, FileText, UserCheck } from 'lucide-react';
+import { Gauge, FileText, UserCheck, Globe } from 'lucide-react';
 
 interface FooterProps {
   onOpenLeadModal: () => void;
@@ -140,6 +140,19 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLeadModal }) => {
               <li>
                 <Link to="/shop" className="text-gray-500 hover:text-nuvv-purple transition-colors whitespace-nowrap block">
                   Nuvv Shop
+                </Link>
+              </li>
+              <li className="pt-1">
+                <Link
+                  to="/en/"
+                  className="text-nuvv-purple hover:text-nuvv-dark font-semibold transition-colors whitespace-nowrap inline-flex items-center gap-1.5"
+                  title="Nuvv Global Partners — Wholesale & Dedicated Connectivity in Brazil"
+                >
+                  <Globe className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Nuvv Global</span>
+                  <span className="text-[9px] px-1 py-0.2 rounded bg-indigo-50 text-indigo-700 font-bold uppercase tracking-wider">
+                    EN
+                  </span>
                 </Link>
               </li>
             </ul>
